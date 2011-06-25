@@ -68,6 +68,10 @@ package org.osmf.player.configuration
 					tempUrl = parameters.src.replace(/:\//, "://localhost/");	
 				}
 				parameters.src = tempUrl;
+			} 
+			else if (parameters.hasOwnProperty("flvID") && parameters.flvID != null)
+			{
+				
 			}
 			
 			// Replace the default configuration with external configuration values.

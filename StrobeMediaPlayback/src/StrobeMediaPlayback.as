@@ -19,6 +19,8 @@
 
 package
 {	
+	import com.umiwi.util.UConfigurationLoader;
+	
 	import flash.display.*;
 	import flash.events.*;
 	import flash.external.ExternalInterface;
@@ -142,6 +144,11 @@ package
 				}
 			}
 			
+			var uc:UConfigurationLoader = new UConfigurationLoader();
+			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
+		}
+		
+		private function loadConfigurationFromParameters(parameters:Object):void{
 			var assetManager:AssetsManager = new AssetsManager();
 			
 			injector = new InjectorModule();
@@ -180,7 +187,7 @@ package
 					onSkinLoaderComplete();
 				}
 			}
-				
+			
 			function onSkinLoaderComplete(event:Event = null):void
 			{
 				if (event != null)
@@ -211,7 +218,7 @@ package
 			if (configuration.javascriptCallbackFunction != "" && ExternalInterface.available && mediaPlayerJSBridge == null)
 			{
 				mediaPlayerJSBridge = new JavaScriptBridge(this, player, StrobeMediaPlayer, configuration.javascriptCallbackFunction);			
-			}
+			}			
 		}
 		
 		// Internals
