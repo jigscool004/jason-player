@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>优米网</title>
+        <script type="text/javascript" src="lib/swfobject.js">
+        </script>
+        <script type="text/javascript" src="lib/ParsedQueryString.js">
+        </script>
+        <script type="text/javascript">
+            
+            // Collect query parameters in an object that we can
+            // forward to SWFObject:
+            
+            var pqs = new ParsedQueryString();
+            var parameterNames = pqs.params(false);
+            var parameters = {
+            	  flvID: 6509,
+                autoPlay: "false",
+                verbose: true,
+                controlBarAutoHide: "false",
+                controlBarPosition: "bottom",
+                poster: "images/poster.png"
+            };
+            
+            for (var i = 0; i < parameterNames.length; i++) {
+                var parameterName = parameterNames[i];
+                parameters[parameterName] = pqs.param(parameterName) ||
+                parameters[parameterName];
+            }
+            
+       	    var wmodeValue = "direct";
+            var wmodeOptions = ["direct", "opaque", "transparent", "window"];
+            if (parameters.hasOwnProperty("wmode"))
+            {
+            	if (wmodeOptions.indexOf(parameters.wmode) >= 0)
+            	{
+            		wmodeValue = parameters.wmode;
+            	}	            	
+            	delete parameters.wmode;
+            }
+            
+            // Embed the player SWF:	            
+            swfobject.embedSWF(
+				"StrobeMediaPlayback.swf"
+				, "StrobeMediaPlayback"
+				, 640
+				, 480
+				, "10.2.0"
+				, "expressInstall.swf"
+				, parameters
+				, {
+	                allowFullScreen: "true",
+	                wmode: wmodeValue
+	            }
+				, {
+	                name: "StrobeMediaPlayback"
+	            }
+			);
+            
+            /* Uncomment this code to be notified of playback errors in JavaScript:
+            
+             function onMediaPlaybackError(playerId, code, message, detail)            
+             {
+             	alert(playerId + "\n\n" + code + "\n" + message + "\n" + detail);            
+             }
+             
+             */
+            
+        </script>
+
+    </head>
+    <body>
+        <table width="100%" border="0" cellspacing="5">
+            <tr>
+                <td>
+                    <div id="StrobeMediaPlayback">
+                        <p>
+                            Alternative content
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>
+                        载入流媒体
+                    </p>
+                    <p>
+                        <script type="text/javascript">
+                            
+                            // Construct the HTML required to reload with any of the
+                            // listed media links:
+                            
+                            var linkingCode = "";
+                            var links = ["http://vod.umiwi.com/vod/2011/06/20/b83a4e99d29ade16734f63a877bac307.mp4", 
+                            "http://vod2.umiwi.com/vod/2011/05/30/26f57ef0c2e1b2d88f04c9c192b9dc6d.ssm/26f57ef0c2e1b2d88f04c9c192b9dc6d.f4m"];
+                            
+                            for (var i = 0; i < links.length; i++) {
+                                var link = links[i];
+                                linkingCode = linkingCode +
+                                '<a href="umiwi_parameter.html?src=' +
+                                encodeURI(link) +
+                                '">' +
+                                link +
+                                '</a><br/>';
+                            }
+                            
+                            document.write(linkingCode);
+                        </script>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
