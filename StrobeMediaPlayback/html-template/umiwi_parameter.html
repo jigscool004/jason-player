@@ -15,11 +15,11 @@
             var parameterNames = pqs.params(false);
             var parameters = {
             	  flvID: 6509,
-                autoPlay: "false",
+                autoPlay: "true",
                 verbose: true,
-                controlBarAutoHide: "true",
                 controlBarPosition: "bottom",
-                poster: "images/poster.png"
+                poster: "images/poster.png",
+                backgroundColor: "FFFFFF"
             };
             
             for (var i = 0; i < parameterNames.length; i++) {
@@ -43,8 +43,8 @@
             swfobject.embedSWF(
 				"StrobeMediaPlayback.swf"
 				, "StrobeMediaPlayback"
-				, 640
-				, 480
+				, 320
+				, 320
 				, "10.2.0"
 				, "expressInstall.swf"
 				, parameters

@@ -58,21 +58,69 @@ package org.osmf.player.chrome
 			fadeSteps = 6;			
 			
 			layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
-			layoutMetadata.verticalAlign = VerticalAlign.TOP;
-			layoutMetadata.layoutMode = LayoutMode.HORIZONTAL;
+			layoutMetadata.verticalAlign = VerticalAlign.BOTTOM;
+			layoutMetadata.layoutMode = LayoutMode.VERTICAL;
+			layoutMetadata.height = 50;
+			layoutMetadata.percentWidth = 100;
 			super.configure(xml, assetManager);
+			
+			var topControls:Widget = new Widget();
+			topControls.layoutMetadata.percentWidth = 100;
+			topControls.layoutMetadata.height = 20;
+			topControls.layoutMetadata.layoutMode = LayoutMode.HORIZONTAL;
+			topControls.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
+			topControls.layoutMetadata.verticalAlign = VerticalAlign.BOTTOM;
+			
+/*			// Left margin
+			var leftTopMargin:Widget = new Widget();
+			leftTopMargin.face = AssetIDs.CONTROL_BAR_BACKDROP_LEFT;
+			leftTopMargin.layoutMetadata.horizontalAlign = HorizontalAlign.LEFT;
+			topControls.addChildWidget(leftTopMargin);*/
+			
+			var beforeScrubSpacer:Widget = new Widget();
+			beforeScrubSpacer.width = 10;		
+			topControls.addChildWidget(beforeScrubSpacer);
+			
+			// Scrub bar
+			var scrubBar:ScrubBar = new ScrubBar();		
+			scrubBar.id = WidgetIDs.SCRUB_BAR;
+			scrubBar.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
+			scrubBar.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+			scrubBar.layoutMetadata.percentWidth = 100;
+			topControls.addChildWidget(scrubBar);
+			
+			var rightScrubSpacer:Widget = new Widget();
+			rightScrubSpacer.width = 10;
+			topControls.addChildWidget(rightScrubSpacer);
+			
+/*			var rightTopMargin:Widget = new Widget();
+			rightTopMargin.face = AssetIDs.CONTROL_BAR_BACKDROP_RIGHT;
+			rightTopMargin.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;
+			topControls.addChildWidget(rightTopMargin);*/
+			
+			addChildWidget(topControls);
+			
+			var bottomControls:Widget = new Widget();
+			bottomControls.layoutMetadata.percentWidth = 100;
+			bottomControls.layoutMetadata.height = 30;
+			bottomControls.layoutMetadata.layoutMode = LayoutMode.HORIZONTAL;
+			bottomControls.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
+			bottomControls.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+			
 			
 			// Left margin
 			var leftMargin:Widget = new Widget();
 			leftMargin.face = AssetIDs.CONTROL_BAR_BACKDROP_LEFT;
 			leftMargin.layoutMetadata.horizontalAlign = HorizontalAlign.LEFT;
 			
-			addChildWidget(leftMargin);
+			bottomControls.addChildWidget(leftMargin);
 			
-			// Spacer
+/*			// Spacer
 			var beforePlaySpacer:Widget = new Widget();
 			beforePlaySpacer.width = 6;			
-			addChildWidget(beforePlaySpacer);
+			bottomControls.addChildWidget(beforePlaySpacer);*/
+			
+			
 			
 			var leftControls:Widget = new Widget();
 			leftControls.layoutMetadata.percentHeight = 100;
@@ -101,21 +149,20 @@ package org.osmf.player.chrome
 			nextButton.layoutMetadata.horizontalAlign = HorizontalAlign.LEFT;
 			leftControls.addChildWidget(nextButton);
 			
-			addChildWidget(leftControls);		
+			// Time view
+			var timeViewWidget:TimeViewWidget = new TimeViewWidget();
+			timeViewWidget.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+			timeViewWidget.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;	
+			leftControls.addChildWidget(timeViewWidget);
+			
+			bottomControls.addChildWidget(leftControls);		
 			
 			// Spacer
 			var afterPlaySpacer:Widget = new Widget();
-			afterPlaySpacer.width = 10;			
+			afterPlaySpacer.layoutMetadata.percentWidth = 100;
+			afterPlaySpacer.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
 			
-			addChildWidget(afterPlaySpacer);
-			
-			// Scrub bar
-			var scrubBar:ScrubBar = new ScrubBar();		
-			scrubBar.id = WidgetIDs.SCRUB_BAR;
-			scrubBar.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
-			scrubBar.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
-			scrubBar.layoutMetadata.percentWidth = 100;
-			addChildWidget(scrubBar);
+			bottomControls.addChildWidget(afterPlaySpacer);
 			
 			// Right side
 			var rightControls:Widget = new Widget();
@@ -128,12 +175,6 @@ package org.osmf.player.chrome
 			var afterScrubSpacer:Widget = new Widget();
 			afterScrubSpacer.width = 5;
 			rightControls.addChildWidget(afterScrubSpacer);
-			
-			// Time view
-			var timeViewWidget:TimeViewWidget = new TimeViewWidget();
-			timeViewWidget.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
-			timeViewWidget.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;	
-			rightControls.addChildWidget(timeViewWidget);
 			
 			// HD indicator
 			var hdIndicator:QualityIndicator = new QualityIndicator();
@@ -170,23 +211,24 @@ package org.osmf.player.chrome
 			fullscreenEnterButton.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;
 			rightControls.addChildWidget(fullscreenEnterButton);
 			
-			addChildWidget(rightControls);
+			bottomControls.addChildWidget(rightControls);
 			
 			// Spacer
 			var afterFullscreenSpacer:Widget = new Widget();
 			afterFullscreenSpacer.layoutMetadata.width = 13;
-			addChildWidget(afterFullscreenSpacer);
+			bottomControls.addChildWidget(afterFullscreenSpacer);
 
 			var filler:Widget = new Widget();
 
 			var rightMargin:Widget = new Widget();
 			rightMargin.face = AssetIDs.CONTROL_BAR_BACKDROP_RIGHT;
 			rightMargin.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;
-			addChildWidget(rightMargin);				
+			bottomControls.addChildWidget(rightMargin);				
 
+			addChildWidget(bottomControls);
 
 			configureWidgets
-				(	[ leftMargin, beforePlaySpacer, pauseButton, playButton, previousButton, nextButton, afterPlaySpacer
+				(	[ leftMargin, pauseButton, playButton, previousButton, nextButton, afterPlaySpacer
 					, leftControls		
 					, scrubBar, afterScrubSpacer
 					, timeViewWidget, afterTimeSpacer
