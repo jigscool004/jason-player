@@ -44,6 +44,11 @@ package com.umiwi.util
 		{
 			_parameters = parameters;
 			_callback = cback
+			if(_parameters.src) 
+			{
+				_callback.call(null, _parameters);
+				return;
+			}
 			//http://www.umiwi.com/player/vod/getflvpath.php?id=6509&randomNum=4897
 			var randomNum:Number=int(Math.random()*10000);
 			var phpRequest:URLRequest=new URLRequest(GET_PATH_URL);
