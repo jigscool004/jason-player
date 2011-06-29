@@ -1,5 +1,7 @@
 package com.umiwi.util
 {
+	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.net.URLLoader;
@@ -80,6 +82,16 @@ package com.umiwi.util
 		private function getFlvInfoError(e:IOErrorEvent):void
 		{
 			logger.error("获取视频信息失败");
+		}
+		
+		public static function traceChildren(containter:DisplayObjectContainer, depth:String = ""):void{
+			for (var i:uint = 0; i < containter.numChildren; i++){
+				var obj:Object = containter.getChildAt(i);
+				trace(depth + obj.toString());
+				if(obj is DisplayObjectContainer) {
+					traceChildren(obj as DisplayObjectContainer, depth + "    ");
+				}
+			}
 		}
 		
 	}

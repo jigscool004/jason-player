@@ -19,6 +19,7 @@
 
 package
 {	
+	import com.umiwi.control.MediaConfiguration;
 	import com.umiwi.util.UConfigurationLoader;
 	
 	import flash.display.*;
@@ -272,6 +273,7 @@ package
 			
 			addChild(mainContainer);
 			
+			mediaContainer = MediaConfiguration.changeView(mediaContainer) as MediaContainer;
 			mediaContainer.clipChildren = true;
 			mediaContainer.layoutMetadata.percentWidth = 100;
 			mediaContainer.layoutMetadata.percentHeight = 100;

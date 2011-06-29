@@ -254,10 +254,10 @@ package org.osmf.player.chrome.widgets
 			addChild(scrubBarDVRLiveTrack);
 			
 			scrubBarTrackLeft = assetManager.getDisplayObject(trackLeft) || new Sprite();			
-			addChild(scrubBarTrackLeft);
+			//addChild(scrubBarTrackLeft);
 			
 			scrubBarTrackRight = assetManager.getDisplayObject(trackRight) || new Sprite();			
-			addChild(scrubBarTrackRight);
+			//addChild(scrubBarTrackRight);
 			
 			scrubber
 				= new Slider

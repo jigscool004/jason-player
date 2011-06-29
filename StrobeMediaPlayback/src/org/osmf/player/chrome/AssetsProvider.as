@@ -201,7 +201,7 @@ package org.osmf.player.chrome
 			addEmbeddedSymbol(AssetIDs.NEXT_BUTTON_NORMAL, ASSET_next_normal);
 			addEmbeddedSymbol(AssetIDs.NEXT_BUTTON_DOWN, ASSET_next_selected);
 			addEmbeddedSymbol(AssetIDs.NEXT_BUTTON_OVER, ASSET_next_rollover);
-			addEmbeddedSymbol(AssetIDs.NEXT_BUTTON_DISABLED, ASSET_next_disabled)
+			addEmbeddedSymbol(AssetIDs.NEXT_BUTTON_DISABLED, ASSET_next_disabled);
 			
 			// HD indicator:
 			addEmbeddedSymbol(AssetIDs.HD_ON, ASSET_hd_on);
@@ -209,6 +209,10 @@ package org.osmf.player.chrome
 			
 			// Buffering overlay:
 			addEmbeddedSymbol(AssetIDs.BUFFERING_OVERLAY, ASSET_BufferingOverlay);
+			
+			//Umiwi
+			addEmbeddedSymbol(AssetIDs.SCRUB_HINT_BACKDROP, ASSET_scrub_hint);
+			addEmbeddedSymbol(AssetIDs.LOGO_LINK_BUTTON, ASSET_logo_link);
 		}
 		
 		private function onAssetsManagerComplete(event:Event):void

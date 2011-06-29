@@ -19,13 +19,23 @@
 
 package org.osmf.player.chrome.widgets
 {
+	import com.umiwi.control.MediaConfiguration;
+	import com.umiwi.util.UConfigurationLoader;
+	
+	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
+	import mx.core.mx_internal;
+	
+	import org.osmf.containers.MediaContainer;
+	import org.osmf.media.videoClasses.VideoSurface;
 	import org.osmf.player.chrome.assets.AssetIDs;
 	import org.osmf.traits.MediaTraitType;
 	import org.osmf.traits.PlayState;
 	import org.osmf.traits.PlayTrait;
+	
+	use namespace mx_internal;
 	
 	public class PauseButton extends PlayableButton
 	{
@@ -53,6 +63,16 @@ package org.osmf.player.chrome.widgets
 			{
 				playable.stop();
 			}
+			
+			var container:DisplayObjectContainer  = media.container as DisplayObjectContainer;
+			for (var i:uint = 0; i < container.numChildren; i++){
+				if (container.getChildAt(i) is VideoSurface) {
+					var obj1:VideoSurface = container.getChildAt(i) as VideoSurface;
+					//MediaConfiguration.changeView(obj1.stageVideo);
+					MediaConfiguration.changeView(obj1);
+				}
+			}
+			//UConfigurationLoader.traceChildren(stage);
 		}
 		
 		override protected function visibilityDeterminingEventHandler(event:Event = null):void
