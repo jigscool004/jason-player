@@ -116,5 +116,9 @@ package org.osmf.player.chrome.assets
 		public static const AUTH_CANCEL_BUTTON_OVER:String = "authCancelButtonOver";
 		
 		public static const BUFFERING_OVERLAY:String = "bufferingOverlay";
+		
+		public static const SCRUB_HINT_BACKDROP:String = "scrupHintBackdrop";
+		public static const LOGO_LINK_BUTTON:String = "logoLinkButton";
+		
 	}
 }

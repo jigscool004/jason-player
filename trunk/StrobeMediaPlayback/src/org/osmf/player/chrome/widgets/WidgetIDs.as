@@ -40,6 +40,7 @@ package org.osmf.player.chrome.widgets
 		public static const CAPTION_LABEL:String = "captionLabel";
 		public static const MESSAGE_LABEL:String = "messageLabel";
 		public static const ERROR:String = "error";
+		public static const LOGO_LINK:String = "logoLink";
 		
 	}
 }
