@@ -45,8 +45,8 @@ package org.osmf.player.chrome.widgets
 			super();
 			
 			upFace = AssetIDs.PAUSE_BUTTON_NORMAL;
-			downFace = AssetIDs.PAUSE_BUTTON_DOWN;
-			overFace = AssetIDs.PAUSE_BUTTON_OVER;
+			downFace = AssetIDs.PAUSE_BUTTON_NORMAL;
+			overFace = AssetIDs.PAUSE_BUTTON_NORMAL;
 		}
 		// Overrides
 		//

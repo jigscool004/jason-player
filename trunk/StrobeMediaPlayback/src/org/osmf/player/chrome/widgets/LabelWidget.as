@@ -44,7 +44,7 @@ package org.osmf.player.chrome.widgets
 		public var selectable:Boolean;
 		public var password:Boolean;
 		public var multiline:Boolean;
-		public var textColor:String;
+		public var textColor:String = "0x333333";
 		public var defaultText:String = "";
 		
 		public function LabelWidget()

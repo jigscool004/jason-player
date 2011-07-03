@@ -14,11 +14,12 @@
             var pqs = new ParsedQueryString();
             var parameterNames = pqs.params(false);
             var parameters = {
+            	src: "images/video_logo.jpg",
             	  flvID: 6509,
                 autoPlay: "true",
                 verbose: true,
                 controlBarPosition: "bottom",
-                poster: "images/poster.png",
+                poster: "images/video_logo.jpg",
                 backgroundColor: "FFFFFF"
             };
             
@@ -43,8 +44,8 @@
             swfobject.embedSWF(
 				"StrobeMediaPlayback.swf"
 				, "StrobeMediaPlayback"
-				, 609
-				, 523
+				, 610
+				, 458
 				, "10.2.0"
 				, "expressInstall.swf"
 				, parameters

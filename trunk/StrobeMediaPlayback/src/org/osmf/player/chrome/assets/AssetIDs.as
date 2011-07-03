@@ -119,6 +119,9 @@ package org.osmf.player.chrome.assets
 		
 		public static const SCRUB_HINT_BACKDROP:String = "scrupHintBackdrop";
 		public static const LOGO_LINK_BUTTON:String = "logoLinkButton";
+		public static const VIDEO_LOGO:String = "videoLogo";
+		public static const VOLUME_CHANGE:String = "volumeChange";
+		public static const VOLUME_BACKDROP:String = "volumeBackdrop";
 		
 	}
 }

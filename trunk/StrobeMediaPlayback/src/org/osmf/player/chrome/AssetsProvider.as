@@ -213,6 +213,10 @@ package org.osmf.player.chrome
 			//Umiwi
 			addEmbeddedSymbol(AssetIDs.SCRUB_HINT_BACKDROP, ASSET_scrub_hint);
 			addEmbeddedSymbol(AssetIDs.LOGO_LINK_BUTTON, ASSET_logo_link);
+			addEmbeddedSymbol(AssetIDs.LOGO_LINK_BUTTON, ASSET_video_logo);
+			
+			addEmbeddedSymbol(AssetIDs.VOLUME_CHANGE, ASSET_VolumeChange);
+			addEmbeddedSymbol(AssetIDs.VOLUME_BACKDROP, ASSET_VolumeBackdrop);
 		}
 		
 		private function onAssetsManagerComplete(event:Event):void

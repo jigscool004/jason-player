@@ -191,7 +191,7 @@ package org.osmf.player.chrome.widgets
 					}
 				}
 
-				scrubber.y = scrubBarTrack.y;
+				scrubber.y = scrubBarTrack.y - ( scrubber.height - scrubBarTrack.height) * 0.5;
 				scrubber.origin = scrubberStart;
 				
 				scrubBarClickArea.x = scrubBarTrack.x;
