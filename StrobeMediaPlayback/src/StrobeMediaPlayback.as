@@ -20,6 +20,7 @@
 package
 {	
 	import com.umiwi.control.MediaConfiguration;
+	import com.umiwi.util.LoadingDisplay;
 	import com.umiwi.util.UConfigurationLoader;
 	
 	import flash.display.*;
@@ -147,9 +148,13 @@ package
 			
 			var uc:UConfigurationLoader = new UConfigurationLoader();
 			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
-		}
-		
-		private function loadConfigurationFromParameters(parameters:Object):void{
+			function loadConfigurationFromParameters(params:Object):void{
+				configuration.src = params.src;
+				configuration.poster = params.poster;
+			    loadMedia();
+			}
+
+			//stage.removeChild(loadingDisplay);
 			var assetManager:AssetsManager = new AssetsManager();
 			
 			injector = new InjectorModule();
@@ -910,6 +915,8 @@ package
 		private static const BUFFERING_OVERLAY_INDEX:int = 4;
 		private static const OVERLAY_FADE_STEPS:int = 6;
 		private static const MEDIA_PLAYER:String = "org.osmf.media.MediaPlayer";
+		
+		private var videoUrlLoaded:Boolean = false;
 		
 		private static const EXTERNAL_INTERFACE_ERROR_CALL:String
 		 	= "function(playerId, code, message, detail)"

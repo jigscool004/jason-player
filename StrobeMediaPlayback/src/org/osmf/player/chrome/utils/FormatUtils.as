@@ -44,15 +44,15 @@ package org.osmf.player.chrome.utils
 				h = Math.floor(seconds / 3600.0);
 				m = Math.floor(seconds % 3600.0 / 60.0);
 				s = seconds % 60.0;
-				return ((h > 0.0 || leadingHours) ? (h + ":") : "")
+				return ((h > 0.0 || leadingHours) ? (h + "0:") : "")
 				+ (((h > 0.0 || leadingMinutes) && m < 10.0) ? "0" : "")
 					+ m + ":" 
 					+ (s < 10.0 ? "0" : "") 
 					+ s;
 			}	
 						
-			var totalDurationString:String =  isNaN(totalDuration) ? LIVE : prettyPrintSeconds(totalDuration);			
-			var currentPositionString:String = isLive ? LIVE :  prettyPrintSeconds(currentPosition, h>0||m>9, h>0);
+			var totalDurationString:String =  isNaN(totalDuration) ? LIVE : prettyPrintSeconds(totalDuration, true, true);			
+			var currentPositionString:String = isLive ? LIVE :  prettyPrintSeconds(currentPosition, true, true);
 			
 			while (currentPositionString.length < totalDurationString.length)
 			{

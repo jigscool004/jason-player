@@ -390,7 +390,7 @@ package org.osmf.player.chrome.widgets
 		private var _hint:String = null;
 		private var _tintColor:uint = 0;
 		
-		private var _displayObject:DisplayObject;
+		protected var _displayObject:DisplayObject;
 		private var layoutRenderer:LayoutRendererBase;
 		
 		private var children:Vector.<Widget>;

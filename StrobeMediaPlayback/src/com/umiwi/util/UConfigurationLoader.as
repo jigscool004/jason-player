@@ -2,6 +2,7 @@ package com.umiwi.util
 {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.net.URLLoader;
@@ -22,6 +23,7 @@ package com.umiwi.util
 	{
 		
 		private static const GET_PATH_URL:String = "http://www.umiwi.com/player/vod/getflvpath.php";
+		private static const GET_LIB_URL:String = "OSMF/library.swf";
 		
 		CONFIG::LOGGING
 		{
@@ -30,7 +32,6 @@ package com.umiwi.util
 		
 		public function UConfigurationLoader()
 		{
-			Log
 			CONFIG::LOGGING
 			{
 				// Setup the custom logging factory 
@@ -45,10 +46,9 @@ package com.umiwi.util
 		public function getFlvInfo(parameters:Object, cback:Function):void
 		{
 			_parameters = parameters;
-			_callback = cback
-			if(_parameters.src) 
+			_callback = cback;
+			if(!_parameters.flvID) 
 			{
-				_callback.call(null, _parameters);
 				return;
 			}
 			//http://www.umiwi.com/player/vod/getflvpath.php?id=6509&randomNum=4897
@@ -64,14 +64,14 @@ package com.umiwi.util
 			phpLoader.addEventListener(IOErrorEvent.IO_ERROR,getFlvInfoError);
 			try {
 				phpLoader.load(phpRequest);
-				logger.info("正在获取视频信息");
+				//logger.info("正在获取视频信息");
 			} catch (error:Error) {
-				logger.error("获取视频信息失败");
+				//logger.error("获取视频信息失败");
 			}
 		}
 		private function getFlvInfoComplete(e:Event):void
 		{
-			logger.info("获取视频信息成功!");
+			//logger.info("获取视频信息成功!");
 			var info:XML = new XML(e.target.data);
 			var item:XML = info..item[0];
 			_parameters.src = item.@url.toString();
@@ -81,7 +81,35 @@ package com.umiwi.util
 		}
 		private function getFlvInfoError(e:IOErrorEvent):void
 		{
-			logger.error("获取视频信息失败");
+			//logger.error("获取视频信息失败");
+		}
+		
+		
+		public function getLibrary(cback:Function):void
+		{
+			_callback = cback;
+			var libLoader:Loader = new Loader();
+			libLoader.contentLoaderInfo.addEventListener(Event.COMPLETE,getLibComplete);
+			libLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,getLibError);
+			var url:URLRequest = new URLRequest(GET_LIB_URL); 
+			libLoader.load(url); 
+
+			try {
+				libLoader.load(url); 
+				//logger.info("正在获取外部库");
+			} catch (error:Error) {
+				//logger.error("获取视频信息失败");
+			}
+		}
+		private function getLibComplete(e:Event):void
+		{
+			//logger.info("获取外部库成功!");
+			_callback.call(null);
+			
+		}
+		private function getLibError(e:IOErrorEvent):void
+		{
+			//logger.error("获取外部库失败");
 		}
 		
 		public static function traceChildren(containter:DisplayObjectContainer, depth:String = ""):void{

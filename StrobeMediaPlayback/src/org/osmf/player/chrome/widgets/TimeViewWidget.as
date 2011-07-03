@@ -54,6 +54,10 @@ package org.osmf.player.chrome.widgets
 	 */ 
 	public class TimeViewWidget extends Widget
 	{
+		public function TimeViewWidget()
+		{
+			super();
+		}
 		/**
 		 * Returns the current textual represention of the time displayed by the TimeViewWidget.
 		 */ 
@@ -142,14 +146,16 @@ package org.osmf.player.chrome.widgets
 			layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
 			
 			// Current time
-			currentTimeLabel = new LabelWidget();			
+			currentTimeLabel = new LabelWidget();
+			currentTimeLabel.fontSize = FONT_SIZE;
 			currentTimeLabel.autoSize = true;
 			currentTimeLabel.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
 			currentTimeLabel.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;			
 			addChildWidget(currentTimeLabel);
 			
 			// Separator
-			timeSeparatorLabel = new LabelWidget();			
+			timeSeparatorLabel = new LabelWidget();	
+			timeSeparatorLabel.fontSize = FONT_SIZE;
 			timeSeparatorLabel.autoSize = true;
 			timeSeparatorLabel.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
 			timeSeparatorLabel.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;
@@ -157,6 +163,7 @@ package org.osmf.player.chrome.widgets
 			
 			// Duration
 			totalTimeLabel = new LabelWidget();
+			totalTimeLabel.fontSize = FONT_SIZE;
 			totalTimeLabel.autoSize = true;
 			totalTimeLabel.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
 			totalTimeLabel.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;
@@ -216,7 +223,8 @@ package org.osmf.player.chrome.widgets
 		private static const _requiredTraits:Vector.<String> = new Vector.<String>;
 		_requiredTraits[0] = MediaTraitType.TIME;
 		private static const LIVE:String = "Live";
-		private static const TIME_ZERO:String = " 0:00 ";
+		private static const TIME_ZERO:String = " 00:00:00 ";
+		private static const FONT_SIZE:uint = 12;
 		
 		private var currentTimeLabel:LabelWidget;
 		private var timeSeparatorLabel:LabelWidget;

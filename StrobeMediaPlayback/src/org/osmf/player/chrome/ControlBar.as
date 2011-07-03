@@ -39,6 +39,7 @@ package org.osmf.player.chrome
 	import org.osmf.player.chrome.widgets.QualityIndicator;
 	import org.osmf.player.chrome.widgets.ScrubBar;
 	import org.osmf.player.chrome.widgets.TimeViewWidget;
+	import org.osmf.player.chrome.widgets.UMuteButton;
 	import org.osmf.player.chrome.widgets.Widget;
 	import org.osmf.player.chrome.widgets.WidgetIDs;
 	import org.osmf.traits.MediaTraitType;
@@ -59,7 +60,7 @@ package org.osmf.player.chrome
 			fadeSteps = 6;			
 			
 			layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
-			layoutMetadata.verticalAlign = VerticalAlign.BOTTOM;
+			layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
 			layoutMetadata.layoutMode = LayoutMode.VERTICAL;
 			layoutMetadata.height = 66;
 			layoutMetadata.percentWidth = 100;
@@ -70,7 +71,7 @@ package org.osmf.player.chrome
 			topControls.layoutMetadata.height = 30;
 			topControls.layoutMetadata.layoutMode = LayoutMode.HORIZONTAL;
 			topControls.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
-			topControls.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+			topControls.layoutMetadata.verticalAlign = VerticalAlign.BOTTOM;
 			
 /*			// Left margin
 			var leftTopMargin:Widget = new Widget();
@@ -86,7 +87,7 @@ package org.osmf.player.chrome
 			var scrubBar:ScrubBar = new ScrubBar();		
 			scrubBar.id = WidgetIDs.SCRUB_BAR;
 			scrubBar.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
-			scrubBar.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+			scrubBar.layoutMetadata.verticalAlign = VerticalAlign.BOTTOM;
 			scrubBar.layoutMetadata.percentWidth = 100;
 			topControls.addChildWidget(scrubBar);
 			
@@ -159,6 +160,7 @@ package org.osmf.player.chrome
 			// Time bakdrop
 			var timeBackdrop:Widget = new Widget();
 			timeBackdrop.face = AssetIDs.SCRUB_HINT_BACKDROP;
+			timeBackdrop.height = 26;
 			timeBackdrop.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
 			timeBackdrop.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE
 			leftControls.addChildWidget(timeBackdrop);
@@ -222,8 +224,20 @@ package org.osmf.player.chrome
 			rightControls.addChildWidget(muteButton);
 			
 			// Spacer
+			var afterConfigSpacer:Widget = new Widget();
+			afterConfigSpacer.width = 5;
+			rightControls.addChildWidget(afterConfigSpacer);
+			
+			// volume change
+			var umuteButton:UMuteButton = new UMuteButton();
+			umuteButton.id = WidgetIDs.UMUTE_BUTTON;
+			umuteButton.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+			umuteButton.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;
+			rightControls.addChildWidget(umuteButton);
+			
+			// Spacer
 			var afterVolumeSpacer:Widget = new Widget();
-			afterVolumeSpacer.width = 11;
+			afterVolumeSpacer.width = 5;
 			rightControls.addChildWidget(afterVolumeSpacer);
 			
 			// FullScreen			
@@ -259,7 +273,7 @@ package org.osmf.player.chrome
 					, scrubBar, afterScrubSpacer
 					, timeBackdrop, linkButton
 					, timeViewWidget, afterTimeSpacer
-					, hdIndicator, muteButton, afterVolumeSpacer
+					, hdIndicator, muteButton, afterConfigSpacer, umuteButton, afterVolumeSpacer
 					, fullscreenEnterButton, fullscreenLeaveButton, afterFullscreenSpacer
 					, rightControls
 					]
