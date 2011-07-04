@@ -39,6 +39,7 @@ package
 	import org.osmf.metadata.Metadata;
 	import org.osmf.net.StreamingURLResource;
 	import org.osmf.player.chrome.ChromeProvider;
+	import org.osmf.player.chrome.ConfigPanel;
 	import org.osmf.player.chrome.assets.AssetsManager;
 	import org.osmf.player.chrome.configuration.ConfigurationUtils;
 	import org.osmf.player.chrome.events.WidgetEvent;
@@ -278,7 +279,6 @@ package
 			
 			addChild(mainContainer);
 			
-			mediaContainer = MediaConfiguration.changeView(mediaContainer) as MediaContainer;
 			mediaContainer.clipChildren = true;
 			mediaContainer.layoutMetadata.percentWidth = 100;
 			mediaContainer.layoutMetadata.percentHeight = 100;
@@ -349,7 +349,7 @@ package
 				
 				mainContainer.layoutRenderer.addTarget(controlBarContainer);
 				//mediaContainer.layoutRenderer.addTarget(loginWindowContainer);
-			}			
+			}	
 			
 			mainContainer.layoutRenderer.addTarget(mediaContainer);
 			CONFIG::FLASH_10_1
@@ -361,6 +361,18 @@ package
 					qosOverlay.showInfo();
 				}
 			}
+			
+			configPanel = new ConfigPanel();
+			configPanel.configure(<default/>, ChromeProvider.getInstance().assetManager);
+			configPanel.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+			configPanel.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
+			configPanel.layoutMetadata.index = CONFIG_OVERLAY_INDEX;
+			configPanel.fadeSteps = OVERLAY_FADE_STEPS;
+			mediaContainer.layoutRenderer.addTarget(configPanel);
+			configPanel.register(controlBarContainer, mainContainer, player);
+			configPanel.visible = false;
+			
+			
 			// Simulate the stage resizing, to update the dimensions of the container:
 			onStageResize();
 		}
@@ -516,6 +528,11 @@ package
 						}
 					}
 					
+					if (configPanel != null)
+					{
+						configPanel.media = _media;
+					}
+					
 					// Forward a reference to login window:
 /*					if (loginWindow != null)
 					{
@@ -537,6 +554,11 @@ package
 					if (bufferingOverlay != null)
 					{
 						bufferingOverlay.media = null;
+					}
+					
+					if (configPanel != null)
+					{
+						configPanel.media = null;
 					}
 				}
 			}			
@@ -900,6 +922,7 @@ package
 		private var _media:MediaElement;
 		
 		private var controlBar:ControlBarElement;
+		private var configPanel:ConfigPanel
 		private var alert:AlertDialogElement;
 		//private var loginWindow:AuthenticationDialogElement;
 		private var posterImage:ImageElement;
@@ -917,6 +940,7 @@ package
 		private static const POSTER_INDEX:int = 2;
 		private static const PLAY_OVERLAY_INDEX:int = 3;
 		private static const BUFFERING_OVERLAY_INDEX:int = 4;
+		private static const CONFIG_OVERLAY_INDEX:int = 5;
 		private static const OVERLAY_FADE_STEPS:int = 6;
 		private static const MEDIA_PLAYER:String = "org.osmf.media.MediaPlayer";
 		

@@ -123,5 +123,7 @@ package org.osmf.player.chrome.assets
 		public static const VOLUME_CHANGE:String = "volumeChange";
 		public static const VOLUME_BACKDROP:String = "volumeBackdrop";
 		
+		public static const CONFIG_PANEL_BACKDROP:String = "configPanelBackdrop";
+		
 	}
 }

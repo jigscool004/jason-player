@@ -27,6 +27,9 @@ package org.osmf.player.chrome
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
+	import org.osmf.layout.HorizontalAlign;
+	import org.osmf.layout.LayoutMode;
+	import org.osmf.layout.VerticalAlign;
 	import org.osmf.player.chrome.assets.AssetIDs;
 	import org.osmf.player.chrome.assets.AssetsManager;
 	import org.osmf.player.chrome.widgets.AlertDialog;
@@ -35,9 +38,6 @@ package org.osmf.player.chrome
 	import org.osmf.player.chrome.widgets.LabelWidget;
 	import org.osmf.player.chrome.widgets.Widget;
 	import org.osmf.player.chrome.widgets.WidgetIDs;
-	import org.osmf.layout.HorizontalAlign;
-	import org.osmf.layout.LayoutMode;
-	import org.osmf.layout.VerticalAlign;
 	import org.osmf.player.elements.ErrorWidget;
 	
 	[Event(name="complete", type="flash.events.Event")]
@@ -269,6 +269,13 @@ package org.osmf.player.chrome
 			controlBar.configure(<default/>,  assetsProvider.assetsManager)
 			return controlBar;
 		}
+		
+		public function createConfigPanel():ConfigPanel
+		{
+			var configPanel:ConfigPanel = new ConfigPanel();
+			configPanel.configure(<default/>,  assetsProvider.assetsManager)
+			return configPanel;
+		}		
 		
 		public function getWidget(id:String):Widget
 		{

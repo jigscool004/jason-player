@@ -216,6 +216,8 @@ package org.osmf.player.chrome
 			
 			addEmbeddedSymbol(AssetIDs.VOLUME_CHANGE, ASSET_VolumeChange);
 			addEmbeddedSymbol(AssetIDs.VOLUME_BACKDROP, ASSET_VolumeBackdrop);
+			
+			addEmbeddedSymbol(AssetIDs.CONFIG_PANEL_BACKDROP, ASSET_VideoInfoOverlay);
 		}
 		
 		private function onAssetsManagerComplete(event:Event):void
