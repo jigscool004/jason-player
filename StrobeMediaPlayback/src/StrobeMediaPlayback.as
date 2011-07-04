@@ -20,7 +20,6 @@
 package
 {	
 	import com.umiwi.control.MediaConfiguration;
-	import com.umiwi.util.LoadingDisplay;
 	import com.umiwi.util.UConfigurationLoader;
 	
 	import flash.display.*;
@@ -149,6 +148,7 @@ package
 			var uc:UConfigurationLoader = new UConfigurationLoader();
 			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
 			function loadConfigurationFromParameters(params:Object):void{
+				videoInfoLoaded = true;
 				configuration.src = params.src;
 				configuration.poster = params.poster;
 			    loadMedia();
@@ -317,7 +317,7 @@ package
 			alert.tintColor = configuration.tintColor;				
 			
 			// Setup authentication dialog:
-			loginWindow = new AuthenticationDialogElement();
+/*			loginWindow = new AuthenticationDialogElement();
 			loginWindow.tintColor = configuration.tintColor;
 			
 			loginWindowContainer = new MediaContainer();
@@ -327,7 +327,7 @@ package
 			loginWindowContainer.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
 			loginWindowContainer.layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
 			
-			loginWindowContainer.addMediaElement(loginWindow);
+			loginWindowContainer.addMediaElement(loginWindow);*/
 			
 			if (configuration.controlBarMode == ControlBarMode.NONE)
 			{
@@ -348,7 +348,7 @@ package
 				controlBarContainer.addEventListener(WidgetEvent.REQUEST_FULL_SCREEN, onFullScreenRequest);
 				
 				mainContainer.layoutRenderer.addTarget(controlBarContainer);
-				mediaContainer.layoutRenderer.addTarget(loginWindowContainer);
+				//mediaContainer.layoutRenderer.addTarget(loginWindowContainer);
 			}			
 			
 			mainContainer.layoutRenderer.addTarget(mediaContainer);
@@ -510,13 +510,17 @@ package
 					if (bufferingOverlay != null)
 					{
 						bufferingOverlay.media = _media;
+						if (!videoInfoLoaded)
+						{
+							bufferingOverlay.visible = true;
+						}
 					}
 					
 					// Forward a reference to login window:
-					if (loginWindow != null)
+/*					if (loginWindow != null)
 					{
 						loginWindow.target = _media;
-					}
+					}*/
 					
 					_stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreen);
 					mainContainer.addEventListener(MouseEvent.DOUBLE_CLICK, onFullScreenRequest);
@@ -892,12 +896,12 @@ package
 		private var mainContainer:StrobeMediaContainer;
 		private var mediaContainer:MediaContainer = new MediaContainer();;
 		private var controlBarContainer:MediaContainer;
-		private var loginWindowContainer:MediaContainer;
+		//private var loginWindowContainer:MediaContainer;
 		private var _media:MediaElement;
 		
 		private var controlBar:ControlBarElement;
 		private var alert:AlertDialogElement;
-		private var loginWindow:AuthenticationDialogElement;
+		//private var loginWindow:AuthenticationDialogElement;
 		private var posterImage:ImageElement;
 		private var playOverlay:PlayButtonOverlay;
 		private var bufferingOverlay:BufferingOverlay;
@@ -916,7 +920,7 @@ package
 		private static const OVERLAY_FADE_STEPS:int = 6;
 		private static const MEDIA_PLAYER:String = "org.osmf.media.MediaPlayer";
 		
-		private var videoUrlLoaded:Boolean = false;
+		private var videoInfoLoaded:Boolean = false;
 		
 		private static const EXTERNAL_INTERFACE_ERROR_CALL:String
 		 	= "function(playerId, code, message, detail)"

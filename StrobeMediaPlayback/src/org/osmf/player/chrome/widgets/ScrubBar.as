@@ -78,7 +78,7 @@ package org.osmf.player.chrome.widgets
 		
 		public var font:String = AssetIDs.DEFAULT_FONT;
 		public var scrubberUp:String = AssetIDs.SCRUB_BAR_SCRUBBER_NORMAL;
-		public var scrubberDown:String = AssetIDs.SCRUB_BAR_SCRUBBER_DOWN;
+		public var scrubberDown:String = AssetIDs.SCRUB_BAR_SCRUBBER_NORMAL;
 		public var scrubberDisabled:String = AssetIDs.SCRUB_BAR_SCRUBBER_DISABLED;
 		public var timeHint:String = AssetIDs.SCRUB_BAR_TIME_HINT;
 		public var liveOnlyTrack:String = AssetIDs.SCRUB_BAR_LIVE_ONLY_TRACK;
