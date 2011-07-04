@@ -42,6 +42,9 @@ package org.osmf.player.chrome.widgets
 		public static const ERROR:String = "error";
 		public static const LOGO_LINK:String = "logoLink";
 		public static const UMUTE_BUTTON:String = "umuteButton";
-		
+		public static const BRIGHTNESS_SLIDER:String = "brightnessSlider";
+		public static const CONFIG_PANEL:String = "configPanel";
+		public static const CONFIG_BUTTON:String = "configButton";
+		public static const CLOSE_CONFIG:String = "closeConfig";
 	}
 }

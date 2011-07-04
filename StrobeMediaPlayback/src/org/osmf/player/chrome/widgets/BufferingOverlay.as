@@ -177,7 +177,11 @@ package org.osmf.player.chrome.widgets
 			
 			// WORKARROUND: for https://bugs.adobe.com/jira/browse/FM-1146
 			workarroundTimer = new Timer(VISIBILITY_DELAY)
-			visibleWorkarroundTimestamp = timeTrait.currentTime;
+			if(!timeTrait) {
+				visibleWorkarroundTimestamp = 1000;
+			}else {
+				visibleWorkarroundTimestamp = timeTrait.currentTime;	
+			}
 			workarroundTimer.addEventListener(TimerEvent.TIMER, workarrounHandler);			
 		}
 		

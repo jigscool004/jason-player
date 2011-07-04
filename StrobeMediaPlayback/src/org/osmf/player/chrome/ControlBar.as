@@ -28,6 +28,7 @@ package org.osmf.player.chrome
 	import org.osmf.player.chrome.assets.AssetIDs;
 	import org.osmf.player.chrome.assets.AssetsManager;
 	import org.osmf.player.chrome.widgets.AutoHideWidget;
+	import org.osmf.player.chrome.widgets.ConfigButton;
 	import org.osmf.player.chrome.widgets.FullScreenEnterButton;
 	import org.osmf.player.chrome.widgets.FullScreenLeaveButton;
 	import org.osmf.player.chrome.widgets.LogoLinkButton;
@@ -215,13 +216,12 @@ package org.osmf.player.chrome
 			afterTimeSpacer.width = 5;
 			rightControls.addChildWidget(afterTimeSpacer);
 			
-			// Mute/unmute
-			var muteButton:MuteButton = new MuteButton();
-			muteButton.id = WidgetIDs.MUTE_BUTTON;
-			muteButton.volumeSteps = 3;
-			muteButton.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
-			muteButton.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;
-			rightControls.addChildWidget(muteButton);
+			// open config panel
+			var configButton:ConfigButton = new ConfigButton();
+			configButton.id = WidgetIDs.CONFIG_BUTTON;
+			configButton.layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+			configButton.layoutMetadata.horizontalAlign = HorizontalAlign.RIGHT;
+			rightControls.addChildWidget(configButton);
 			
 			// Spacer
 			var afterConfigSpacer:Widget = new Widget();
@@ -273,7 +273,7 @@ package org.osmf.player.chrome
 					, scrubBar, afterScrubSpacer
 					, timeBackdrop, linkButton
 					, timeViewWidget, afterTimeSpacer
-					, hdIndicator, muteButton, afterConfigSpacer, umuteButton, afterVolumeSpacer
+					, hdIndicator, configButton, afterConfigSpacer, umuteButton, afterVolumeSpacer
 					, fullscreenEnterButton, fullscreenLeaveButton, afterFullscreenSpacer
 					, rightControls
 					]

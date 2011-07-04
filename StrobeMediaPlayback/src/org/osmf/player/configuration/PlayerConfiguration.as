@@ -131,7 +131,7 @@ package org.osmf.player.configuration
 		
 		public var showVideoInfoOverlayOnStartUp:Boolean = false;
 		
-		public var enableStageVideo:Boolean = true;
+		public var enableStageVideo:Boolean = false;
 		
 		// Debug configuration setting
 		public var removeContentFromStageOnFullScreenWithStageVideo:Boolean = false;

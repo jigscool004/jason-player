@@ -17,8 +17,12 @@ package com.umiwi.control
 		{
 		}
 		
-		public static function changeView(obj:DisplayObject):Object
+		public static function changeView(obj:DisplayObject):DisplayObject
 		{
+			if(!obj)
+			{
+				return null;
+			}
 /*			brightness:Number = 0,
 				
 				contrast:Number = 0,
@@ -59,14 +63,29 @@ package com.umiwi.control
 			
 			targetDisplayObject.filters = [new ColorMatrixFilter(colorArray)];*/	
 			
-			var filterArray:Array=[1, 0, 0, 0, 2,
-				0, 1, 0, 0, 2,
-				0, 0, 1, 0, 2,
-				0, 0, 0, 1, 0];
+			var filterArray:Array=[1, 0, 0, 0, -255,
+									0, 1, 0, 0, -255,
+									0, 0, 1, 0, -255,
+									0, 0, 0, 1, 0];
 			var colorMatrix:ColorMatrixFilter=new ColorMatrixFilter(filterArray);
 			obj.filters = [colorMatrix];
 			return obj;
 			
+		}
+		
+		public static function setBrightness(obj:DisplayObject, value:Number):DisplayObject
+		{
+			if(!obj)
+			{
+				return null;
+			}
+			var filterArray:Array=[1, 0, 0, 0, value,
+									0, 1, 0, 0, value,
+									0, 0, 1, 0, value,
+									0, 0, 0, 1, 0];
+			var colorMatrix:ColorMatrixFilter=new ColorMatrixFilter(filterArray);
+			obj.filters = [colorMatrix];
+			return obj;
 		}
 	}
 }

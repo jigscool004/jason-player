@@ -19,61 +19,32 @@
 
 package org.osmf.player.chrome.widgets
 {
-	import com.umiwi.control.MediaConfiguration;
-	import com.umiwi.util.UConfigurationLoader;
-	
-	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
-	import mx.core.mx_internal;
-	
-	import org.osmf.containers.MediaContainer;
-	import org.osmf.media.videoClasses.VideoSurface;
 	import org.osmf.player.chrome.assets.AssetIDs;
+	import org.osmf.traits.DisplayObjectTrait;
 	import org.osmf.traits.MediaTraitType;
 	import org.osmf.traits.PlayState;
 	import org.osmf.traits.PlayTrait;
 	
-	use namespace mx_internal;
-	
-	public class PauseButton extends PlayableButton
+	public class CloseConfigButton extends PlayableButton
 	{
-
-		public function PauseButton()
+		public function CloseConfigButton()
 		{
 			super();
 			
-			upFace = AssetIDs.PAUSE_BUTTON_NORMAL;
-			downFace = AssetIDs.PAUSE_BUTTON_NORMAL;
-			overFace = AssetIDs.PAUSE_BUTTON_NORMAL;
+			upFace = AssetIDs.PLAY_BUTTON_NORMAL
+			downFace = AssetIDs.PLAY_BUTTON_NORMAL;
+			overFace = AssetIDs.PLAY_BUTTON_NORMAL;
 		}
+	
 		// Overrides
 		//
-
 		
 		override protected function onMouseClick(event:MouseEvent):void
 		{
-			var playable:PlayTrait = media.getTrait(MediaTraitType.PLAY) as PlayTrait;
-			if ( playable.canPause)
-			{
-				playable.pause();
-			}
-			else
-			{
-				playable.stop();
-			}
-			
-			UConfigurationLoader.traceChildren(stage);
-		}
-		
-		override protected function visibilityDeterminingEventHandler(event:Event = null):void
-		{
-			visible = (playable && playable.playState == PlayState.PLAYING) 
-			if (media && media.metadata)
-			{
-				visible ||= media.metadata.getValue("Advertisement") != null;
-			}	
+			this.dispatchEvent(new Event("closeConfigPanel", true));
 		}
 	}
 }
