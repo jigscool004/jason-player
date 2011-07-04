@@ -37,8 +37,8 @@ package org.osmf.player.chrome.widgets
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			
 			upFace = AssetIDs.FULL_SCREEN_ENTER_NORMAL;
-			downFace = AssetIDs.FULL_SCREEN_ENTER_DOWN;
-			overFace = AssetIDs.FULL_SCREEN_ENTER_OVER;
+			downFace = AssetIDs.FULL_SCREEN_ENTER_NORMAL;
+			overFace = AssetIDs.FULL_SCREEN_ENTER_NORMAL;
 		}
 		
 		// Overrides

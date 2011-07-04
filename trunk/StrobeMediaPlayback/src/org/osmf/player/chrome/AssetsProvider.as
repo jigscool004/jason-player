@@ -115,31 +115,30 @@ package org.osmf.player.chrome
 			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_LOADED_TRACK_END, ASSET_scrub_loaded_end);
 			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_PLAYED_TRACK, ASSET_scrub_loaded_played);		
 			
-			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_DVR_LIVE_TRACK, ASSET_ScrubDvrLive);
+/*			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_DVR_LIVE_TRACK, ASSET_ScrubDvrLive);
 			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_DVR_LIVE_INACTIVE_TRACK, ASSET_ScrubDvrLiveInactive);	
 			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_LIVE_ONLY_TRACK, ASSET_ScrubLive);
-			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_LIVE_ONLY_INACTIVE_TRACK, ASSET_ScrubLiveInactive);
+			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_LIVE_ONLY_INACTIVE_TRACK, ASSET_ScrubLiveInactive);*/
 			
 			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_SCRUBBER_NORMAL, ASSET_scrub_tab);
-			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_SCRUBBER_DOWN, ASSET_scrub_tab);
-			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_SCRUBBER_OVER, ASSET_scrub_tab);
-			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_SCRUBBER_OVER, ASSET_scrub_tab);
+/*			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_SCRUBBER_DOWN, ASSET_scrub_tab);
+			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_SCRUBBER_OVER, ASSET_scrub_tab);*/
 			addEmbeddedSymbol(AssetIDs.SCRUB_BAR_TIME_HINT, ASSET_time_hint);
 						
 			// Play button:
 			addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_NORMAL, ASSET_play_normal);
-			addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_DOWN, ASSET_play_selected);
-			addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_OVER, ASSET_play_over);
+			//addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_DOWN, ASSET_play_selected);
+			//addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_OVER, ASSET_play_over);
 			
 			// Play overlay:
 			addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_OVERLAY_NORMAL, ASSET_play_overlayed_normal);
-			addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_OVERLAY_DOWN, ASSET_play_overlayed_normal);
-			addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_OVERLAY_OVER, ASSET_play_overlayed_over);
+			//addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_OVERLAY_DOWN, ASSET_play_overlayed_normal);
+			//addEmbeddedSymbol(AssetIDs.PLAY_BUTTON_OVERLAY_OVER, ASSET_play_overlayed_over);
 			
 			// Pause button:
 			addEmbeddedSymbol(AssetIDs.PAUSE_BUTTON_NORMAL, ASSET_pause_normal);
-			addEmbeddedSymbol(AssetIDs.PAUSE_BUTTON_DOWN, ASSET_pause_selected);
-			addEmbeddedSymbol(AssetIDs.PAUSE_BUTTON_OVER, ASSET_pause_over);			
+			//addEmbeddedSymbol(AssetIDs.PAUSE_BUTTON_DOWN, ASSET_pause_selected);
+			//addEmbeddedSymbol(AssetIDs.PAUSE_BUTTON_OVER, ASSET_pause_over);			
 			
 			// Mute:
 			addEmbeddedSymbol(AssetIDs.VOLUME_BUTTON_NORMAL, ASSET_volume_low_normal);
@@ -173,23 +172,23 @@ package org.osmf.player.chrome
 			
 			// Fullscreen enter:
 			addEmbeddedSymbol(AssetIDs.FULL_SCREEN_ENTER_NORMAL, ASSET_fullscreen_on_normal);
-			addEmbeddedSymbol(AssetIDs.FULL_SCREEN_ENTER_DOWN, ASSET_fullscreen_on_selected);
-			addEmbeddedSymbol(AssetIDs.FULL_SCREEN_ENTER_OVER, ASSET_fullscreen_on_over);
+			//addEmbeddedSymbol(AssetIDs.FULL_SCREEN_ENTER_DOWN, ASSET_fullscreen_on_selected);
+			//addEmbeddedSymbol(AssetIDs.FULL_SCREEN_ENTER_OVER, ASSET_fullscreen_on_over);
 			
 			// Fullscreen leave:
 			addEmbeddedSymbol(AssetIDs.FULL_SCREEN_LEAVE_NORMAL, ASSET_fullscreen_off_normal);
-			addEmbeddedSymbol(AssetIDs.FULL_SCREEN_LEAVE_DOWN, ASSET_fullscreen_off_selected);
-			addEmbeddedSymbol(AssetIDs.FULL_SCREEN_LEAVE_OVER, ASSET_fullscreen_off_over);
+			//addEmbeddedSymbol(AssetIDs.FULL_SCREEN_LEAVE_DOWN, ASSET_fullscreen_off_selected);
+			//addEmbeddedSymbol(AssetIDs.FULL_SCREEN_LEAVE_OVER, ASSET_fullscreen_off_over);
 			
 			// Authentication dialog:
-			addEmbeddedSymbol(AssetIDs.AUTH_BACKDROP, ASSET_auth_backdrop);
+/*			addEmbeddedSymbol(AssetIDs.AUTH_BACKDROP, ASSET_auth_backdrop);
 			addEmbeddedSymbol(AssetIDs.AUTH_SUBMIT_BUTTON_NORMAL, ASSET_button_normal);
 			addEmbeddedSymbol(AssetIDs.AUTH_SUBMIT_BUTTON_DOWN, ASSET_button_selected);
 			addEmbeddedSymbol(AssetIDs.AUTH_SUBMIT_BUTTON_OVER, ASSET_button_over);
 			addEmbeddedSymbol(AssetIDs.AUTH_CANCEL_BUTTON_NORMAL, ASSET_close_normal);
 			addEmbeddedSymbol(AssetIDs.AUTH_CANCEL_BUTTON_OVER, ASSET_close_over);
 			addEmbeddedSymbol(AssetIDs.AUTH_CANCEL_BUTTON_DOWN, ASSET_close_selected);
-			addEmbeddedSymbol(AssetIDs.AUTH_WARNING, ASSET_warning);
+			addEmbeddedSymbol(AssetIDs.AUTH_WARNING, ASSET_warning);*/
 			
 			// Previous button:
 			addEmbeddedSymbol(AssetIDs.PREVIOUS_BUTTON_NORMAL, ASSET_previous_normal);

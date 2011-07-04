@@ -34,8 +34,8 @@ package org.osmf.player.chrome.widgets
 			super();
 			
 			upFace = AssetIDs.PLAY_BUTTON_NORMAL
-			downFace = AssetIDs.PLAY_BUTTON_DOWN;
-			overFace = AssetIDs.PLAY_BUTTON_OVER;
+			downFace = AssetIDs.PLAY_BUTTON_NORMAL;
+			overFace = AssetIDs.PLAY_BUTTON_NORMAL;
 		}
 	
 		// Overrides
