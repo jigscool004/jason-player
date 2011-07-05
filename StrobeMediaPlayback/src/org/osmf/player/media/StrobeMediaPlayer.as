@@ -107,7 +107,7 @@ package org.osmf.player.media
 			super(media);
 			
 			// Change the default of autoPlay to false (business requirement).
-			autoPlay = false;
+			autoPlay = true;
 
 			addEventListener(MediaPlayerCapabilityChangeEvent.IS_DYNAMIC_STREAM_CHANGE, onIsDynamicStreamChange);
 			addEventListener(DisplayObjectEvent.MEDIA_SIZE_CHANGE, onMediaSizeChange);

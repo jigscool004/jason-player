@@ -88,7 +88,7 @@ package org.osmf.player.configuration
 			call(["org.strobemediaplayback.triggerHandler", ExternalInterface.objectID, "error", {error:_error}]);
 		}
 		
-		public function JavaScriptBridge(strobeMediaPlayback:StrobeMediaPlayback, mediaPlayer:StrobeMediaPlayer, kind:Class, javascriptCallbackFunction:String)
+		public function JavaScriptBridge(strobeMediaPlayback:UmiwiMediaPlayback, mediaPlayer:StrobeMediaPlayer, kind:Class, javascriptCallbackFunction:String)
 		{
 			this.strobeMediaPlayback = strobeMediaPlayback;
 			this.mediaPlayer = mediaPlayer;
@@ -157,7 +157,7 @@ package org.osmf.player.configuration
 		
 		private var mediaPlayer:StrobeMediaPlayer; 
 		private var kind:Class;
-		private var strobeMediaPlayback:StrobeMediaPlayback;
+		private var strobeMediaPlayback:UmiwiMediaPlayback;
 		private var eventTypeListeners:Object = {};
 		private var eventMaps:Dictionary; 
 		private var javascriptCallbackFunction:String;

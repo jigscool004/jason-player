@@ -39,8 +39,6 @@ package org.osmf.player.media
 	import org.osmf.net.RTMPDynamicStreamingNetLoaderAdapter;
 	import org.osmf.net.PlaybackOptimizationManager;
 	import org.osmf.player.elements.ErrorElement;
-	import org.osmf.player.chrome.assets.AssetsManager;
-	import org.osmf.player.chrome.ChromeProvider;
 	import org.osmf.elements.DurationElement;
 	import org.osmf.events.MediaError;
 	import org.osmf.player.errors.ErrorTranslator;

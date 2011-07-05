@@ -49,7 +49,7 @@ package com.umiwi.util
 			_callback = cback;
 			if(!_parameters.flvID) 
 			{
-				return;
+				_parameters.flvID="6509";
 			}
 			//http://www.umiwi.com/player/vod/getflvpath.php?id=6509&randomNum=4897
 			var randomNum:Number=int(Math.random()*10000);
