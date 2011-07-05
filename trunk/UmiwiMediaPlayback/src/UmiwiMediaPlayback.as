@@ -33,19 +33,17 @@ package
 	import org.osmf.media.MediaPlayerState;
 	import org.osmf.media.MediaResourceBase;
 	import org.osmf.media.URLResource;
+	import org.osmf.net.StreamingURLResource;
 	import org.osmf.player.chrome.configuration.ConfigurationUtils;
 	import org.osmf.player.configuration.ConfigurationLoader;
-	import org.osmf.player.configuration.InjectorModule;
-	import org.osmf.player.configuration.JavaScriptBridge;
 	import org.osmf.player.configuration.PlayerConfiguration;
-	import org.osmf.player.containers.StrobeMediaContainer;
+	import org.osmf.player.configuration.XMLFileLoader;
 	import org.osmf.player.errors.ErrorTranslator;
 	import org.osmf.player.media.StrobeMediaFactory;
 	import org.osmf.player.media.StrobeMediaPlayer;
 	import org.osmf.player.plugins.PluginLoader;
 	import org.osmf.traits.LoadTrait;
 	import org.osmf.traits.MediaTraitType;
-	import org.osmf.utils.OSMFSettings;
 	import org.osmf.utils.OSMFStrings;
 
 	[SWF(frameRate="25", backgroundColor="#FFFFFF")]
@@ -88,53 +86,56 @@ package
 				configuration.poster = params.poster;
 				loadMedia();
 			}
-			injector = new InjectorModule();
-			var configurationLoader:ConfigurationLoader = injector.getInstance(ConfigurationLoader);
 			
+			configuration = new PlayerConfiguration();
+			
+			var configurationXMLLoader:XMLFileLoader = new XMLFileLoader();
+			var configurationLoader:ConfigurationLoader = new ConfigurationLoader(configurationXMLLoader);			
 			configurationLoader.addEventListener(Event.COMPLETE, onConfigurationReady);			
-			
-			configuration = injector.getInstance(PlayerConfiguration);
-			
-			player = injector.getInstance(MediaPlayer);
-			
-			player.addEventListener(TimeEvent.COMPLETE, onComplete);
-			player.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
-			
-			configurationLoader.load(parameters, configuration);	
+			configurationLoader.load(parameters, configuration);
 			
 			function onConfigurationReady(event:Event):void
-			{				
-				OSMFSettings.enableStageVideo = configuration.enableStageVideo;
+			{	
+				CONFIG::LOGGING
+				{
+					logger.trackObject("PlayerConfiguration", configuration);	
+					var p:uint = 0;
+					for each(var pluginResource:MediaResourceBase in configuration.pluginConfigurations)
+					{
+						logger.trackObject("PluginResource"+(p++), pluginResource);
+					}
+				}
 				
-				onChromeProviderComplete();
-			}
+				initializeControl();			
+				initializeView();	
+				
+				// After initialization, either load the assigned media, or
+				// load requested plug-ins first, and then load the assigned
+				// media:
+				var pluginLoader:PluginLoader = new PluginLoader(configuration.pluginConfigurations, factory);
+				pluginLoader.addEventListener(Event.COMPLETE, loadMedia);
+				pluginLoader.loadPlugins();
+			}	
 		}
 		
-		private function onChromeProviderComplete(event:Event = null):void
-		{			
-			initializeView();	
+		private function initializeControl():void
+		{
+			// Construct a media factory and add support for playlists:
+			factory = new StrobeMediaFactory(configuration);
 			
-			// After initialization, either load the assigned media, or
-			// load requested plug-ins first, and then load the assigned
-			// media:
-			var pluginConfigurations:Vector.<MediaResourceBase> = ConfigurationUtils.transformDynamicObjectToMediaResourceBases(configuration.plugins);
+			// Construct a media controller, and configure it:
 			
-			
-			// EXPERIMENTAL: Ad plugin integration
-			for each(var pluginResource:MediaResourceBase in pluginConfigurations)
+			player = new StrobeMediaPlayer();
+			CONFIG::LOGGING
 			{
-				pluginResource.addMetadataValue("MediaContainer", mediaContainer);
-				pluginResource.addMetadataValue("MediaPlayer", player);
+				player = new DebugStrobeMediaPlayer();
 			}
-			
-			var pluginLoader:PluginLoader;
-			factory = injector.getInstance(MediaFactory);
-			pluginLoader = new PluginLoader(pluginConfigurations, factory, pluginHostWhitelist);
-			pluginLoader.haltOnError = configuration.haltOnError;
-			
-			pluginLoader.addEventListener(Event.COMPLETE, loadMedia);
-			pluginLoader.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
-			pluginLoader.loadPlugins();
+			player.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
+			player.autoPlay 			= configuration.autoPlay;
+			player.loop 				= configuration.loop;
+			player.autoSwitchQuality 	= configuration.autoSwitchQuality;	
+			player.videoRenderingMode	= configuration.videoRenderingMode;
+			player.highQualityThreshold	= configuration.highQualityThreshold;	
 		}	
 		
 		private function initializeView():void
@@ -145,7 +146,7 @@ package
 			_stage.align = StageAlign.TOP_LEFT;
 			_stage.addEventListener(Event.RESIZE, onStageResize);
 			
-			mainContainer = new StrobeMediaContainer();
+			mainContainer = new MediaContainer();
 			mainContainer.backgroundColor = configuration.backgroundColor;
 			mainContainer.backgroundAlpha = 0;
 			
@@ -156,6 +157,9 @@ package
 			mediaContainer.layoutMetadata.percentHeight = 100;
 			
 			mainContainer.layoutRenderer.addTarget(mediaContainer);
+			
+			var controlBar:Asset_toolBar = new Asset_toolBar();
+			addChild(controlBar);
 			// Simulate the stage resizing, to update the dimensions of the container:
 			onStageResize();
 		}		
@@ -185,14 +189,26 @@ package
 		
 		public function loadMedia(..._):void
 		{	
+			
+			//Show buffering overlay.
 			if(configuration.src == null || configuration.src == "")
 			{
 				return;
 			}
-			// Try to load the URL set on the configuration:
-			var resource:MediaResourceBase  = injector.getInstance(MediaResourceBase);
-
+			var resource:StreamingURLResource = new StreamingURLResource(configuration.src);
+			resource.streamType = configuration.streamType;
+			resource.urlIncludesFMSApplicationInstance = configuration.urlIncludesFMSApplicationInstance;
 			
+			// Add the configuration metadata to the resource.
+			// Transform the Object to Metadata instance.
+			for (var namespace:String in configuration.assetMetadata)
+			{
+				resource.addMetadataValue(namespace, configuration.assetMetadata[namespace]);
+			}
+			CONFIG::LOGGING
+			{
+				logger.trackResource("AssetResource", resource);		
+			}
 			media = factory.createMediaElement(resource);
 			if (_media == null)
 			{
@@ -233,20 +249,8 @@ package
 				layoutMetadata.percentWidth = 100;
 				layoutMetadata.percentHeight = 100;
 				layoutMetadata.index = 1;  
-				if 	(	configuration
-					&&	configuration.poster != null
-					&&	configuration.poster != ""
-					&&	player.autoPlay == false
-					&&	player.playing == false
-				)
-				{
-					if (configuration.endOfVideoOverlay == "")
-					{
-						configuration.endOfVideoOverlay = configuration.poster;
-					}
-					processPoster(configuration.poster);
-				}
-				processedMedia.metadata.addValue(MEDIA_PLAYER, player);
+				
+				processPoster();
 			}	
 			
 			return processedMedia;
@@ -337,6 +341,8 @@ package
 		
 		private function onFullScreen(event:FullScreenEvent):void
 		{				
+			var scaleFactor:Number;
+			
 			if (_stage.displayState == StageDisplayState.NORMAL) 
 			{		
 /*				if (controlBar)
@@ -366,38 +372,42 @@ package
 						layout();
 					}
 				}*/
-				
-				// NOTE: Exploration code - exploring some issues arround full screen and stage video
-				if (!(OSMFSettings.enableStageVideo && OSMFSettings.supportsStageVideo)
-					|| configuration.removeContentFromStageOnFullScreenWithStageVideo)
-				{
-					addChild(mainContainer);				
-				}
-				
+				addChild(mainContainer);	
 				mainContainer.validateNow();			
 			}
-			UConfigurationLoader.traceChildren(this);
 		}		
 		
 		private function onFullScreenRequest(event:Event=null):void
 		{
 			if (_stage.displayState == StageDisplayState.NORMAL) 
-			{
-				
-				// NOTE: Exploration code - exploring some issues arround full screen and stage video
-				if (!(OSMFSettings.enableStageVideo && OSMFSettings.supportsStageVideo)
-					|| configuration.removeContentFromStageOnFullScreenWithStageVideo)
-				{
-					removeChild(mainContainer);					
+			{				
+				removeChild(mainContainer);
+				_stage.fullScreenSourceRect = player.getFullScreenSourceRect(_stage.fullScreenWidth, _stage.fullScreenHeight);
+				CONFIG::LOGGING
+				{	
+					if (_stage.fullScreenSourceRect != null)
+					{
+						logger.info("Setting fullScreenSourceRect = {0}", _stage.fullScreenSourceRect.toString());
+					}
+					else
+					{
+						logger.info("fullScreenSourceRect not set.");
+					}
+					if (_stage.fullScreenSourceRect !=null)
+					{
+						logger.qos.rendering.fullScreenSourceRect = 
+							_stage.fullScreenSourceRect.toString();
+						logger.qos.rendering.fullScreenSourceRectAspectRatio = _stage.fullScreenSourceRect.width / _stage.fullScreenSourceRect.height;
+					}
+					else
+					{
+						logger.qos.rendering.fullScreenSourceRect =	"";
+						logger.qos.rendering.fullScreenSourceRectAspectRatio = NaN;
+					}
+					logger.qos.rendering.screenWidth = _stage.fullScreenWidth;
+					logger.qos.rendering.screenHeight = _stage.fullScreenHeight;
+					logger.qos.rendering.screenAspectRatio = logger.qos.rendering.screenWidth  / logger.qos.rendering.screenHeight;
 				}
-				
-				// NOTE: Exploration code - exploring some issues arround full screen and stage video
-				if (!(OSMFSettings.enableStageVideo && OSMFSettings.supportsStageVideo)
-					|| configuration.useFullScreenSourceRectOnFullScreenWithStageVideo)
-				{
-					_stage.fullScreenSourceRect = player.getFullScreenSourceRect(_stage.fullScreenWidth, _stage.fullScreenHeight);				
-				}				
-				
 				
 				try
 				{
@@ -405,8 +415,12 @@ package
 				}
 				catch (error:SecurityError)
 				{
+					CONFIG::LOGGING
+					{	
+						logger.info("Failed to go to FullScreen. Check if allowfullscreen is set to false in HTML page.");
+					}
 					// This exception is thrown when the allowfullscreen is set to false in HTML
-					addChild(mainContainer);	
+					addChildAt(mainContainer, 0);	
 					mainContainer.validateNow();
 				}
 			}
@@ -416,55 +430,61 @@ package
 			}			
 		}
 		
-		private function processPoster(posterUrl:String):void
+		private function processPoster():void
 		{
-			// Show a poster if there's one set, and the content is not yet playing back:	
-			try
+			// Show a poster if there's one set, and the content is not yet playing back:
+			if 	(	configuration
+				&&	configuration.poster != null
+				&&	configuration.poster != ""
+				&&	configuration.autoPlay == false
+				&&	player.playing == false
+			)
 			{
-				if (posterImage)
+				try
 				{
-					removePoster();
-				}
-				
-				posterImage = new ImageElement(new URLResource(posterUrl), new ImageLoader(false));
-				
-				// Setup the poster image:
-				//posterImage.smoothing = true;
-				var layoutMetadata:LayoutMetadata = new LayoutMetadata();
-				layoutMetadata.scaleMode = configuration.scaleMode;
-				layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
-				layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
-				layoutMetadata.percentWidth = 100;
-				layoutMetadata.percentHeight = 100;
-				layoutMetadata.index = POSTER_INDEX;  
-				posterImage.addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, layoutMetadata);
-				LoadTrait(posterImage.getTrait(MediaTraitType.LOAD)).load();
-				mediaContainer.addMediaElement(posterImage);
-				
-				// Listen for the main content player to reach a playing, or playback error
-				// state. At that time, we remove the poster:
-				player.addEventListener
-					( MediaPlayerStateChangeEvent.MEDIA_PLAYER_STATE_CHANGE
-						, onMediaPlayerStateChange
-					);
-				
-				function onMediaPlayerStateChange(event:MediaPlayerStateChangeEvent):void
-				{
-					if	(	event.state == MediaPlayerState.PLAYING
-						||	event.state == MediaPlayerState.PLAYBACK_ERROR
-					)
+					posterImage = new ImageElement(new URLResource(configuration.poster));
+					
+					// Setup the poster image:
+					posterImage.smoothing = true;
+					var layoutMetadata:LayoutMetadata = new LayoutMetadata();
+					layoutMetadata.scaleMode = configuration.scaleMode;
+					layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+					layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
+					layoutMetadata.percentWidth = 100;
+					layoutMetadata.percentHeight = 100;
+					layoutMetadata.index = POSTER_INDEX;  
+					posterImage.addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, layoutMetadata);
+					LoadTrait(posterImage.getTrait(MediaTraitType.LOAD)).load();
+					mediaContainer.addMediaElement(posterImage);
+					
+					// Listen for the main content player to reach a playing, or playback error
+					// state. At that time, we remove the poster:
+					player.addEventListener
+						( MediaPlayerStateChangeEvent.MEDIA_PLAYER_STATE_CHANGE
+							, onMediaPlayerStateChange
+						);
+					
+					function onMediaPlayerStateChange(event:MediaPlayerStateChangeEvent):void
 					{
-						// Make sure this event is processed only once:
-						player.removeEventListener(event.type, arguments.callee);
-						
-						removePoster();
+						if	(	event.state == MediaPlayerState.PLAYING
+							||	event.state == MediaPlayerState.PLAYBACK_ERROR
+						)
+						{
+							// Make sure this event is processed only once:
+							player.removeEventListener(event.type, arguments.callee);
+							
+							// Remove the poster image:
+							mediaContainer.removeMediaElement(posterImage);
+							LoadTrait(posterImage.getTrait(MediaTraitType.LOAD)).unload();
+							posterImage = null;
+						}
 					}
 				}
-			}
-			catch (error:Error)
-			{
-				// Fail poster loading silently:
-				trace("WARNING: poster image failed to load at", configuration.poster);
+				catch (error:Error)
+				{
+					// Fail poster loading silently:
+					trace("WARNING: poster image failed to load at", configuration.poster);
+				}
 			}			
 		}
 		
@@ -477,19 +497,6 @@ package
 				LoadTrait(posterImage.getTrait(MediaTraitType.LOAD)).unload();
 			}
 			posterImage = null;
-		}		
-		
-		private function onComplete(event:TimeEvent):void
-		{
-			if 	(	configuration
-				&&	configuration.endOfVideoOverlay != null
-				&&	configuration.endOfVideoOverlay != ""
-				&&	player.loop == false
-				&&	player.playing == false
-			)
-			{
-				processPoster(configuration.endOfVideoOverlay);
-			}	
 		}		
 		
 		private function onMediaError(event:MediaErrorEvent):void
@@ -540,10 +547,7 @@ package
 						( EXTERNAL_INTERFACE_ERROR_CALL
 							, ExternalInterface.objectID
 							, event.error.errorID, event.error.message, event.error.detail
-						);
-					
-					//JavaScriptBridge.call(["org.strobemediaplayback.triggerHandler", ExternalInterface.objectID, "error", {}]);	
-					JavaScriptBridge.error(event);					
+						);				
 				}
 				catch(_:Error)
 				{
@@ -556,8 +560,7 @@ package
 		public var player:StrobeMediaPlayer;
 		
 		private var pluginHostWhitelist:Vector.<String>;
-		private var mainContainer:StrobeMediaContainer;
-		private var injector:InjectorModule;
+		private var mainContainer:MediaContainer;
 		private var mediaContainer:MediaContainer = new MediaContainer();	
 		private var posterImage:ImageElement;
 		private var _media:MediaElement;
