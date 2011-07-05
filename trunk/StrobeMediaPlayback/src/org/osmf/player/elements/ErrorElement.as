@@ -24,12 +24,9 @@ package org.osmf.player.elements
 	import flash.display.Graphics;
 	import flash.display.Sprite;
 	
-	import org.osmf.player.chrome.assets.AssetsManager;
-	import org.osmf.player.chrome.widgets.LabelWidget;
 	import org.osmf.layout.LayoutMetadata;
 	import org.osmf.layout.VerticalAlign;
 	import org.osmf.media.MediaElement;
-	import org.osmf.player.chrome.ChromeProvider;
 	import org.osmf.traits.DisplayObjectTrait;
 	import org.osmf.traits.PlayTrait;
 	import org.osmf.traits.SeekTrait;
@@ -60,20 +57,6 @@ package org.osmf.player.elements
 		override protected function setupTraits():void
 		{
 			super.setupTraits();
-			
-			// Setup a AlertDialog using the ChromeLibrary based ChromeProvider:
-			var chromeProvider:ChromeProvider = ChromeProvider.getInstance();
-			chromeProvider.createErrorWidget();
-			var errorWidget:ErrorWidget = chromeProvider.getWidget("error") as ErrorWidget;
-			errorWidget.errorMessage = errorMessage;
-			errorWidget.measure();
-			
-			// Make the widget's layout metadata, the element's metadata:
-			addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, errorWidget.layoutMetadata);
-			
-			// Add a view trait, using the widget's display object:
-			var viewable:DisplayObjectTrait	= new DisplayObjectTrait(errorWidget, errorWidget.measuredWidth, errorWidget.measuredHeight);
-			addTrait(viewable.traitType, viewable);
 			
 		}
 		

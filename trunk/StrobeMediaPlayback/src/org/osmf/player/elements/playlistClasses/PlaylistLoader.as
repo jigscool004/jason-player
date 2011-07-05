@@ -38,7 +38,6 @@ package org.osmf.player.elements.playlistClasses
 	import org.osmf.media.MediaTypeUtil;
 	import org.osmf.media.URLResource;
 	import org.osmf.net.StreamType;
-	import org.osmf.player.chrome.AssetsProvider;
 	import org.osmf.player.elements.ErrorElement;
 	import org.osmf.traits.LoadState;
 	import org.osmf.traits.LoadTrait;
