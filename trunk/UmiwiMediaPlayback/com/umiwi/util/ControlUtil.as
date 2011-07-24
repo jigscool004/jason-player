@@ -25,6 +25,7 @@
 		protected var playback:UmiwiMediaPlayback;
 		
 		public static var configuration:PlayerConfiguration;
+		public static var playStatus:String;
 		
 		public function ControlUtil(pb:UmiwiMediaPlayback)
 		{
@@ -83,6 +84,7 @@
 			{
 				//playback.hideRecommend();
 			}*/
+			playStatus = (traitInstance as PlayTrait).playState;
 		}
 		
 		public function get media():MediaElement

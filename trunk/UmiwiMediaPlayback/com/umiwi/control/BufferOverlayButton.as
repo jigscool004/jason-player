@@ -51,10 +51,10 @@
 				: 	(( traitInstance as BufferTrait ).buffering && isPlaying);
 			
 /*			UConfigurationLoader.updateMsg("visible:" + visible + " bufferTrait:" + (traitInstance == null));
-			UConfigurationLoader.updateMsg("visible:" + visible + " isPlaying:" + isPlaying);
+			UConfigurationLoader.updateMsg("* isPlaying:" + isPlaying);
 			if(traitInstance)
 			{
-				UConfigurationLoader.updateMsg("visible:" + visible + " bufferTrait is buffering:" + ( traitInstance as BufferTrait ).buffering);
+				UConfigurationLoader.updateMsg("* bufferTrait is buffering:" + ( traitInstance as BufferTrait ).buffering);
 			}*/
 		}
 		
@@ -77,14 +77,10 @@
 			{
 				_visible = value;
 				
-				if (value == false)
+				if (value == true)
 				{
-					if(!UConfigurationLoader.firstBufferCompleted)
-					{
-						return;
-					}
 					visibilityTimer.stop();
-					super.visible = false;
+					super.visible = true;
 				}
 				else
 				{
@@ -100,12 +96,12 @@
 		
 		private function onVisibilityTimerComplete(event:TimerEvent):void
 		{
-			super.visible = true;		
+			super.visible = false;		
 		}
 		
 		private var _visible:Boolean;
 		private var visibilityTimer:Timer;
 		
-		private static const VISIBILITY_DELAY:int = 1000;
+		private static const VISIBILITY_DELAY:int = 500;
 	}
 }

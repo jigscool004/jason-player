@@ -105,9 +105,12 @@
 			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
 			function loadConfigurationFromParameters(params:Object):void{
 				videoInfoLoaded = true;
-				configuration.src = params.src;
-				configuration.poster = params.poster;
-				loadMedia();
+				if(configuration.src != params.src)
+				{
+					configuration.src = params.src;
+					configuration.poster = params.poster;
+					loadMedia();
+				}
 				uc.getRecommendFlv(params, loadRecommendFlv);
 				function loadRecommendFlv(params:XML):void
 				{
