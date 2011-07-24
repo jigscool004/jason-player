@@ -209,9 +209,11 @@
 					}
 					else if(loadTrait is NetStreamLoadTrait)
 					{
-						if(ControlUtil.playStatus != PlayState.STOPPED)
+						var playTrait:PlayTrait = _media ? _media.getTrait(MediaTraitType.PLAY) as PlayTrait : null;
+						var netStream:NetStream = (loadTrait as NetStreamLoadTrait).netStream;
+						if(playTrait && playTrait.playState != PlayState.STOPPED)
 						{
-							var netStream:NetStream = (loadTrait as NetStreamLoadTrait).netStream;
+							
 							scrubBarLoadedTrack.width 
 								= 	0
 								+ 	(	scrubberEnd
@@ -240,7 +242,7 @@
 		
 		private function enlargeBuffer(netStream:NetStream):void
 		{
-			if(netStream.bufferTime<=netStream.bufferLength && netStream.bufferTime>= ControlUtil.configuration.expandedBufferTime)
+			if(netStream.bufferTime<=netStream.bufferLength && netStream.bufferTime> ControlUtil.configuration.initialBufferTime)
 			{
 				netStream.bufferTime = Math.min(netStream.bufferTime* 2, ControlUtil.configuration.bufferWindow);
 				UConfigurationLoader.updateMsg("Enlarge buffer size to " + netStream.bufferTime.toString());

@@ -124,11 +124,6 @@ package org.osmf.net
 		protected function onNetStatus(event:NetStatusEvent):void
 		{
 			UConfigurationLoader.updateMsg("Net status: " + event.info.code.toString());
-			if(ControlUtil.playStatus == PlayState.STOPPED)
-			{
-				netStream.bufferTime = 0.01;
-				return;
-			}
 			switch (event.info.code) 
 			{
 				case NetStreamCodes.NETSTREAM_PLAY_START:
