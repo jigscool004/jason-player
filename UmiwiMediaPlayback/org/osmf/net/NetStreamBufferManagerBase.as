@@ -1,4 +1,4 @@
-/*****************************************************
+﻿/*****************************************************
  *  
  *  Copyright 2010 Adobe Systems Incorporated.  All Rights Reserved.
  *  
@@ -27,6 +27,8 @@ package org.osmf.net
 	
 	import flash.events.NetStatusEvent;
 	import flash.net.NetStream;
+	
+	import org.osmf.traits.PlayState;
 	
 	CONFIG::LOGGING
 	{
@@ -122,6 +124,11 @@ package org.osmf.net
 		protected function onNetStatus(event:NetStatusEvent):void
 		{
 			UConfigurationLoader.updateMsg("Net status: " + event.info.code.toString());
+			if(ControlUtil.playStatus == PlayState.STOPPED)
+			{
+				netStream.bufferTime = 0.01;
+				return;
+			}
 			switch (event.info.code) 
 			{
 				case NetStreamCodes.NETSTREAM_PLAY_START:
@@ -143,7 +150,6 @@ package org.osmf.net
 					netStream.bufferTime = initialBufferTime;	
 					break;	
 				case NetStreamCodes.NETSTREAM_BUFFER_FULL:
-					UConfigurationLoader.firstBufferCompleted = true;
 					if (isNaN(metrics.downloadRatio) || metrics.downloadRatio > 1)
 					{
 						// For high or unknown downloadRatio simply set the buffer to the expandedBufferTime config setting.
@@ -152,16 +158,16 @@ package org.osmf.net
 						logger.info("ExpandedBuffer:. previousBufferTime={0} currentBufferTime={1}", netStream.bufferTime, expandedBufferTime);
 						logger.qos.buffer.time = expandedBufferTime;
 						}
-/*						if(netStream.bufferTime < expandedBufferTime)
+						if(netStream.bufferTime < expandedBufferTime)
 						{
 							netStream.bufferTime = expandedBufferTime;
+							UConfigurationLoader.updateMsg("Extended buffer as: " + netStream.bufferTime.toString() + " seconds.");
 						}
 						else
 						{
-							netStream.bufferTime = ControlUtil.configuration.bufferThreshold;
-						}*/
-						netStream.bufferTime = ControlUtil.configuration.bufferWindow;
-						UConfigurationLoader.updateMsg("Extended buffer as: " + netStream.bufferTime.toString() + " seconds.");
+							netStream.bufferTime = Math.min(netStream.bufferTime* 2, ControlUtil.configuration.bufferWindow);
+							UConfigurationLoader.updateMsg("Enlarge buffer size to " + netStream.bufferTime.toString());
+						}
 						break;
 					}
 				case NetStreamCodes.NETSTREAM_BUFFER_EMPTY:					
