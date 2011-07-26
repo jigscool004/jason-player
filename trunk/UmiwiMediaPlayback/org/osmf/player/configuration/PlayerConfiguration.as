@@ -114,9 +114,9 @@ package org.osmf.player.configuration
 		/** Defines the collection of plug-in configurations */
 		public var pluginConfigurations:Vector.<MediaResourceBase> = new Vector.<MediaResourceBase>();
 		
-		public var bufferWindow:Number = 100;
+		public var bufferWindow:Number = 300;
 		
-		public var bufferThreshold:Number = 20;
+		public var bufferThreshold:Number = 180;
 		
 		public var backBufferTime:Number = 1200;
 	}

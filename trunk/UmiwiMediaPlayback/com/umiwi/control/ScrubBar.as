@@ -227,6 +227,8 @@
 						else
 						{
 							scrubBarLoadedTrack.width = 0;
+							dealedTag = -1;
+							bufferPaused = false;
 						}
 
 					}
@@ -242,35 +244,43 @@
 		
 		private function enlargeBuffer(netStream:NetStream):void
 		{
-			if(netStream.bufferTime<=netStream.bufferLength && netStream.bufferTime> ControlUtil.configuration.initialBufferTime)
+			if(netStream.bufferTime<=netStream.bufferLength && 
+				netStream.bufferTime< ControlUtil.configuration.bufferWindow &&
+				netStream.bufferTime> ControlUtil.configuration.initialBufferTime && 
+				!bufferPaused)
 			{
 				netStream.bufferTime = Math.min(netStream.bufferTime* 2, ControlUtil.configuration.bufferWindow);
 				UConfigurationLoader.updateMsg("Enlarge buffer size to " + netStream.bufferTime.toString());
 			}
 		}
 		
-		private var dealedTag:int = 0;
+		private var dealedTag:int = -1;
+		private var bufferPaused:Boolean = false;
 		
 		private function applyUmiwiPolicy(netStream:NetStream):void
 		{
 			var bufferTail:Number = netStream.time + netStream.bufferLength;
-			if(bufferTail >= (ControlUtil.configuration.bufferWindow -10))
+			if(bufferTail >= ControlUtil.configuration.bufferWindow)
 			{
-				var bufferWindowOffset:Number = bufferTail % ControlUtil.configuration.bufferWindow;
-				var tag:int = bufferTail / ControlUtil.configuration.bufferWindow;
-				if (bufferWindowOffset <= 5 && tag != dealedTag)
+				var bufferWindowOffset:Number = (bufferTail - ControlUtil.configuration.bufferWindow) % ControlUtil.configuration.bufferThreshold;
+				var tag:int = (bufferTail - ControlUtil.configuration.bufferWindow) / ControlUtil.configuration.bufferThreshold;
+				if (bufferWindowOffset <= 10 && tag != dealedTag)
 				{
-					if (netStream.bufferLength > ControlUtil.configuration.bufferThreshold && netStream.bufferTime > 0.1)
+					if (netStream.bufferLength > (ControlUtil.configuration.bufferWindow - ControlUtil.configuration.bufferThreshold) 
+						&& netStream.bufferTime > 0.1)
 					{
 						netStream.bufferTime = 0;
+						bufferPaused = true;
 						UConfigurationLoader.updateMsg("-----------------------------------------------------------------");
 						UConfigurationLoader.updateMsg("Loaded content reach buffer window, pause buffer.");
 						UConfigurationLoader.updateMsg("Loaded buffer time: " + int(bufferTail) + ". Play time: " + int(netStream.time));
 						UConfigurationLoader.updateMsg("-----------------------------------------------------------------");
-					}else if(netStream.bufferLength <= ControlUtil.configuration.bufferThreshold && netStream.bufferTime < ControlUtil.configuration.bufferWindow)
+					}else if(netStream.bufferLength <= (ControlUtil.configuration.bufferWindow - ControlUtil.configuration.bufferThreshold) 
+						&& bufferPaused)
 					{
 						dealedTag = tag;
 						netStream.bufferTime = ControlUtil.configuration.expandedBufferTime;
+						bufferPaused = false;
 						UConfigurationLoader.updateMsg("-----------------------------------------------------------------");
 						UConfigurationLoader.updateMsg("Play progress reach threshold, resume buffer.");
 						UConfigurationLoader.updateMsg("Loaded buffer time: " + int(bufferTail) + ". Play time: " + int(netStream.time));	
@@ -334,6 +344,9 @@
 					trace("seek to x " + relativePositition);
 					scrubber.x = Math.max(0, relativePositition);
 					scrubBarPlayedTrack.width = scrubber.x;
+					
+					dealedTag = -1;
+					bufferPaused = false;
 				}
 			}
 		}
@@ -415,8 +428,13 @@
 			if(loadTrait is NetStreamLoadTrait)
 			{
 				var netStream:NetStream = (loadTrait as NetStreamLoadTrait).netStream;
-				var bufferTail:Number = netStream.time + netStream.bufferLength;
-				UConfigurationLoader.updateMsg("Loaded buffer time: " + int(bufferTail) + ". Play time: " + int(netStream.time));
+				if(netStream)
+				{
+					var bufferTail:Number = netStream.time + netStream.bufferLength;
+					UConfigurationLoader.updateMsg("Loaded buffer: " + int(bufferTail) + ". Current buffer size: " + int(netStream.bufferTime));
+					
+				}
+
 			}
 		}
 		
