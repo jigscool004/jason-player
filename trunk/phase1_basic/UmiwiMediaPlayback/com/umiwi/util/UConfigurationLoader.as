@@ -1,4 +1,4 @@
-package com.umiwi.util
+﻿package com.umiwi.util
 {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -20,7 +20,7 @@ package com.umiwi.util
 		private static const GET_PATH_URL:String = "http://www.umiwi.com/player/vod/getflvpath.php";
 		private static const IIS_PATH:String = "http://www.umiwi.com/player/getrecommend.php"
 		private static const GET_LIB_URL:String = "OSMF/library.swf";
-		private static const DEFAULT_FLV_ID:String = "5759"
+		private static const DEFAULT_FLV_ID:String = "5759";
 		
 		public static var isOut:Boolean;
 		public static var firstBufferCompleted:Boolean = false;
@@ -164,17 +164,18 @@ package com.umiwi.util
 			}
 		}
 		
-		public static function updateMsg(tmpMsg:String) {
-			
-			//msg.text=tmpMsg;
-			try
+		public static function updateMsg(message:String) {
+			trace (message);
+			if (ExternalInterface.available)
 			{
-				ExternalInterface.call("player_console",tmpMsg);
+				// Create Javascript function to call the Firebug console log method and append the message.
+				message = "function(){if (window.console) console.log('" + message;
+				// Close the Firebug console log method and the Javascript function.
+				message +=  "');}";
+				// Request running the function.
+				ExternalInterface.call(message);
 			}
-			catch(e:Error){ }
-			//msg.alpha = 0;
-			
-			trace('Update message:'+tmpMsg);
+
 			
 		}
 		

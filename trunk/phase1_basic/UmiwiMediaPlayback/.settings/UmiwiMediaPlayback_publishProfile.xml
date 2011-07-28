@@ -22,10 +22,10 @@
     <qtDefaultName>1</qtDefaultName>
     <rnwkDefaultName>1</rnwkDefaultName>
     <swcDefaultName>1</swcDefaultName>
-    <flashFileName>D:\jason-player\UmiwiMediaPlayback\bin-debug\UmiwiMediaPlayback.swf</flashFileName>
+    <flashFileName>D:\jason-player\trunk\phase1_basic\UmiwiMediaPlayback\bin-debug\UmiwiMediaPlayback.swf</flashFileName>
     <projectorWinFileName>UmiwiMediaPlayback.exe</projectorWinFileName>
     <projectorMacFileName>UmiwiMediaPlayback.app</projectorMacFileName>
-    <htmlFileName>D:\jason-player\UmiwiMediaPlayback\bin-debug\UmiwiMediaPlayback.html</htmlFileName>
+    <htmlFileName>D:\jason-player\trunk\phase1_basic\UmiwiMediaPlayback\bin-debug\UmiwiMediaPlayback.html</htmlFileName>
     <gifFileName>UmiwiMediaPlayback.gif</gifFileName>
     <jpegFileName>UmiwiMediaPlayback.jpg</jpegFileName>
     <pngFileName>UmiwiMediaPlayback.png</pngFileName>

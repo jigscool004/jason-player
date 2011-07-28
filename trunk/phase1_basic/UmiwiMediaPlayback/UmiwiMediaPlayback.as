@@ -105,6 +105,14 @@
 			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
 			function loadConfigurationFromParameters(params:Object):void{
 				videoInfoLoaded = true;
+				if(params.autoPlay == "0")
+				{
+					configuration.autoPlay = false;
+				}
+				else
+				{
+					configuration.autoPlay = true;
+				}
 				if(configuration.src != params.src)
 				{
 					configuration.src = params.src;
