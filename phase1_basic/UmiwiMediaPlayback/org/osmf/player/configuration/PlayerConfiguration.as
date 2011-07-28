@@ -55,7 +55,7 @@ package org.osmf.player.configuration
 		public var loop:Boolean = false;
 		
 		/** Tels whether the media should autostart */ 
-		public var autoPlay:Boolean = false;
+		public var autoPlay:Boolean = true;
 		
 		/**
 		 * Scale mode as defined here:

@@ -425,17 +425,6 @@
 		{
 			showTimeHint();
 			var loadTrait:LoadTrait = media ? media.getTrait(MediaTraitType.LOAD) as LoadTrait : null;
-			if(loadTrait is NetStreamLoadTrait)
-			{
-				var netStream:NetStream = (loadTrait as NetStreamLoadTrait).netStream;
-				if(netStream)
-				{
-					var bufferTail:Number = netStream.time + netStream.bufferLength;
-					UConfigurationLoader.updateMsg("Loaded buffer: " + int(bufferTail) + ". Current buffer size: " + int(netStream.bufferTime));
-					
-				}
-
-			}
 		}
 		
 		private function onTrackMouseMove(event:MouseEvent):void
