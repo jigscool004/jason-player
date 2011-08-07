@@ -299,6 +299,7 @@
 		
 		public function setWidth(newWidth:Number):void{
 			scrubBarTrack.width = newWidth;
+			scrubberEnd = scrubBarTrack.x + scrubBarTrack.width - scrubber.width/2;
 			updateScrubberPosition();
 		}
 

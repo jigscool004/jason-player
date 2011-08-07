@@ -100,6 +100,7 @@
 			Security.allowDomain("*.csbew.com");
 			Security.allowDomain("*.acs86.com");
 			Security.allowDomain("*.umiwi.com");
+			Security.loadPolicyFile("http://upload.umiwi.com/crossdomain.xml");
 			
 			
 			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
@@ -135,6 +136,22 @@
 						{
 							navigateToURL(new URLRequest(e.currentTarget.parent.link));
 						});
+					}
+					if(params.Item.length() == 0)
+					{
+						miniatureMC.visible = false;
+					}
+					else if(params.Item.length() == 1)
+					{
+						miniatureMC.gotoAndStop(3);
+					}
+					else if(params.Item.length() == 2)
+					{
+						miniatureMC.gotoAndStop(2);
+					}
+					else
+					{
+						miniatureMC.gotoAndStop(1);
 					}
 				}
 			}
@@ -334,6 +351,9 @@
 			
 		    localVideoMC.width = _stage.stageWidth;
 			localVideoMC.height = _stage.stageHeight;
+			
+			miniatureMC.x=(swfWidth-miniatureMC.width)/3;
+			miniatureMC.y=(swfHeight-toolBar.height-PADDING-miniatureMC.height)/3;
 			
 			this.setChildIndex(mainContainer, 0);
 		}
