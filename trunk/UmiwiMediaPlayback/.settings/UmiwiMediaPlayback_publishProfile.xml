@@ -120,10 +120,10 @@
       </library-path-entry>
       <library-path-entry>
         <swc-path>$(AppConfig)/ActionScript 3.0/libs/11.0/osmf.swc</swc-path>
-        <linkage>rsl</linkage>
+        <linkage>merge</linkage>
+        <rsl-url>osmf_1.0.0.16316.swz</rsl-url>
         <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.5.0.20967/osmf_1.0.0.16316.swz</rsl-url>
         <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
-        <rsl-url>osmf_1.0.0.16316.swz</rsl-url>
       </library-path-entry>
     </LibraryPath>
     <LibraryVersions>

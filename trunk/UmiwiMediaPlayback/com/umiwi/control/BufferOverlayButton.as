@@ -41,16 +41,25 @@
 				if(playTrait.playState == PlayState.PLAYING)
 				{
 					isPlaying = true;
+					startedOnce = true;
 				}
 			}
-			// Show the overlay only if both the bufferable and playtrait are present,
-			// and buffering is taking place while playing back.
-			visible
-			= (traitInstance == null) 
-				? 	false
-				: 	(( traitInstance as BufferTrait ).buffering && isPlaying);
+			if(!startedOnce)
+			{
+				visible = true;
+			}
+			else
+			{
+				// Show the overlay only if both the bufferable and playtrait are present,
+				// and buffering is taking place while playing back.
+				visible
+				= (traitInstance == null) 
+					? 	false
+					: 	(( traitInstance as BufferTrait ).buffering && isPlaying);	
+			}
+
 			
-/*			UConfigurationLoader.updateMsg("visible:" + visible + " bufferTrait:" + (traitInstance == null));
+/*			UConfigurationLoader.updateMsg("* visible:" + visible + " bufferTrait:" + (traitInstance == null));
 			UConfigurationLoader.updateMsg("* isPlaying:" + isPlaying);
 			if(traitInstance)
 			{
@@ -72,6 +81,8 @@
 		
 		override public function set visible(value:Boolean):void
 		{
+		    var date:Date = new Date();
+			//UConfigurationLoader.updateMsg(date.toLocaleTimeString() + " ** set visible:" + value);
 
 			if (value != _visible)
 			{
@@ -98,6 +109,8 @@
 		{
 			super.visible = false;		
 		}
+		
+		private var startedOnce:Boolean = false;
 		
 		private var _visible:Boolean;
 		private var visibilityTimer:Timer;
