@@ -30,6 +30,7 @@
 	import org.osmf.containers.MediaContainer;
 	import org.osmf.elements.ImageElement;
 	import org.osmf.elements.ImageLoader;
+	import org.osmf.elements.SerialElement;
 	import org.osmf.events.MediaElementEvent;
 	import org.osmf.events.MediaError;
 	import org.osmf.events.MediaErrorCodes;
@@ -100,17 +101,28 @@
 			Security.allowDomain("*.csbew.com");
 			Security.allowDomain("*.acs86.com");
 			Security.allowDomain("*.umiwi.com");
+			Security.loadPolicyFile("http://upload.umiwi.com/crossdomain.xml");
 			
 			
 			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
+			go();
 			function loadConfigurationFromParameters(params:Object):void{
 				videoInfoLoaded = true;
+				if(params.autoPlay == "0")
+				{
+					configuration.autoPlay = false;
+				}
+				else
+				{
+					configuration.autoPlay = true;
+				}
 				if(configuration.src != params.src)
 				{
 					configuration.src = params.src;
 					configuration.poster = params.poster;
 					loadMedia();
 				}
+				
 				uc.getRecommendFlv(params, loadRecommendFlv);
 				function loadRecommendFlv(params:XML):void
 				{
@@ -127,6 +139,22 @@
 						{
 							navigateToURL(new URLRequest(e.currentTarget.parent.link));
 						});
+					}
+					if(params.Item.length() == 0)
+					{
+						miniatureMC.gotoAndStop(4);
+					}
+					else if(params.Item.length() == 1)
+					{
+						miniatureMC.gotoAndStop(3);
+					}
+					else if(params.Item.length() == 2)
+					{
+						miniatureMC.gotoAndStop(2);
+					}
+					else
+					{
+						miniatureMC.gotoAndStop(1);
 					}
 				}
 			}
@@ -241,9 +269,11 @@
 				centerBufferingMC();
 				resizeDisplay();
 			});*/
+			
+			//Waiting for ads completed.
+			toolBar.mouseChildren = false;
+			bigPlayBtn.mouseEnabled = false;
 			toolBar.brightNessBtn.adjustBar.visible=false;
-			//初始化qualityBar按钮不可见
-			toolBar.qualityBar.highQualityBtn.visible=toolBar.qualityBar.mediumQualityBtn.visible=toolBar.qualityBar.lowQualityBtn.visible=false;
 			//初始化推荐视频不可见
 			miniatureMC.visible=false;
 			toolBar.scrubBar.visible = false;
@@ -271,6 +301,86 @@
 			onMouseMove();
 			
 		}
+		
+		public function go(target:MovieClip = null):void { 
+			Security.allowDomain("pagead2.googlesyndication.com"); 
+			
+			// Prepare to load Google SWF 
+			var request:URLRequest = new URLRequest("http://pagead2.googlesyndication.com/" +  
+				"pagead/scache/googlevideoadslibraryas3.swf"); 
+			var loader:Loader = new Loader(); 
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, sendAdRequest); 
+			
+			// load Google SWF 
+			loader.load(request); 
+			addChild(loader); 
+		} 
+		
+		private function sendAdRequest(event:Event) { 
+			var googleAds:Object = event.target.content; 
+			
+			// Create request params object 
+			var request:Object = new Object(); 
+			request.videoId = loaderInfo.parameters.flvID; 
+			request.videoPublisherId = "ca-video-afvtest"; 
+			request.videoFlvUrl = configuration.src; 
+			request.videoDescriptionUrl = "http://chuangye.umiwi.com/2011/0714/15892.shtml"; 
+			request.channels = ["1234567890", "9876543210"]; // Must be an array of strings 
+			request.pubWidth = mediaContainer.width; 
+			request.pubHeight = mediaContainer.height; 
+			request.adType = "video"; 
+			
+			// Fetch an ad, specify callback method 
+			googleAds.requestAds(request, onAdsRequestResult); 
+		} 
+		
+		private function onAdsRequestResult(callbackObj:Object):void { 
+			trace("onAdsRequestResult: callbackObj.success = " + callbackObj.success);     
+			if (callbackObj.success) { 
+				var player:MovieClip = callbackObj.ads[0].getAdPlayerMovieClip(); 
+				player.setSize(mediaContainer.width,  mediaContainer.height); 
+				player.setX(0); 
+				player.setY(0); 
+				player.load(); 
+				player.playAds();  
+				
+				player.onStateChange = delegate(this, adsStateChange);
+				
+			} 
+			else { 
+				trace("Error: " + callbackObj.errorMsg); 
+			} 
+		}
+		
+		public function adsStateChange(oldState:String, newState:String) {  
+			if (newState == "completed") { 
+				//enableToolBar(true);
+				toolBar.mouseChildren = true;
+				bigPlayBtn.mouseEnabled = true;
+				player.play();
+				//loadMedia();
+				UConfigurationLoader.updateMsg("Google Ad over, play video.");
+			} 
+		} 
+		
+		private function enableToolBar(en:Boolean):void
+		{
+			for(var i:int=0; i<toolBar.numChildren; i++)
+			{
+				if(toolBar.getChildAt(i) is TraitControl)
+				{
+					(toolBar.getChildAt(i) as TraitControl).enabled = en;
+				}
+			}
+		}
+		
+		// Helper function 
+		public static function delegate(scope:Object, handler:Function):Function { 
+			var fn:Function = function() { 
+				return handler.apply(scope, arguments); 
+			} 
+			return fn; 
+		} 
 		
 		private function onStageResize(event:Event = null):void
 		{
@@ -309,8 +419,7 @@
 			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-37;
 			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width -10;
 			toolBar.brightNessBtn.x=toolBar.volumeButton.x-36.15;
-			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 133;
-			toolBar.qualityBar.x=(toolBar.toolBarBack.width-toolBar.qualityBar.width)/2;			
+			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 133;			
 			
 			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
 			
@@ -327,8 +436,14 @@
 		    localVideoMC.width = _stage.stageWidth;
 			localVideoMC.height = _stage.stageHeight;
 			
+			miniatureMC.x=(swfWidth-miniatureMC.width)/3;
+			miniatureMC.y=(swfHeight-toolBar.height-PADDING-miniatureMC.height)/3;
+			
 			this.setChildIndex(mainContainer, 0);
 		}
+		
+		private var preResource:String = "http://pagead2.googlesyndication.com/" +  
+			"pagead/scache/googlevideoadslibraryas3.swf";
 		
 		public function loadMedia(..._):void
 		{	
