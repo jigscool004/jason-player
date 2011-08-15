@@ -36,6 +36,7 @@
 	import org.osmf.events.MediaErrorCodes;
 	import org.osmf.events.MediaErrorEvent;
 	import org.osmf.events.MediaPlayerStateChangeEvent;
+	import org.osmf.events.PlayEvent;
 	import org.osmf.events.TimeEvent;
 	import org.osmf.layout.HorizontalAlign;
 	import org.osmf.layout.LayoutMetadata;
@@ -60,7 +61,9 @@
 	import org.osmf.traits.AudioTrait;
 	import org.osmf.traits.BufferTrait;
 	import org.osmf.traits.LoadTrait;
+	import org.osmf.traits.MediaTraitBase;
 	import org.osmf.traits.MediaTraitType;
+	import org.osmf.traits.PlayState;
 	import org.osmf.traits.PlayTrait;
 	import org.osmf.traits.TimeTrait;
 	import org.osmf.utils.OSMFStrings;
@@ -105,17 +108,18 @@
 			
 			
 			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
-			go();
+
 			function loadConfigurationFromParameters(params:Object):void{
 				videoInfoLoaded = true;
-				if(params.autoPlay == "0")
+				//configuration.autoPlay = true;
+				/*if(params.autoPlay == "0")
 				{
 					configuration.autoPlay = false;
 				}
 				else
 				{
 					configuration.autoPlay = true;
-				}
+				}*/
 				if(configuration.src != params.src)
 				{
 					configuration.src = params.src;
@@ -204,6 +208,13 @@
 			}
 			player.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
 			player.autoPlay 			= configuration.autoPlay;
+			
+			if(configuration.autoPlay)
+			{
+				//Waiting for ads completed.
+				disablePlayControl();
+			}
+			
 			player.loop 				= configuration.loop;
 			player.autoSwitchQuality 	= configuration.autoSwitchQuality;	
 			player.videoRenderingMode	= configuration.videoRenderingMode;
@@ -270,9 +281,7 @@
 				resizeDisplay();
 			});*/
 			
-			//Waiting for ads completed.
-			toolBar.mouseChildren = false;
-			bigPlayBtn.mouseEnabled = false;
+
 			toolBar.brightNessBtn.adjustBar.visible=false;
 			//初始化推荐视频不可见
 			miniatureMC.visible=false;
@@ -300,6 +309,9 @@
 			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenEvent);
 			onMouseMove();
 			
+			
+			adsTimer = new Timer(ADS_TIMEOUT, 1);
+			adsTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onAdsLoadTimeout);
 		}
 		
 		public function go(target:MovieClip = null):void { 
@@ -314,6 +326,11 @@
 			// load Google SWF 
 			loader.load(request); 
 			addChild(loader); 
+			UConfigurationLoader.updateMsg("Add ads loader to player");
+			
+			adsLoader = loader;
+			adsTimer.start();
+			adsState == null
 		} 
 		
 		private function sendAdRequest(event:Event) { 
@@ -323,15 +340,20 @@
 			var request:Object = new Object(); 
 			request.videoId = loaderInfo.parameters.flvID; 
 			request.videoPublisherId = "ca-video-afvtest"; 
+			//request.videoPublisherId = "ca-video-pub-8477572604480528"; 
 			request.videoFlvUrl = configuration.src; 
-			request.videoDescriptionUrl = "http://chuangye.umiwi.com/2011/0714/15892.shtml"; 
+			//request.videoDescriptionUrl = "http://chuangye.umiwi.com/2011/0714/15892.shtml";
+			request.videoDescriptionUrl = configuration.descriptionUrl;
 			request.channels = ["1234567890", "9876543210"]; // Must be an array of strings 
 			request.pubWidth = mediaContainer.width; 
 			request.pubHeight = mediaContainer.height; 
-			request.adType = "video"; 
+			request.adType = "fullscreen"; 
+			
+			request.adTimePosition = 0;
 			
 			// Fetch an ad, specify callback method 
 			googleAds.requestAds(request, onAdsRequestResult); 
+			UConfigurationLoader.updateMsg("Start to request ads");
 		} 
 		
 		private function onAdsRequestResult(callbackObj:Object):void { 
@@ -344,24 +366,61 @@
 				player.load(); 
 				player.playAds();  
 				
+				player.resumeContentVideo = delegate(this, resumeStream); 
 				player.onStateChange = delegate(this, adsStateChange);
 				
 			} 
 			else { 
-				trace("Error: " + callbackObj.errorMsg); 
+				UConfigurationLoader.updateMsg("Error: " + callbackObj.errorMsg); 
 			} 
 		}
 		
-		public function adsStateChange(oldState:String, newState:String) {  
+		public function resumeStream():void {  
+			enablePlayControol();
+			player.play();
+			UConfigurationLoader.updateMsg("Google Ad over, play video.");
+		} 
+		
+		private var initAdsBuffer:Boolean = false;
+		public function adsStateChange(oldState:String, newState:String):void {
+			bufferingMC.visible = false;
+			adsState = newState;
 			if (newState == "completed") { 
 				//enableToolBar(true);
-				toolBar.mouseChildren = true;
+/*				toolBar.mouseChildren = true;
 				bigPlayBtn.mouseEnabled = true;
 				player.play();
 				//loadMedia();
-				UConfigurationLoader.updateMsg("Google Ad over, play video.");
+				UConfigurationLoader.updateMsg("Google Ad over, play video.");*/
+				adsTimer.reset();
 			} 
+			if (newState == "buffering")
+			{
+				initAdsBuffer = true;
+				this.startPlayerQuietly();
+			}
 		} 
+		
+		private function onAdsLoadTimeout(event:TimerEvent):void
+		{
+			adsTimer.reset();
+			if(adsState == null || adsState == "buffering")
+			{
+				if(adsLoader)
+				{
+					try
+					{
+						removeChild(adsLoader);
+					}
+					catch (error:Error){
+						UConfigurationLoader.updateMsg("Remove ads failed: " + error.message);
+					}
+					resumeStream();
+					UConfigurationLoader.updateMsg("Google Ad load content timeout (30s), play video.");
+				}
+			}
+			
+		}
 		
 		private function enableToolBar(en:Boolean):void
 		{
@@ -395,24 +454,42 @@
 		private function onEnterFrameCallback(event:Event):void{
 			_stage.removeEventListener(Event.ENTER_FRAME, onEnterFrameCallback);
 			
+			swfWidth=_stage.stageWidth;
+			swfHeight=_stage.stageHeight;
+			
 			mediaContainer.width = _stage.stageWidth;
+			bufferingMC.width = _stage.stageWidth;
+			miniatureMC.x=(swfWidth-miniatureMC.width)/2;
 			if(_stage.displayState == "fullScreen")
 			{
 				mediaContainer.height = _stage.stageHeight;
+				bufferingMC.heigh = _stage.stageHeight;
+				miniatureMC.y=(swfHeight-miniatureMC.height)/2;
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
+				bufferingMC.heigh = _stage.stageHeight - toolBar.toolBarBack.height;
+				miniatureMC.y=(swfHeight-toolBar.toolBarBack.height-miniatureMC.height)/2;
+			}
+			
+			if(adsLoader)
+			{
+				adsLoader.width = swfWidth;
+				adsLoader.height = _stage.stageHeight - toolBar.toolBarBack.height;
+/*				if(_stage.displayState == "fullScreen")
+				{
+					adsLoader.height = _stage.stageHeight;
+				}else
+				{
+					adsLoader.height = _stage.stageHeight - toolBar.toolBarBack.height;
+				}*/
 			}
 			
 			
 			fullScrBtn.width = _stage.stageWidth;
 			fullScrBtn.height = _stage.stageHeight;
 
-			swfWidth=_stage.stageWidth;
-			swfHeight=_stage.stageHeight;
-			
-			bufferingMC.width = swfWidth;
-			bufferingMC.heigh = swfHeight;
+
 			
 			toolBar.y=swfHeight-toolBar.height-PADDING;			
 			toolBar.toolBarBack.width=swfWidth;
@@ -436,8 +513,6 @@
 		    localVideoMC.width = _stage.stageWidth;
 			localVideoMC.height = _stage.stageHeight;
 			
-			miniatureMC.x=(swfWidth-miniatureMC.width)/3;
-			miniatureMC.y=(swfHeight-toolBar.height-PADDING-miniatureMC.height)/3;
 			
 			this.setChildIndex(mainContainer, 0);
 		}
@@ -648,6 +723,87 @@
 		
 			controlUtil.setElement(element);
 			
+			setElement(element);
+			
+		}
+		
+		protected var traitType:String = MediaTraitType.PLAY;
+		protected var traitInstance:MediaTraitBase;
+		public var initBuffer:Boolean = false;
+		
+		public function setElement(element:MediaElement):void{
+			if(element.hasTrait(traitType))
+			{
+				traitInstance = element.getTrait(traitType);
+				addElement();
+			}
+			else
+			{
+				if(traitInstance != null)
+				{
+					removeElement();
+					traitInstance = null;
+				}
+			}
+			
+			if(element.hasTrait(MediaTraitType.DISPLAY_OBJECT) && !configuration.autoPlay)
+			{
+				bufferingMC.visible = false;
+			}
+		}
+		
+		protected function addElement():void{
+			var playTrait:PlayTrait = traitInstance as PlayTrait;
+			playTrait.addEventListener(PlayEvent.CAN_PAUSE_CHANGE, visibilityDeterminingEventHandler);
+			playTrait.addEventListener(PlayEvent.PLAY_STATE_CHANGE, visibilityDeterminingEventHandler);
+			visibilityDeterminingEventHandler();
+		}
+		
+		protected function removeElement():void{
+			if(traitInstance == null)
+			{
+				return;
+			}
+			var playTrait:PlayTrait = traitInstance as PlayTrait;
+			playTrait.removeEventListener(PlayEvent.CAN_PAUSE_CHANGE, visibilityDeterminingEventHandler);
+			playTrait.removeEventListener(PlayEvent.PLAY_STATE_CHANGE, visibilityDeterminingEventHandler);
+		}
+		
+		protected function visibilityDeterminingEventHandler(event:Event = null):void
+		{
+			var playTrait:PlayTrait = traitInstance as PlayTrait;
+			if(playTrait.playState == PlayState.PLAYING && !initBuffer)
+			{
+				this.disablePlayControl();
+				go();
+				initBuffer = true;
+				playTrait.pause();
+				UConfigurationLoader.updateMsg("Start to buffer");
+				startPlayerQuietly()
+			}
+		}
+		
+		private var quietPlayerTimer:Timer = new Timer(1000, 1);
+		
+		private function startPlayerQuietly():void{
+			if(initBuffer && initAdsBuffer)
+			{
+				toolBar.scrubBar.visible = false;
+				player.muted = true;
+				player.play();
+				quietPlayerTimer.addEventListener(TimerEvent.TIMER_COMPLETE, resetPlayerQuietly);
+				quietPlayerTimer.start();
+			}
+		}
+		
+		private function resetPlayerQuietly(event:TimerEvent):void
+		{
+			quietPlayerTimer.stop();
+			player.muted = false;
+			player.seek(0);
+			player.pause();
+			bufferingMC.visible = false;
+			toolBar.scrubBar.visible = true;
 		}
 		
 		private function onFullScreen(event:FullScreenEvent):void
@@ -908,6 +1064,20 @@
 			}*/
 		}
 		
+		private function disablePlayControl():void
+		{
+			toolBar.mouseChildren = false;
+			bigPlayBtn.mouseEnabled = false;
+			fullScrBtn.mouseEnabled = false;
+		}
+		
+		private function enablePlayControol():void
+		{
+			toolBar.mouseChildren = true;
+			bigPlayBtn.mouseEnabled = true;
+			fullScrBtn.mouseEnabled = true;
+		}
+		
 		private var visibilityTimer:Timer;
 		
 		private static const VISIBILITY_DELAY:int = 3000;
@@ -1010,6 +1180,11 @@
 		private var iisPath:String;
 		private var bottomHeight:Number;
 		private var resized:Boolean = false;
+		
+		private var adsState:String;
+		private var adsLoader:Loader;
+		private var adsTimer:Timer = new Timer(ADS_TIMEOUT, 1);
+		private static const ADS_TIMEOUT:int = 30000;
 		
 		private static const PADDING:uint = 3;
 		private static const POSTER_INDEX:int = 2;

@@ -36,6 +36,8 @@ package org.osmf.player.configuration
 		/** The location of the mediafile. */
 		public var src:String = "";
 		
+		public var descriptionUrl:String = "";
+		
 		/** Contains the asset metadata */
 		public var assetMetadata:Object = new Object();
 		
@@ -55,7 +57,9 @@ package org.osmf.player.configuration
 		public var loop:Boolean = false;
 		
 		/** Tels whether the media should autostart */ 
-		public var autoPlay:Boolean = false;
+		public var autoPlay:Boolean = true;
+		
+		public var umiwiAutoPlay:Boolean = true;
 		
 		/**
 		 * Scale mode as defined here:
@@ -100,7 +104,8 @@ package org.osmf.player.configuration
 		public var urlIncludesFMSApplicationInstance : Boolean = false;
 			
 		/** Defines the initial buffer time for video content */
-		public var initialBufferTime:Number = 0.1;		
+		//public var initialBufferTime:Number = 0.1;		
+		public var initialBufferTime:Number = 5;	
 		
 		/** Defines the expanded buffer time for video content */
 		public var expandedBufferTime:Number = 10;	

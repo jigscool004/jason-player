@@ -1,5 +1,6 @@
 ﻿package com.umiwi.control
 {
+	import com.umiwi.util.ControlUtil;
 	import com.umiwi.util.UConfigurationLoader;
 	
 	import flash.events.Event;
@@ -44,19 +45,31 @@
 					startedOnce = true;
 				}
 			}
-			if(!startedOnce)
+			
+			if(ControlUtil.configuration.autoPlay)
 			{
-				visible = true;
-			}
-			else
+				if(!startedOnce)
+				{
+					visible = true;
+				}
+				else
+				{
+					// Show the overlay only if both the bufferable and playtrait are present,
+					// and buffering is taking place while playing back.
+					visible
+					= (traitInstance == null) 
+						? 	false
+						: 	(( traitInstance as BufferTrait ).buffering && isPlaying);	
+				}
+			}else
 			{
-				// Show the overlay only if both the bufferable and playtrait are present,
-				// and buffering is taking place while playing back.
 				visible
 				= (traitInstance == null) 
 					? 	false
-					: 	(( traitInstance as BufferTrait ).buffering && isPlaying);	
+					: 	(( traitInstance as BufferTrait ).buffering && isPlaying);
 			}
+			
+
 
 			
 /*			UConfigurationLoader.updateMsg("* visible:" + visible + " bufferTrait:" + (traitInstance == null));
@@ -88,10 +101,10 @@
 			{
 				_visible = value;
 				
-				if (value == true)
+				if (value == false)
 				{
 					visibilityTimer.stop();
-					super.visible = true;
+					super.visible = false;
 				}
 				else
 				{
@@ -107,7 +120,7 @@
 		
 		private function onVisibilityTimerComplete(event:TimerEvent):void
 		{
-			super.visible = false;		
+			super.visible = true;		
 		}
 		
 		private var startedOnce:Boolean = false;
