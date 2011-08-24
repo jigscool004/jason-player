@@ -1,7 +1,10 @@
 ﻿package com.umiwi.control
 {
+	import com.umiwi.util.UConfigurationLoader;
+	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.external.ExternalInterface;
 	
 	import org.osmf.events.PlayEvent;
 	import org.osmf.media.MediaElement;
@@ -42,6 +45,8 @@
 			if(playTrait.playState == PlayState.STOPPED)
 			{
 				visible = true;
+				ExternalInterface.call("video_play_over");
+				UConfigurationLoader.updateMsg("Video stop");
 			}
 			else{
 				visible = false;
