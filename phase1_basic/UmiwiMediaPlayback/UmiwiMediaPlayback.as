@@ -267,8 +267,6 @@
 				resizeDisplay();
 			});*/
 			toolBar.brightNessBtn.adjustBar.visible=false;
-			//初始化qualityBar按钮不可见
-			toolBar.qualityBar.highQualityBtn.visible=toolBar.qualityBar.mediumQualityBtn.visible=toolBar.qualityBar.lowQualityBtn.visible=false;
 			//初始化推荐视频不可见
 			miniatureMC.visible=false;
 			toolBar.scrubBar.visible = false;
@@ -334,8 +332,7 @@
 			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-37;
 			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width -10;
 			toolBar.brightNessBtn.x=toolBar.volumeButton.x-36.15;
-			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 133;
-			toolBar.qualityBar.x=(toolBar.toolBarBack.width-toolBar.qualityBar.width)/2;			
+			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 133;			
 			
 			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
 			

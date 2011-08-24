@@ -33,8 +33,6 @@ package com.umiwi.control
 			}
 			else
 			{
-				
-				visible = false;
 				if(traitInstance != null)
 				{
 					removeElement();
