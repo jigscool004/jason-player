@@ -166,7 +166,7 @@
 		
 		public static function updateMsg(message:String) {
 			trace (message);
-			if (ExternalInterface.available)
+			if (ExternalInterface.available && !ControlUtil.configuration.out)
 			{
 				try{
 					// Create Javascript function to call the Firebug console log method and append the message.
@@ -185,7 +185,7 @@
 		
 		public static function callExternal(message:String) {
 			trace (message);
-			if (ExternalInterface.available)
+			if (ExternalInterface.available && !ControlUtil.configuration.out)
 			{
 				try{
 					ExternalInterface.call(message);

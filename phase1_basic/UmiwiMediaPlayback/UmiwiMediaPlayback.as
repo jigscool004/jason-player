@@ -309,12 +309,18 @@
 			_stage.removeEventListener(Event.ENTER_FRAME, onEnterFrameCallback);
 			
 			mediaContainer.width = _stage.stageWidth;
+			bufferingMC.width = _stage.stageWidth;
+			miniatureMC.x=(swfWidth-miniatureMC.width)/2;
 			if(_stage.displayState == "fullScreen")
 			{
 				mediaContainer.height = _stage.stageHeight;
+				bufferingMC.height = _stage.stageHeight;
+				miniatureMC.y=(swfHeight-miniatureMC.height)/2;
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
+				bufferingMC.height = _stage.stageHeight - toolBar.toolBarBack.height;
+				miniatureMC.y=(swfHeight-toolBar.toolBarBack.height-miniatureMC.height)/2;
 			}
 			
 			
@@ -323,9 +329,6 @@
 
 			swfWidth=_stage.stageWidth;
 			swfHeight=_stage.stageHeight;
-			
-			bufferingMC.width = swfWidth;
-			bufferingMC.heigh = swfHeight;
 			
 			toolBar.y=swfHeight-toolBar.height-PADDING;			
 			toolBar.toolBarBack.width=swfWidth;
@@ -359,9 +362,6 @@
 			
 		    localVideoMC.width = _stage.stageWidth;
 			localVideoMC.height = _stage.stageHeight;
-			
-			miniatureMC.x=(swfWidth-miniatureMC.width)/3;
-			miniatureMC.y=(swfHeight-toolBar.height-PADDING-miniatureMC.height)/3;
 			
 			this.setChildIndex(mainContainer, 0);
 		}
