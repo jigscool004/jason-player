@@ -19,6 +19,8 @@
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.external.ExternalInterface;
+	import flash.filters.ColorMatrixFilter;
+	import flash.net.NetStream;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.system.Capabilities;
@@ -47,6 +49,7 @@
 	import org.osmf.media.MediaPlayerState;
 	import org.osmf.media.MediaResourceBase;
 	import org.osmf.media.URLResource;
+	import org.osmf.net.NetStreamLoadTrait;
 	import org.osmf.net.StreamingURLResource;
 	import org.osmf.player.chrome.configuration.ConfigurationUtils;
 	import org.osmf.player.chrome.utils.FormatUtils;
@@ -301,13 +304,22 @@
 				navigateToURL(new URLRequest('http://www.umiwi.com/?utm_source=umv&utm_medium=videoshare&utm_content='+_loaderInfo.parameters.flvID+'&utm_campaign='+year+m+day));
 			});
 			
+			if(configuration.colorFilter == "reverse")
+			{
+				var filterObj:ColorMatrixFilter = new ColorMatrixFilter();    
+				filterObj.matrix = new Array(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);   
+				toolBar.filters = [filterObj]; 
+				
+				bufferingMC.filters = [filterObj]; 
+			}
+ 
+			
 			controlUtil = new ControlUtil(this);
 			
 			visibilityTimer = new Timer(VISIBILITY_DELAY, 1);
 			visibilityTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onVisibilityTimerComplete);
 			addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenEvent);
-			onMouseMove();
 			
 			
 			adsTimer = new Timer(ADS_TIMEOUT, 1);
@@ -325,7 +337,10 @@
 			
 			// load Google SWF 
 			loader.load(request); 
-			addChild(loader); 
+			
+			//Add ads behind tool bar.
+			var toolIndex:int = this.getChildIndex(toolBar);
+		    this.addChildAt(loader, toolIndex); 
 			UConfigurationLoader.updateMsg("Add ads loader to player");
 			
 			adsLoader = loader;
@@ -339,17 +354,19 @@
 			// Create request params object 
 			var request:Object = new Object(); 
 			request.videoId = loaderInfo.parameters.flvID; 
-			request.videoPublisherId = "ca-video-afvtest"; 
-			//request.videoPublisherId = "ca-video-pub-8477572604480528"; 
+			//request.videoPublisherId = "ca-video-afvtest"; 
+			request.videoPublisherId = "ca-video-pub-8477572604480528"; 
 			request.videoFlvUrl = configuration.src; 
 			//request.videoDescriptionUrl = "http://chuangye.umiwi.com/2011/0714/15892.shtml";
 			request.videoDescriptionUrl = configuration.descriptionUrl;
 			request.channels = ["1234567890", "9876543210"]; // Must be an array of strings 
 			request.pubWidth = mediaContainer.width; 
 			request.pubHeight = mediaContainer.height; 
-			request.adType = "fullscreen"; 
+			//request.adType = "fullscreen"; 
+			request.adType = "graphical_fullscreen";
 			
 			request.adTimePosition = 0;
+			request.maxTotalAdDuration = 15000;
 			
 			// Fetch an ad, specify callback method 
 			googleAds.requestAds(request, onAdsRequestResult); 
@@ -376,6 +393,7 @@
 		}
 		
 		public function resumeStream():void {  
+			stopPlayerQuietly();
 			enablePlayControol();
 			player.play();
 			UConfigurationLoader.updateMsg("Google Ad over, play video.");
@@ -383,7 +401,6 @@
 		
 		private var initAdsBuffer:Boolean = false;
 		public function adsStateChange(oldState:String, newState:String):void {
-			bufferingMC.visible = false;
 			adsState = newState;
 			if (newState == "completed") { 
 				//enableToolBar(true);
@@ -394,7 +411,7 @@
 				UConfigurationLoader.updateMsg("Google Ad over, play video.");*/
 				adsTimer.reset();
 			} 
-			if (newState == "buffering")
+			if (newState == "buffering" || oldState == "buffering")
 			{
 				initAdsBuffer = true;
 				this.startPlayerQuietly();
@@ -463,26 +480,25 @@
 			if(_stage.displayState == "fullScreen")
 			{
 				mediaContainer.height = _stage.stageHeight;
-				bufferingMC.heigh = _stage.stageHeight;
+				bufferingMC.height = _stage.stageHeight;
 				miniatureMC.y=(swfHeight-miniatureMC.height)/2;
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
-				bufferingMC.heigh = _stage.stageHeight - toolBar.toolBarBack.height;
+				bufferingMC.height = _stage.stageHeight - toolBar.toolBarBack.height;
 				miniatureMC.y=(swfHeight-toolBar.toolBarBack.height-miniatureMC.height)/2;
 			}
 			
 			if(adsLoader)
 			{
 				adsLoader.width = swfWidth;
-				adsLoader.height = _stage.stageHeight - toolBar.toolBarBack.height;
-/*				if(_stage.displayState == "fullScreen")
+				if(_stage.displayState == "fullScreen")
 				{
 					adsLoader.height = _stage.stageHeight;
 				}else
 				{
 					adsLoader.height = _stage.stageHeight - toolBar.toolBarBack.height;
-				}*/
+				}
 			}
 			
 			
@@ -496,7 +512,22 @@
 			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-37;
 			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width -10;
 			toolBar.brightNessBtn.x=toolBar.volumeButton.x-36.15;
-			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 133;			
+			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 128;			
+			
+			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
+			
+			if(swfWidth < 480)
+			{
+				if(swfWidth > 430)
+				{
+					toolBar.umiwilink.gotoAndStop(2);
+				}
+				else
+				{
+					toolBar.umiwilink.visible = false;
+				}
+				
+			}		
 			
 			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
 			
@@ -778,32 +809,82 @@
 				go();
 				initBuffer = true;
 				playTrait.pause();
-				UConfigurationLoader.updateMsg("Start to buffer");
 				startPlayerQuietly()
 			}
 		}
 		
-		private var quietPlayerTimer:Timer = new Timer(1000, 1);
+		private var quietPlayerTimer:Timer = new Timer(1000);
+		private var netStream:NetStream;
 		
 		private function startPlayerQuietly():void{
+/*			if(initBuffer && initAdsBuffer)
+			{
+				
+				quietPlayerTimer.addEventListener(TimerEvent.TIMER_COMPLETE, resetPlayerQuietly);
+				quietPlayerTimer.start();
+			}*/
 			if(initBuffer && initAdsBuffer)
 			{
+				mediaContainer.visible = false;
 				toolBar.scrubBar.visible = false;
 				player.muted = true;
 				player.play();
-				quietPlayerTimer.addEventListener(TimerEvent.TIMER_COMPLETE, resetPlayerQuietly);
-				quietPlayerTimer.start();
+				var loadTrait:LoadTrait = _media ? _media.getTrait(MediaTraitType.LOAD) as LoadTrait : null;
+				if(loadTrait is NetStreamLoadTrait)
+				{
+					netStream = (loadTrait as NetStreamLoadTrait).netStream;
+					netStream.bufferTime = configuration.initialBufferTime;
+					quietPlayerTimer.addEventListener(TimerEvent.TIMER, enlargeBuffer);
+					quietPlayerTimer.start();
+					UConfigurationLoader.updateMsg("Enlarge buffer while ads is displaying");
+				}
+			}
+		}
+		
+		private function stopPlayerQuietly():void
+		{
+			quietPlayerTimer.stop();
+			var loadTrait:LoadTrait = _media ? _media.getTrait(MediaTraitType.LOAD) as LoadTrait : null;
+			if(loadTrait is NetStreamLoadTrait)
+			{
+				var netStream:NetStream = (loadTrait as NetStreamLoadTrait).netStream;
+				netStream.bufferTime = configuration.initialBufferTime;
+				UConfigurationLoader.updateMsg("Reset buffer after ads is closed");
+			}
+			netStream = null;
+		}
+		
+		private function enlargeBuffer(event:TimerEvent):void
+		{
+			if(player.playing)
+			{
+				mediaContainer.visible = true;
+				player.muted = false;
+				player.seek(0);
+				player.pause();
+				bufferingMC.visible = false;
+				toolBar.scrubBar.visible = true;
+				bufferingMC.visible = false;
+			}
+			if(netStream && netStream.bufferTime<=netStream.bufferLength && 
+				netStream.bufferTime< ControlUtil.configuration.bufferWindow)
+			{
+				netStream.bufferTime = Math.min(netStream.bufferTime + configuration.expandedBufferTime, ControlUtil.configuration.bufferWindow);
+				UConfigurationLoader.updateMsg("Enlarge buffer size to " + netStream.bufferTime.toString());
 			}
 		}
 		
 		private function resetPlayerQuietly(event:TimerEvent):void
 		{
+/*			mediaContainer.visible = true;
 			quietPlayerTimer.stop();
 			player.muted = false;
 			player.seek(0);
 			player.pause();
 			bufferingMC.visible = false;
 			toolBar.scrubBar.visible = true;
+			
+			bufferingMC.visible = false;*/
 		}
 		
 		private function onFullScreen(event:FullScreenEvent):void
@@ -1089,15 +1170,18 @@
 		
 		protected function onMouseMove(event:MouseEvent=null):void
 		{
-			toolBar.visible = true;
-			if (visibilityTimer.running)
+			if( (stage.height - event.stageY) < 5)
 			{
-				visibilityTimer.stop();
-			}
-			visibilityTimer.reset();
-			if (stage.displayState == "fullScreen")
-			{
-				visibilityTimer.start();
+				toolBar.visible = true;
+				if (visibilityTimer.running)
+				{
+					visibilityTimer.stop();
+				}
+				visibilityTimer.reset();
+				if (stage.displayState == "fullScreen")
+				{
+					visibilityTimer.start();
+				}
 			}
 		}
 		
@@ -1114,6 +1198,11 @@
 			if (stage.displayState == StageDisplayState.NORMAL)
 			{
 				toolBar.visible = true;
+			}
+			else
+			{
+				visibilityTimer.reset();
+				visibilityTimer.start();
 			}
 		}
 		
@@ -1147,7 +1236,7 @@
 		public function stopPlay():void {
 			
 			UConfigurationLoader.updateMsg("Video stop");
-			ExternalInterface.call("video_play_over");
+			UConfigurationLoader.callExternal("video_play_over");
 			
 			//显示推荐视频
 			miniatureMC.visible=true;

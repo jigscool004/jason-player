@@ -166,17 +166,35 @@
 		
 		public static function updateMsg(message:String) {
 			trace (message);
-			if (ExternalInterface.available)
+			if (ExternalInterface.available && !ControlUtil.configuration.out)
 			{
-				// Create Javascript function to call the Firebug console log method and append the message.
-				message = "function(){if (window.console) console.log('" + message;
-				// Close the Firebug console log method and the Javascript function.
-				message +=  "');}";
-				// Request running the function.
-				ExternalInterface.call(message);
+				try{
+					// Create Javascript function to call the Firebug console log method and append the message.
+					message = "function(){if (window.console) console.log('" + message;
+					// Close the Firebug console log method and the Javascript function.
+					message +=  "');}";
+					// Request running the function.
+					ExternalInterface.call(message);
+				}
+				catch(_:Error)
+				{
+					trace(_.toString());
+				}
 			}
-
-			
+		}
+		
+		public static function callExternal(message:String) {
+			trace (message);
+			if (ExternalInterface.available && !ControlUtil.configuration.out)
+			{
+				try{
+					ExternalInterface.call(message);
+				}
+				catch(_:Error)
+				{
+					trace(_.toString());
+				}
+			}
 		}
 		
 	}
