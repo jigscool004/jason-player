@@ -332,11 +332,22 @@
 			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-37;
 			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width -10;
 			toolBar.brightNessBtn.x=toolBar.volumeButton.x-36.15;
-			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 133;			
+			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 128;			
 			
 			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
 			
-			
+			if(swfWidth < 480)
+			{
+				if(swfWidth > 430)
+				{
+					toolBar.umiwilink.gotoAndStop(2);
+				}
+				else
+				{
+					toolBar.umiwilink.visible = false;
+				}
+				
+			}
 			
 			//缩放时进度条不可见
 			//toolBar.scrubBar.scrubber.visible=toolBar.scrubBar.visible=toolBar.scrubBar.scrubBarPlayedTrack.visible=toolBar.scrubBar.scrubBarLoadedTrack.visible=false;
@@ -887,7 +898,7 @@
 		public function stopPlay():void {
 			
 			UConfigurationLoader.updateMsg("Video stop");
-			ExternalInterface.call("video_play_over");
+			UConfigurationLoader.callExternal("video_play_over");
 			
 			//显示推荐视频
 			miniatureMC.visible=true;

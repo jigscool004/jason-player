@@ -45,7 +45,7 @@
 			if(playTrait.playState == PlayState.STOPPED)
 			{
 				visible = true;
-				ExternalInterface.call("video_play_over");
+				UConfigurationLoader.callExternal("video_play_over");
 				UConfigurationLoader.updateMsg("Video stop");
 			}
 			else{
