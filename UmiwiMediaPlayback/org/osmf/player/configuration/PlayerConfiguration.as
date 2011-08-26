@@ -124,5 +124,9 @@ package org.osmf.player.configuration
 		public var bufferThreshold:Number = 180;
 		
 		public var backBufferTime:Number = 1200;
+		
+		public var colorFilter:String = "normal";
+		
+		public var out:Boolean = false;
 	}
 }
