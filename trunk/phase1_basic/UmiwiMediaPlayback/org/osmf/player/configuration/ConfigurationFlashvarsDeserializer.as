@@ -104,7 +104,16 @@ package org.osmf.player.configuration
 									else if (lc == "false")
 									{
 										value = false;
-									} // else Leave the default value alone							
+									}
+									if (lc == "1")
+									{
+										value = true;
+									}
+									else if (lc == "0")
+									{
+										value = false;
+									}
+									// else Leave the default value alone							
 									break;	
 								case int:
 								case uint:
