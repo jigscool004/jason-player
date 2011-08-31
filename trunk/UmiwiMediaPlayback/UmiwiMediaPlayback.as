@@ -307,10 +307,26 @@
 			if(configuration.colorFilter == "reverse")
 			{
 				var filterObj:ColorMatrixFilter = new ColorMatrixFilter();    
-				filterObj.matrix = new Array(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);   
-				toolBar.filters = [filterObj]; 
+				filterObj.matrix = new Array(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);  
 				
-				bufferingMC.filters = [filterObj]; 
+				
+				
+				for(var i:int=0; i<toolBar.numChildren; i++)
+				{
+					toolBar.getChildAt(i).filters = [filterObj];
+				}
+				//toolBar.filters = [filterObj]; 
+				
+				//bufferingMC.filters = [filterObj]; 
+				
+				
+				var matrix:Array = new Array();
+				matrix = matrix.concat([1, 0, 0, 0, 0]); // red
+				matrix = matrix.concat([0, 1, 0, 0, 0]); // green
+				matrix = matrix.concat([0, 0, 1, 0, 0]); // blue
+				matrix = matrix.concat([0, 0, 0, 1, 0]); // alpha
+				var rawFilter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
+				toolBar.umiwilink.filters = [rawFilter];
 			}
  
 			
