@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>优米网</title>
+        <script type="text/javascript" src="lib/swfobject.js">
+        </script>
+        <script type="text/javascript" src="lib/ParsedQueryString.js">
+        </script>
+        <script type="text/javascript">
+            
+            // Collect query parameters in an object that we can
+            // forward to SWFObject:
+            
+            var pqs = new ParsedQueryString();
+            var parameterNames = pqs.params(false);
+            var parameters = {
+            	  flvID: "f8589",
+                bufferWindow: 300,
+                bufferThreshold: 180,
+                descriptionUrl: "http://chuangye.umiwi.com/2011/0802/24997.shtml"
+            };
+            
+            for (var i = 0; i < parameterNames.length; i++) {
+                var parameterName = parameterNames[i];
+                parameters[parameterName] = pqs.param(parameterName) ||
+                parameters[parameterName];
+            }
+            
+       	    var wmodeValue = "direct";
+            var wmodeOptions = ["direct", "opaque", "transparent", "window"];
+            if (parameters.hasOwnProperty("wmode"))
+            {
+            	if (wmodeOptions.indexOf(parameters.wmode) >= 0)
+            	{
+            		wmodeValue = parameters.wmode;
+            	}	            	
+            	delete parameters.wmode;
+            }
+            
+            // Embed the player SWF:	            
+            swfobject.embedSWF(
+				"UmiwiMediaPlayback.swf"
+				, "UmiwiMediaPlayback"
+				, 610
+				, 523
+				, "10.2.0"
+				, "expressInstall.swf"
+				, parameters
+				, {
+	                allowFullScreen: "true",
+	                allowScriptAccess: "always",
+	                wmode: wmodeValue
+	            }
+				, {
+	                name: "UmiwiMediaPlayback"
+	            }
+			);
+            
+            /* Uncomment this code to be notified of playback errors in JavaScript:
+            
+             function onMediaPlaybackError(playerId, code, message, detail)            
+             {
+             	alert(playerId + "\n\n" + code + "\n" + message + "\n" + detail);            
+             }
+             
+             */
+            
+        </script>
+
+    </head>
+    <body>
+        <table width="100%" border="0" cellspacing="5">
+        	<tbody>
+						<tr>
+                <td width="700"  valign="top">
+                    <div id="UmiwiMediaPlayback">
+                        <p>
+                            Alternative content
+                        </p>
+                    </div>
+                  	<p>
+                        <script type="text/javascript">
+                            
+                            // Construct the HTML required to reload with any of the
+                            // listed media links:
+                            
+                            var linkingCode = "";
+                            var links = ["http://vod.umiwi.com/vod/2011/06/20/b83a4e99d29ade16734f63a877bac307.mp4", 
+                            "http://vod2.umiwi.com/a.ssm/a.f4m", 
+                            "http://vod2.umiwi.com/vod/2011/05/30/a3dd6e0b185404f9045ef10033085c80.ssm/a3dd6e0b185404f9045ef10033085c80.f4m"];
+                            
+                            for (var i = 0; i < links.length; i++) {
+                                var link = links[i];
+                                linkingCode = linkingCode +
+                                '<a href="UmiwiMediaPlayback.html?src=' +
+                                encodeURI(link) +
+                                '">' +
+                                link +
+                                '</a><br/>';
+                            }
+                            
+                            document.write(linkingCode);
+                        </script>
+                    </p>
+                </td>
+                <td id="debugConsole" width="100%" valign="top" height="100%">
+                	<div id="logs" title="Logs">
+                </td>
+						</tr>
+					</tbody>                
+        </table>
+    </body>
+</html>
