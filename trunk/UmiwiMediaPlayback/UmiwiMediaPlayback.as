@@ -2,6 +2,7 @@
 {
 	import com.umiwi.control.TraitControl;
 	import com.umiwi.util.ControlUtil;
+	import com.umiwi.util.IMAManager;
 	import com.umiwi.util.UConfigurationLoader;
 	
 	import flash.display.Bitmap;
@@ -109,6 +110,8 @@
 			Security.allowDomain("*.umiwi.com");
 			Security.loadPolicyFile("http://upload.umiwi.com/crossdomain.xml");
 			
+			
+			adsManager = new IMAManager(this)
 			
 			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
 
@@ -337,123 +340,8 @@
 			addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenEvent);
 			
-			
-			adsTimer = new Timer(ADS_TIMEOUT, 1);
-			adsTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onAdsLoadTimeout);
 		}
-		
-		public function go(target:MovieClip = null):void { 
-			Security.allowDomain("pagead2.googlesyndication.com"); 
-			
-			// Prepare to load Google SWF 
-			var request:URLRequest = new URLRequest("http://pagead2.googlesyndication.com/" +  
-				"pagead/scache/googlevideoadslibraryas3.swf"); 
-			var loader:Loader = new Loader(); 
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, sendAdRequest); 
-			
-			// load Google SWF 
-			loader.load(request); 
-			
-			//Add ads behind tool bar.
-			var toolIndex:int = this.getChildIndex(toolBar);
-		    this.addChildAt(loader, toolIndex); 
-			UConfigurationLoader.updateMsg("Add ads loader to player");
-			
-			adsLoader = loader;
-			adsTimer.start();
-			adsState == null
-		} 
-		
-		private function sendAdRequest(event:Event) { 
-			var googleAds:Object = event.target.content; 
-			
-			// Create request params object 
-			var request:Object = new Object(); 
-			request.videoId = loaderInfo.parameters.flvID; 
-			//request.videoPublisherId = "ca-video-afvtest"; 
-			request.videoPublisherId = "ca-video-pub-8477572604480528"; 
-			request.videoFlvUrl = configuration.src; 
-			//request.videoDescriptionUrl = "http://chuangye.umiwi.com/2011/0714/15892.shtml";
-			request.videoDescriptionUrl = configuration.descriptionUrl;
-			request.channels = ["1234567890", "9876543210"]; // Must be an array of strings 
-			request.pubWidth = mediaContainer.width; 
-			request.pubHeight = mediaContainer.height; 
-			//request.adType = "fullscreen"; 
-			request.adType = "graphical_fullscreen";
-			
-			request.adTimePosition = 0;
-			request.maxTotalAdDuration = 15000;
-			
-			// Fetch an ad, specify callback method 
-			googleAds.requestAds(request, onAdsRequestResult); 
-			UConfigurationLoader.updateMsg("Start to request ads");
-		} 
-		
-		private function onAdsRequestResult(callbackObj:Object):void { 
-			trace("onAdsRequestResult: callbackObj.success = " + callbackObj.success);     
-			if (callbackObj.success) { 
-				var player:MovieClip = callbackObj.ads[0].getAdPlayerMovieClip(); 
-				player.setSize(mediaContainer.width,  mediaContainer.height); 
-				player.setX(0); 
-				player.setY(0); 
-				player.load(); 
-				player.playAds();  
-				
-				player.resumeContentVideo = delegate(this, resumeStream); 
-				player.onStateChange = delegate(this, adsStateChange);
-				
-			} 
-			else { 
-				UConfigurationLoader.updateMsg("Error: " + callbackObj.errorMsg); 
-			} 
-		}
-		
-		public function resumeStream():void {  
-			stopPlayerQuietly();
-			enablePlayControol();
-			player.play();
-			UConfigurationLoader.updateMsg("Google Ad over, play video.");
-		} 
-		
-		private var initAdsBuffer:Boolean = false;
-		public function adsStateChange(oldState:String, newState:String):void {
-			adsState = newState;
-			if (newState == "completed") { 
-				//enableToolBar(true);
-/*				toolBar.mouseChildren = true;
-				bigPlayBtn.mouseEnabled = true;
-				player.play();
-				//loadMedia();
-				UConfigurationLoader.updateMsg("Google Ad over, play video.");*/
-				adsTimer.reset();
-			} 
-			if (newState == "buffering" || oldState == "buffering")
-			{
-				initAdsBuffer = true;
-				this.startPlayerQuietly();
-			}
-		} 
-		
-		private function onAdsLoadTimeout(event:TimerEvent):void
-		{
-			adsTimer.reset();
-			if(adsState == null || adsState == "buffering")
-			{
-				if(adsLoader)
-				{
-					try
-					{
-						removeChild(adsLoader);
-					}
-					catch (error:Error){
-						UConfigurationLoader.updateMsg("Remove ads failed: " + error.message);
-					}
-					resumeStream();
-					UConfigurationLoader.updateMsg("Google Ad load content timeout (30s), play video.");
-				}
-			}
-			
-		}
+
 		
 		private function enableToolBar(en:Boolean):void
 		{
@@ -466,13 +354,7 @@
 			}
 		}
 		
-		// Helper function 
-		public static function delegate(scope:Object, handler:Function):Function { 
-			var fn:Function = function() { 
-				return handler.apply(scope, arguments); 
-			} 
-			return fn; 
-		} 
+
 		
 		private function onStageResize(event:Event = null):void
 		{
@@ -505,15 +387,15 @@
 				miniatureMC.y=(swfHeight-toolBar.toolBarBack.height-miniatureMC.height)/2;
 			}
 			
-			if(adsLoader)
+			if(adsManager.adsLoader)
 			{
-				adsLoader.width = swfWidth;
+				adsManager.adsLoader.width = swfWidth;
 				if(_stage.displayState == "fullScreen")
 				{
-					adsLoader.height = _stage.stageHeight;
+					adsManager.adsLoader.height = _stage.stageHeight;
 				}else
 				{
-					adsLoader.height = _stage.stageHeight - toolBar.toolBarBack.height;
+					adsManager.adsLoader.height = _stage.stageHeight - toolBar.toolBarBack.height;
 				}
 			}
 			
@@ -822,7 +704,7 @@
 			if(playTrait.playState == PlayState.PLAYING && !initBuffer)
 			{
 				this.disablePlayControl();
-				go();
+				adsManager.go();
 				initBuffer = true;
 				playTrait.pause();
 				startPlayerQuietly()
@@ -832,14 +714,14 @@
 		private var quietPlayerTimer:Timer = new Timer(1000);
 		private var netStream:NetStream;
 		
-		private function startPlayerQuietly():void{
+		public function startPlayerQuietly():void{
 /*			if(initBuffer && initAdsBuffer)
 			{
 				
 				quietPlayerTimer.addEventListener(TimerEvent.TIMER_COMPLETE, resetPlayerQuietly);
 				quietPlayerTimer.start();
 			}*/
-			if(initBuffer && initAdsBuffer)
+			if(initBuffer && adsManager.initAdsBuffer)
 			{
 				mediaContainer.visible = false;
 				toolBar.scrubBar.visible = false;
@@ -857,7 +739,7 @@
 			}
 		}
 		
-		private function stopPlayerQuietly():void
+		public function stopPlayerQuietly():void
 		{
 			quietPlayerTimer.stop();
 			var loadTrait:LoadTrait = _media ? _media.getTrait(MediaTraitType.LOAD) as LoadTrait : null;
@@ -890,7 +772,7 @@
 			}
 		}
 		
-		private function resetPlayerQuietly(event:TimerEvent):void
+		public function resetPlayerQuietly(event:TimerEvent):void
 		{
 /*			mediaContainer.visible = true;
 			quietPlayerTimer.stop();
@@ -1161,14 +1043,14 @@
 			}*/
 		}
 		
-		private function disablePlayControl():void
+		public function disablePlayControl():void
 		{
 			toolBar.mouseChildren = false;
 			bigPlayBtn.mouseEnabled = false;
 			fullScrBtn.mouseEnabled = false;
 		}
 		
-		private function enablePlayControol():void
+		public function enablePlayControl():void
 		{
 			toolBar.mouseChildren = true;
 			bigPlayBtn.mouseEnabled = true;
@@ -1263,6 +1145,13 @@
 			miniatureMC.visible=false;
 		}
 		
+		//Add ads behind tool bar.
+		public function addAdsContainer(loader:Loader):void
+		{
+			var toolIndex:int = getChildIndex(toolBar);
+			addChildAt(loader, toolIndex); 
+		}
+		
 		private var uc:UConfigurationLoader = new UConfigurationLoader();
 		
 		public var factory:StrobeMediaFactory;		
@@ -1271,7 +1160,7 @@
 		
 		private var pluginHostWhitelist:Vector.<String>;
 		private var mainContainer:MediaContainer;
-		private var mediaContainer:MediaContainer = new MediaContainer();	
+		public var mediaContainer:MediaContainer = new MediaContainer();	
 		private var controlUtil:ControlUtil;
 		private var posterImage:ImageElement;
 		private var _media:MediaElement;
@@ -1286,10 +1175,8 @@
 		private var bottomHeight:Number;
 		private var resized:Boolean = false;
 		
-		private var adsState:String;
-		private var adsLoader:Loader;
-		private var adsTimer:Timer = new Timer(ADS_TIMEOUT, 1);
-		private static const ADS_TIMEOUT:int = 30000;
+		private var adsManager:IMAManager;
+
 		
 		private static const PADDING:uint = 3;
 		private static const POSTER_INDEX:int = 2;
