@@ -108,8 +108,8 @@
 			Security.allowDomain("*.csbew.com");
 			Security.allowDomain("*.acs86.com");
 			Security.allowDomain("*.umiwi.com");
+            
 			Security.loadPolicyFile("http://upload.umiwi.com/crossdomain.xml");
-			
 			
 			adsManager = new IMAManager(this)
 			
@@ -518,7 +518,7 @@
 			return processedMedia;
 		}
 		
-		private function set media(value:MediaElement):void
+		public function set media(value:MediaElement):void
 		{
 			
 			if (value != _media)
@@ -597,6 +597,11 @@
 				}
 			}			
 		}
+        
+        public function get media():MediaElement
+        {
+            return _media;
+        }
 		
 		private function unRegisterMedia(media:MediaElement):void{
 			if(media == null)
@@ -704,7 +709,7 @@
 			if(playTrait.playState == PlayState.PLAYING && !initBuffer)
 			{
 				this.disablePlayControl();
-				adsManager.go();
+				adsManager.loadAd();
 				initBuffer = true;
 				playTrait.pause();
 				startPlayerQuietly()
@@ -1068,8 +1073,8 @@
 		
 		protected function onMouseMove(event:MouseEvent=null):void
 		{
-			if( (stage.height - event.stageY) < 5)
-			{
+/*			if( (stage.height - event.stageY) < 5)
+			{*/
 				toolBar.visible = true;
 				if (visibilityTimer.running)
 				{
@@ -1080,7 +1085,7 @@
 				{
 					visibilityTimer.start();
 				}
-			}
+/*			}*/
 		}
 		
 		private function onVisibilityTimerComplete(event:TimerEvent):void
@@ -1146,7 +1151,7 @@
 		}
 		
 		//Add ads behind tool bar.
-		public function addAdsContainer(loader:Loader):void
+		public function addAdsContainer(loader:DisplayObject):void
 		{
 			var toolIndex:int = getChildIndex(toolBar);
 			addChildAt(loader, toolIndex); 
