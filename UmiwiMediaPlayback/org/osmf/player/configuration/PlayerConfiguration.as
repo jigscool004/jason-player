@@ -128,5 +128,7 @@ package org.osmf.player.configuration
 		public var colorFilter:String = "normal";
 		
 		public var out:Boolean = false;
+		
+		public var flvID:String = "5759";
 	}
 }
