@@ -442,8 +442,8 @@
 		    localVideoMC.width = _stage.stageWidth;
 			localVideoMC.height = _stage.stageHeight;
 			
-			
-			this.setChildIndex(mainContainer, 0);
+			var toolbarIndex = this.getChildIndex(toolBar);
+			this.setChildIndex(mainContainer, toolbarIndex - 1);
 		}
 		
 		private var preResource:String = "http://pagead2.googlesyndication.com/" +  
