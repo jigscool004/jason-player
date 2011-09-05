@@ -1,9 +1,11 @@
 ﻿package com.umiwi.util
 {
+	import com.google.ads.instream.api.Ad;
 	import com.google.ads.instream.api.AdErrorEvent;
 	import com.google.ads.instream.api.AdEvent;
 	import com.google.ads.instream.api.AdLoadedEvent;
 	import com.google.ads.instream.api.AdSizeChangedEvent;
+	import com.google.ads.instream.api.AdTypes;
 	import com.google.ads.instream.api.AdsLoadedEvent;
 	import com.google.ads.instream.api.AdsLoader;
 	import com.google.ads.instream.api.AdsManager;
@@ -12,6 +14,8 @@
 	import com.google.ads.instream.api.AdsRequestType;
 	import com.google.ads.instream.api.FlashAdCustomEvent;
 	import com.google.ads.instream.api.FlashAdsManager;
+	import com.google.ads.instream.api.VastVideoAd;
+	import com.google.ads.instream.api.VideoAd;
 	import com.google.ads.instream.api.VideoAdsManager;
 	
 	import flash.display.DisplayObject;
@@ -77,11 +81,12 @@
 		private function createAdsRequest():AdsRequest {
 			var request:AdsRequest = new AdsRequest();
 			request.adSlotWidth = umiwiMediaPlayback.mediaContainer.width;
-			request.adSlotHeight = umiwiMediaPlayback.mediaContainer.height;
+			request.adSlotHeight = umiwiMediaPlayback.mediaContainer.height - 20;
 			//request.adType = AdsRequestType.VIDEO;
+            //request.adType = getAdsTypeRandomly();
             request.adTimePosition = 0;
-            request.adType = "video_fullscreen"
-			//request.adType = AdsRequestType.GRAPHICAL_FULL_SLOT;
+           // request.adType = "video_fullscreen"
+			request.adType = AdsRequestType.GRAPHICAL_FULL_SLOT;
 			request.channels = ["angela"];
 			request.contentId = "123";
 			request.publisherId = "ca-video-googletest1";
@@ -93,6 +98,21 @@
 			request.disableCompanionAds = true;
 			return request;
 		}
+        
+        private function getAdsTypeRandomly():String
+        {
+            var i:Number = Math.random();
+            var type:String
+            if(i < 0.5)
+            {
+                type = AdsRequestType.VIDEO;
+            }
+            else
+            {
+                type = AdsRequestType.GRAPHICAL_FULL_SLOT;
+            }
+            return type;
+        }
         
         
         
@@ -121,7 +141,7 @@
                 var flashAdsManager:FlashAdsManager = adsManager as FlashAdsManager;
                 //jason		
                 //flashAdsManager.decoratedAd = false;
-                
+                flashAdsManager.y = 20;
                 flashAdsManager.addEventListener(AdSizeChangedEvent.SIZE_CHANGED,
                     onFlashAdSizeChanged);
                 flashAdsManager.addEventListener(FlashAdCustomEvent.CUSTOM_EVENT,
@@ -146,7 +166,7 @@
                     onVideoAdPaused);*/
                 videoAdsManager.addEventListener(AdEvent.COMPLETE,
                     onVideoAdComplete);
-/*                videoAdsManager.addEventListener(AdEvent.MIDPOINT,
+                videoAdsManager.addEventListener(AdEvent.MIDPOINT,
                     onVideoAdMidpoint);
                 videoAdsManager.addEventListener(AdEvent.FIRST_QUARTILE,
                     onVideoAdFirstQuartile);
@@ -155,7 +175,7 @@
                 videoAdsManager.addEventListener(AdEvent.RESTARTED,
                     onVideoAdRestarted);
                 videoAdsManager.addEventListener(AdEvent.VOLUME_MUTED,
-                    onVideoAdVolumeMuted);*/
+                    onVideoAdVolumeMuted);
                 
 /*                if(umiwiMediaPlayback.media.hasTrait(MediaTraitType.DISPLAY_OBJECT))
                 {
@@ -185,6 +205,79 @@
 
             } 
         }
+        
+        private var labelTimer:Timer = new Timer(1000);
+        private var timeLabel:Sprite = new Sprite();
+        private var timeLeft:int = 15;
+        private var timeLabelAdded:Boolean = false;
+        private function addTimeLabel():void
+        {
+            if(timeLabelAdded)
+            {
+                umiwiMediaPlayback.setChildIndex(timeLabel, umiwiMediaPlayback.numChildren - 1);
+            }
+            else
+            {
+                MyDrawUtil.drawTimeLeftLabel(timeLabel);
+                timeLabel.x = (umiwiMediaPlayback.mediaContainer.width - timeLabel.width) * 0.5;
+                timeLabel.y = 0;
+                umiwiMediaPlayback.addChild(timeLabel);
+                labelTimer.start();
+                labelTimer.addEventListener(TimerEvent.TIMER, updateTime);
+                
+                timeLabelAdded = true;
+            }
+
+        }
+        
+        private function updateTime(event:TimerEvent):void
+        {
+            var ads:Array = adsManager.ads;
+            var time:int;
+            if (ads) {
+                for each (var ad:Ad in ads) {
+                    try {
+                        if (ad.type == AdTypes.VAST) {
+                            var vastAd:VastVideoAd = ad as VastVideoAd;
+                            time = vastAd.duration - vastAd.currentTime;
+                        } 
+                        else if (ad.type == AdTypes.VIDEO)
+                        {
+                            var videoAd:VideoAd = ad as VideoAd;
+                            time = videoAd.duration - videoAd.currentTime;
+                        }
+                        else
+                        {
+                            timeLeft --;
+                            time = timeLeft;
+                            
+                            this.addTimeLabel();
+                            
+                            if(time == 0)
+                            {
+                                this.unloadAd();
+                            }
+                        }
+                    }
+                    catch(e:Error)
+                    {
+                        
+                    }
+                }
+            }
+            if(time == 10)
+            {
+                UConfigurationLoader.traceChildren(umiwiMediaPlayback);
+            }
+            MyDrawUtil.setTime(timeLabel,time);
+        }
+        
+        private function removeTimeLabel():void
+        {
+            labelTimer.stop();
+            labelTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, updateTime);
+            umiwiMediaPlayback.removeChild(timeLabel);
+        }
 
         /**
          * This method is invoked when an interactive flash ad raises the
@@ -198,6 +291,8 @@
         private function onContentPauseRequested(event:AdEvent):void {
             initAdsBuffer = true;
             umiwiMediaPlayback.startPlayerQuietly();
+            
+            addTimeLabel();
         }
         
         /**
@@ -264,6 +359,7 @@
         
         private function onAdStarted(event:AdEvent):void {
             logEvent(event.type);
+
         }
         
         private function onAdClicked(event:AdEvent):void {
@@ -349,6 +445,7 @@
                 (adsManager as VideoAdsManager).clickTrackingElement = null;
             }
             adsTimer.reset();
+            this.unloadAd();
         }
         
         function metaDataHandler(infoObject:Object):void {
@@ -402,6 +499,7 @@
         }
         
         private function unloadAd():void {
+            removeTimeLabel();
             try {
                 if (adsManager) {
                     removeListeners();
@@ -413,6 +511,7 @@
             } catch (e:Error) {
                 UConfigurationLoader.updateMsg("Error occured during unload : " + e.message);
             }
+            this.resumeStream();
         }
 
         
