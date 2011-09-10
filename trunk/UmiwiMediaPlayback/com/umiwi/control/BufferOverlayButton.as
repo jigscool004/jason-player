@@ -101,10 +101,10 @@
 			{
 				_visible = value;
 				
-				if (value == false)
+				if (value == true)
 				{
 					visibilityTimer.stop();
-					super.visible = false;
+					super.visible = true;
 				}
 				else
 				{
@@ -120,7 +120,7 @@
 		
 		private function onVisibilityTimerComplete(event:TimerEvent):void
 		{
-			super.visible = true;		
+			super.visible = false;		
 		}
 		
 		private var startedOnce:Boolean = false;
@@ -128,6 +128,6 @@
 		private var _visible:Boolean;
 		private var visibilityTimer:Timer;
 		
-		private static const VISIBILITY_DELAY:int = 500;
+		private static const VISIBILITY_DELAY:int = 800;
 	}
 }
