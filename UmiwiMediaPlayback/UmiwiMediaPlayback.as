@@ -330,6 +330,7 @@
 				matrix = matrix.concat([0, 0, 0, 1, 0]); // alpha
 				var rawFilter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
 				toolBar.umiwilink.filters = [rawFilter];
+                toolBar.umiwilink.gotoAndStop(3);
 			}
  
 			
@@ -418,7 +419,14 @@
 			{
 				if(swfWidth > 430)
 				{
-					toolBar.umiwilink.gotoAndStop(2);
+                    if(configuration.colorFilter == "reverse")
+                    {
+                        toolBar.umiwilink.gotoAndStop(4);
+                    }
+                    else
+                    {
+                        toolBar.umiwilink.gotoAndStop(2);
+                    }
 				}
 				else
 				{
