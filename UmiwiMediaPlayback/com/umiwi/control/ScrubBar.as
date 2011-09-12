@@ -56,12 +56,9 @@
 			
 			super();
 			
-			scrubBarClickArea.x = scrubBarTrack.x;
-			scrubBarClickArea.y = scrubBarTrack.y;
-			scrubBarClickArea.graphics.clear();
-			scrubBarClickArea.graphics.beginFill(0xFFFFFF, 0.0);
-			scrubBarClickArea.graphics.drawRect(0.0, 0.0, scrubBarTrack.width, Math.max(scrubBarTrack.height, scrubber.height));
-			scrubBarClickArea.graphics.endFill();
+            scrubBarClickArea.x = scrubBarTrack.x;
+            scrubBarClickArea.y = scrubBarTrack.y;
+            setClickArea();
 			
 			updateScrubberPosition();
 			updateState();
@@ -300,8 +297,17 @@
 		public function setWidth(newWidth:Number):void{
 			scrubBarTrack.width = newWidth;
 			scrubberEnd = scrubBarTrack.x + scrubBarTrack.width - scrubber.width/2;
+            setClickArea();
 			updateScrubberPosition();
 		}
+        
+        private function setClickArea():void
+        {
+            scrubBarClickArea.graphics.clear();
+            scrubBarClickArea.graphics.beginFill(0xFFFFFF, 0.0);
+            scrubBarClickArea.graphics.drawRect(0.0, 0.0, scrubBarTrack.width, Math.max(scrubBarTrack.height, scrubber.height));
+            scrubBarClickArea.graphics.endFill();
+        }
 
 		private function seekToX(relativePositition:Number):void
 		{
