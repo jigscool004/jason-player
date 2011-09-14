@@ -87,7 +87,8 @@
             request.adTimePosition = 0;
            // request.adType = "video_fullscreen"
 			//request.adType = AdsRequestType.GRAPHICAL_FULL_SLOT;
-			request.channels = ["angela"];
+			//request.channels = ["angela"];
+            request.channels = ["angela"];
 			request.contentId = "123";
 			request.publisherId = "ca-video-googletest1";
             //request.publisherId = "ca-video-afvtest"; 
@@ -99,19 +100,21 @@
 			return request;
 		}
         
+        
+        private var adsType:String;
         private function getAdsTypeRandomly():String
         {
             var i:Number = Math.random();
             var type:String
             if(i < 0.5)
             {
-                type = AdsRequestType.VIDEO;
+                adsType = AdsRequestType.VIDEO;
             }
             else
             {
-                type = AdsRequestType.GRAPHICAL_FULL_SLOT;
+                adsType = AdsRequestType.GRAPHICAL_FULL_SLOT;
             }
-            return type;
+            return adsType;
         }
         
         
@@ -262,10 +265,6 @@
                     }
                 }
             }
-            if(time == 10)
-            {
-                UConfigurationLoader.traceChildren(umiwiMediaPlayback.stage);
-            }
             MyDrawUtil.setTime(timeLabel,time);
         }
         
@@ -288,7 +287,10 @@
         private function onContentPauseRequested(event:AdEvent):void {
             UConfigurationLoader.updateMsg(event.type);
             initAdsBuffer = true;
-            umiwiMediaPlayback.startPlayerQuietly();
+            if(adsType == AdsRequestType.GRAPHICAL_FULL_SLOT)
+            {
+                umiwiMediaPlayback.startPlayerQuietly();
+            }
             
             addTimeLabel();
         }
@@ -404,6 +406,7 @@
         
         private function onVideoAdThirdQuartile(event:AdEvent):void {
             logEvent(event.type);
+            umiwiMediaPlayback.startPlayerQuietly();
         }
         
         private function onVideoAdClicked(event:AdEvent):void {

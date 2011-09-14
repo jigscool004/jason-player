@@ -257,6 +257,8 @@
 		private function initAssets():void
 		{
 			ad.visible = false;
+            mediaContainer.visible = false;
+            
 			var myMenu:ContextMenu= new ContextMenu();
 			myMenu.hideBuiltInItems();
 			this.contextMenu=myMenu;
@@ -1149,9 +1151,11 @@
 			UConfigurationLoader.updateMsg("Video stop");
 			UConfigurationLoader.callExternal("video_play_over");
 			
-			//显示推荐视频
-			miniatureMC.visible=true;
-			
+            if(configuration.showRecommend)
+            {
+                //显示推荐视频
+                miniatureMC.visible=true;
+            }
 		}
 		
 		public function hideRecommend():void{
