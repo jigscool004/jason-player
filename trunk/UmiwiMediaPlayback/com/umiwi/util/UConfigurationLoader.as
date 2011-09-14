@@ -108,8 +108,16 @@
 		}
 		private function getRecommendFlvComplete(e:Event) {
 			updateMsg("Get recommended video successfully.");
-			var info:XML = new XML(e.target.data);
-			_callback.call(null, info);
+            try
+            {
+                var info:XML = new XML(e.target.data);
+                _callback.call(null, info);
+            }
+            catch(error:Error)
+            {
+                updateMsg(error.message);
+            }
+
 		}
 		
 		private function getRecommendFlvError(e:IOErrorEvent):void
