@@ -19,9 +19,11 @@
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.external.ExternalInterface;
+	import flash.filters.ColorMatrixFilter;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.system.Capabilities;
+	import flash.system.LoaderContext;
 	import flash.system.Security;
 	import flash.ui.ContextMenu;
 	import flash.ui.Mouse;
@@ -284,6 +286,32 @@
 				year = year%100;
 				navigateToURL(new URLRequest('http://www.umiwi.com/?utm_source=umv&utm_medium=videoshare&utm_content='+_loaderInfo.parameters.flvID+'&utm_campaign='+year+m+day));
 			});
+            
+            if(configuration.colorFilter == "reverse")
+            {
+                var filterObj:ColorMatrixFilter = new ColorMatrixFilter();    
+                filterObj.matrix = new Array(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);  
+                
+                
+                
+                for(var i:int=0; i<toolBar.numChildren; i++)
+                {
+                    toolBar.getChildAt(i).filters = [filterObj];
+                }
+                //toolBar.filters = [filterObj]; 
+                
+                //bufferingMC.filters = [filterObj]; 
+                
+                
+                var matrix:Array = new Array();
+                matrix = matrix.concat([1, 0, 0, 0, 0]); // red
+                matrix = matrix.concat([0, 1, 0, 0, 0]); // green
+                matrix = matrix.concat([0, 0, 1, 0, 0]); // blue
+                matrix = matrix.concat([0, 0, 0, 1, 0]); // alpha
+                var rawFilter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
+                toolBar.umiwilink.filters = [rawFilter];
+                toolBar.umiwilink.gotoAndStop(3);
+            }
 			
 			controlUtil = new ControlUtil(this);
 			
@@ -308,6 +336,9 @@
 		private function onEnterFrameCallback(event:Event):void{
 			_stage.removeEventListener(Event.ENTER_FRAME, onEnterFrameCallback);
 			
+			swfWidth=_stage.stageWidth;
+			swfHeight=_stage.stageHeight;
+			
 			mediaContainer.width = _stage.stageWidth;
 			bufferingMC.width = _stage.stageWidth;
 			miniatureMC.x=(swfWidth-miniatureMC.width)/2;
@@ -326,9 +357,6 @@
 			
 			fullScrBtn.width = _stage.stageWidth;
 			fullScrBtn.height = _stage.stageHeight;
-
-			swfWidth=_stage.stageWidth;
-			swfHeight=_stage.stageHeight;
 			
 			toolBar.y=swfHeight-toolBar.height-PADDING;			
 			toolBar.toolBarBack.width=swfWidth;
@@ -339,18 +367,25 @@
 			
 			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
 			
-			if(swfWidth < 480)
-			{
-				if(swfWidth > 430)
-				{
-					toolBar.umiwilink.gotoAndStop(2);
-				}
-				else
-				{
-					toolBar.umiwilink.visible = false;
-				}
-				
-			}
+            if(swfWidth < 480)
+            {
+                if(swfWidth > 430)
+                {
+                    if(configuration.colorFilter == "reverse")
+                    {
+                        toolBar.umiwilink.gotoAndStop(4);
+                    }
+                    else
+                    {
+                        toolBar.umiwilink.gotoAndStop(2);
+                    }
+                }
+                else
+                {
+                    toolBar.umiwilink.visible = false;
+                }
+                
+            }	
 			
 			//缩放时进度条不可见
 			//toolBar.scrubBar.scrubber.visible=toolBar.scrubBar.visible=toolBar.scrubBar.scrubBarPlayedTrack.visible=toolBar.scrubBar.scrubBarLoadedTrack.visible=false;
@@ -688,6 +723,8 @@
 					posterImage.addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, layoutMetadata);
 					LoadTrait(posterImage.getTrait(MediaTraitType.LOAD)).load();
 					mediaContainer.addMediaElement(posterImage);
+                    
+                    (bufferingMC as TraitControl).setElement(posterImage);
 
 					// Listen for the main content player to reach a playing, or playback error
 					// state. At that time, we remove the poster:
@@ -701,7 +738,7 @@
 						if	(	event.state == MediaPlayerState.PLAYING
 							||	event.state == MediaPlayerState.PLAYBACK_ERROR
 						)
-						{
+						{                            
 							// Make sure this event is processed only once:
 							player.removeEventListener(event.type, arguments.callee);
 							
@@ -891,7 +928,13 @@
 					loader.height = 78;
 				}
 			});
-			loader.load(new URLRequest(url));
+            
+            try {
+                loader.load(new URLRequest(url), new LoaderContext(true));
+            } catch (error:Error) {
+                UConfigurationLoader.updateMsg("Failed to get recommended thumbnail. " + error.message);
+            }
+			
 			if (!isUmiwi) mc.addChild(loader);
 		}
 		
@@ -900,8 +943,12 @@
 			UConfigurationLoader.updateMsg("Video stop");
 			UConfigurationLoader.callExternal("video_play_over");
 			
-			//显示推荐视频
-			miniatureMC.visible=true;
+            if(configuration.showRecommend)
+            {
+                //显示推荐视频
+                miniatureMC.visible=true;
+            }
+
 			
 		}
 		

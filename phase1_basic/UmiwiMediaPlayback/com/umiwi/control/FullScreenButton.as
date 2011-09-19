@@ -3,6 +3,8 @@ package com.umiwi.control
 	import com.umiwi.util.UConfigurationLoader;
 	
 	import flash.display.MovieClip;
+	import flash.display.StageDisplayState;
+	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
 	
 	public class FullScreenButton extends MovieClip
@@ -18,6 +20,7 @@ package com.umiwi.control
 			setTipText1();
 			addEventListener(MouseEvent.MOUSE_OVER,showTooltip);
 			addEventListener(MouseEvent.MOUSE_OUT,hideTooltip);
+            stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenEvent, false, 0, true);
 		}
 		
 		private function showTooltip(event:MouseEvent):void{
@@ -48,25 +51,37 @@ package com.umiwi.control
 				playState="pause";
 				return;
 			}*/
+            
+            updateState();
+            
+        }
 			
-			
-			switch (stage.displayState) {
-				case "normal" :
-					stage.displayState="fullScreen";
-					gotoAndStop(2);
-					setTipText2();
-					break;
-				case "fullScreen" :
-					stage.displayState="normal";
-					gotoAndStop(1);
-					setTipText1();
-					break;
-				default :
-					stage.displayState="normal";
-					gotoAndStop(1);
-					setTipText1();
-			}
-		}
+        private function onFullScreenEvent(event:FullScreenEvent):void
+        {
+            if(event.fullScreen) {
+                gotoAndStop(2);
+                setTipText2();
+            }
+            else
+            {
+                gotoAndStop(1);
+                setTipText1();
+            }
+        }
+        
+        private function updateState():void
+        {
+            switch (stage.displayState) {
+                case StageDisplayState.NORMAL:
+                    stage.displayState=StageDisplayState.FULL_SCREEN;
+                    break;
+                case StageDisplayState.FULL_SCREEN:
+                    stage.displayState=StageDisplayState.NORMAL;
+                    break;
+                default :
+                    stage.displayState=StageDisplayState.NORMAL;
+            }
+        }
 		
 		private function setTipText1():void{
 			toolTipMC.tip.text = "全屏";
