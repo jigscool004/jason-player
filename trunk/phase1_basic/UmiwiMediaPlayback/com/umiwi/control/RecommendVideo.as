@@ -1,5 +1,6 @@
 ﻿package com.umiwi.control
 {
+	import com.umiwi.util.ControlUtil;
 	import com.umiwi.util.UConfigurationLoader;
 	
 	import flash.events.Event;
@@ -44,7 +45,11 @@
 			var playTrait:PlayTrait = traitInstance as PlayTrait;
 			if(playTrait.playState == PlayState.STOPPED)
 			{
-				visible = true;
+                if(ControlUtil.configuration.showRecommend)
+                {
+                    visible = true;
+                }
+				
 				UConfigurationLoader.callExternal("video_play_over");
 				UConfigurationLoader.updateMsg("Video stop");
 			}

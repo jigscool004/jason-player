@@ -25,6 +25,10 @@ package com.umiwi.control
 		}
 		
 		public function setElement(element:MediaElement):void{
+            if(_media != element && _media)
+            {
+                removeElement();
+            }
 			_media = element
 			if(element.hasTrait(traitType))
 			{
