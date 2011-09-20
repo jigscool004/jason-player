@@ -13,6 +13,7 @@
 	import flash.events.IOErrorEvent;
 	import flash.system.Security;
     import flash.system.LoaderContext;
+    import flash.filters.ColorMatrixFilter;
 
 	import flash.events.HTTPStatusEvent;
 	import flash.net.URLLoader;
@@ -275,6 +276,32 @@
 				//}
 				
 			}
+            
+            if(loaderInfo.parameters.colorFilter == "reverse")
+            {
+                var filterObj:ColorMatrixFilter = new ColorMatrixFilter();    
+                filterObj.matrix = new Array(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);  
+                
+                
+                
+                for(var i:int=0; i<toolBar.numChildren; i++)
+                {
+                    toolBar.getChildAt(i).filters = [filterObj];
+                }
+                //toolBar.filters = [filterObj]; 
+                
+                //bufferingMC.filters = [filterObj]; 
+                
+                
+                var matrix:Array = new Array();
+                matrix = matrix.concat([1, 0, 0, 0, 0]); // red
+                matrix = matrix.concat([0, 1, 0, 0, 0]); // green
+                matrix = matrix.concat([0, 0, 1, 0, 0]); // blue
+                matrix = matrix.concat([0, 0, 0, 1, 0]); // alpha
+                var rawFilter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
+                toolBar.umiwilink.filters = [rawFilter];
+                toolBar.umiwilink.gotoAndStop(3);
+            }
 		}
 		
 		private function loadAd(callback,param)
@@ -1429,7 +1456,10 @@
 			miniatureMC.x=(localVideoMC.width-miniatureMC.width)/2;
 			miniatureMC.y=(localVideoMC.height-miniatureMC.height)/2;
 			
-			
+            if(swfWidth < 480)
+            {
+                toolBar.umiwilink.visible = false;
+            }	
 			
 			
 		}
