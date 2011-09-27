@@ -287,6 +287,7 @@
         private function onContentPauseRequested(event:AdEvent):void {
             UConfigurationLoader.updateMsg(event.type);
             initAdsBuffer = true;
+            adsTimer.stop();
             if(adsType == AdsRequestType.GRAPHICAL_FULL_SLOT)
             {
                 umiwiMediaPlayback.startPlayerQuietly();
@@ -307,7 +308,7 @@
             resumeStream()
         }
 		
-		public function resumeStream():void {  
+		public function resumeStream():void {
 			umiwiMediaPlayback.stopPlayerQuietly();
 			umiwiMediaPlayback.enablePlayControl();
 			umiwiMediaPlayback.player.play();
@@ -315,23 +316,6 @@
 		} 
 		
 		public var initAdsBuffer:Boolean = false;
-		public function adsStateChange(oldState:String, newState:String):void {
-			adsState = newState;
-			if (newState == "completed") { 
-				//enableToolBar(true);
-				/*				toolBar.mouseChildren = true;
-				bigPlayBtn.mouseEnabled = true;
-				player.play();
-				//loadMedia();
-				UConfigurationLoader.updateMsg("Google Ad over, play video.");*/
-				adsTimer.reset();
-			} 
-			if (newState == "buffering" || oldState == "buffering")
-			{
-				initAdsBuffer = true;
-				umiwiMediaPlayback.startPlayerQuietly();
-			}
-		} 
 		
 		private function onAdsLoadTimeout(event:TimerEvent):void
 		{
@@ -369,7 +353,6 @@
         private function onAdClosed(event:AdEvent):void {
             logEvent(event.type);
             resumeStream();
-            adsTimer.reset();
             unloadAd();
         }
         
@@ -445,7 +428,6 @@
             if (adsManager.type == AdsManagerTypes.VIDEO) {
                 (adsManager as VideoAdsManager).clickTrackingElement = null;
             }
-            adsTimer.reset();
             this.unloadAd();
         }
         

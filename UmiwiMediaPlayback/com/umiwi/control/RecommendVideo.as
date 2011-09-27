@@ -43,9 +43,12 @@
 		protected function visibilityDeterminingEventHandler(event:Event = null):void
 		{
 			var playTrait:PlayTrait = traitInstance as PlayTrait;
-			if(playTrait.playState == PlayState.STOPPED && ControlUtil.configuration.showRecommend)
+			if(playTrait.playState == PlayState.STOPPED)
 			{
-				visible = true;
+                if(ControlUtil.configuration.showRecommend)
+                {
+                    visible = true;
+                }
 				UConfigurationLoader.callExternal("video_play_over");
 			}
 			else{
