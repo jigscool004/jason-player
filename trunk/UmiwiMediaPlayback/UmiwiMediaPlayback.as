@@ -25,6 +25,7 @@
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.system.Capabilities;
+	import flash.system.LoaderContext;
 	import flash.system.Security;
 	import flash.ui.ContextMenu;
 	import flash.ui.Mouse;
@@ -257,7 +258,11 @@
 		private function initAssets():void
 		{
 			ad.visible = false;
-            mediaContainer.visible = false;
+            
+            if(configuration.autoPlay)
+            {
+                mediaContainer.visible = false;
+            }
             
 			var myMenu:ContextMenu= new ContextMenu();
 			myMenu.hideBuiltInItems();
@@ -273,7 +278,8 @@
 			UConfigurationLoader.updateMsg('iisPath='+iisPath);
 			
 			//初始化大播放按钮不可见
-			bigPlayBtn.visible=false;
+            bigPlayBtn.visible=false;
+            
 			//场景底部预留给工具条的高度
 			bottomHeight=toolBar.toolBarBack.height;
 			//loading flvID
@@ -453,7 +459,7 @@
 			localVideoMC.height = _stage.stageHeight;
 			
 			var toolbarIndex = this.getChildIndex(toolBar);
-			this.setChildIndex(mainContainer, toolbarIndex - 1);
+			this.setChildIndex(mainContainer, 0);
 		}
 		
 		private var preResource:String = "http://pagead2.googlesyndication.com/" +  
@@ -917,6 +923,10 @@
 					posterImage.addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, layoutMetadata);
 					LoadTrait(posterImage.getTrait(MediaTraitType.LOAD)).load();
 					mediaContainer.addMediaElement(posterImage);
+                    
+                    //(bufferingMC as TraitControl).setElement(posterImage);
+                    bufferingMC.visible = false;
+                    setChildIndex(bigPlayBtn, this.numChildren - 1);
 
 					// Listen for the main content player to reach a playing, or playback error
 					// state. At that time, we remove the poster:
@@ -1062,7 +1072,10 @@
 		{
 			toolBar.mouseChildren = false;
 			bigPlayBtn.mouseEnabled = false;
+            var toolbarIndex = this.getChildIndex(toolBar);
+            this.setChildIndex(bigPlayBtn, toolbarIndex + 1);
 			fullScrBtn.mouseEnabled = false;
+            
 		}
 		
 		public function enablePlayControl():void
@@ -1070,6 +1083,7 @@
 			toolBar.mouseChildren = true;
 			bigPlayBtn.mouseEnabled = true;
 			fullScrBtn.mouseEnabled = true;
+            this.removeChild(clickMovieClip);
 		}
 		
 		private var visibilityTimer:Timer;
@@ -1142,7 +1156,11 @@
 					loader.height = 78;
 				}
 			});
-			loader.load(new URLRequest(url));
+            try {
+                loader.load(new URLRequest(url), new LoaderContext(true));
+            } catch (error:Error) {
+                UConfigurationLoader.updateMsg("Failed to get recommended thumbnail. " + error.message);
+            }
 			if (!isUmiwi) mc.addChild(loader);
 		}
 		
