@@ -132,5 +132,7 @@ package org.osmf.player.configuration
 		public var flvID:String = "5759";
         
         public var showRecommend:Boolean = true;
+        
+        public var showAds:Boolean = true;
 	}
 }
