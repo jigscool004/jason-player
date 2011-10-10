@@ -286,16 +286,6 @@
 			bufferingMC.visible = true;
 			
 			
-/*			swfStage=localVideoMC.stage;
-			swfStage.scaleMode=StageScaleMode.NO_SCALE;
-			swfStage.align=StageAlign.TOP_LEFT;
-			swfStage.addEventListener(Event.RESIZE,function()
-			{
-				centerBufferingMC();
-				resizeDisplay();
-			});*/
-			
-
 			toolBar.brightNessBtn.adjustBar.visible=false;
 			//初始化推荐视频不可见
 			miniatureMC.visible=false;
@@ -343,6 +333,11 @@
  
 			
 			controlUtil = new ControlUtil(this);
+            
+            if(!configuration.showAds)
+            {
+                removeChild(clickMovieClip);
+            }
 			
 			visibilityTimer = new Timer(VISIBILITY_DELAY, 1);
 			visibilityTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onVisibilityTimerComplete);
@@ -560,33 +555,6 @@
 					// Add the media to the media container:
 					mediaContainer.addMediaElement(_media);
 					
-					/*					// Forward a reference to controlBar:
-					if (controlBar != null)
-					{
-					controlBar.target = _media;
-					}
-					
-					// Forward a reference to the play overlay:
-					if (playOverlay != null)
-					{
-					playOverlay.media = _media;
-					}
-					
-					// Forward a reference to the buffering overlay:
-					if (bufferingOverlay != null)
-					{
-					bufferingOverlay.media = _media;
-					if (!videoInfoLoaded)
-					{
-					bufferingOverlay.visible = true;
-					}
-					}
-					
-					if (configPanel != null)
-					{
-					configPanel.media = _media;
-					}*/
-					
 					registerMedia(_media);
 					
 					_stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreen);
@@ -673,7 +641,14 @@
 		
 			controlUtil.setElement(element);
 			
-			setElement(element);
+            if(configuration.showAds)
+            {
+                setElement(element);
+            }
+            else
+            {
+                mediaContainer.visible = true;
+            }
 			
 		}
 		
@@ -762,6 +737,7 @@
 		
 		public function stopPlayerQuietly():void
 		{
+            mediaContainer.visible = true;
 			quietPlayerTimer.stop();
 			var loadTrait:LoadTrait = _media ? _media.getTrait(MediaTraitType.LOAD) as LoadTrait : null;
 			if(loadTrait is NetStreamLoadTrait)
@@ -1083,7 +1059,7 @@
 			toolBar.mouseChildren = true;
 			bigPlayBtn.mouseEnabled = true;
 			fullScrBtn.mouseEnabled = true;
-            this.removeChild(clickMovieClip);
+            removeChild(clickMovieClip);
 		}
 		
 		private var visibilityTimer:Timer;

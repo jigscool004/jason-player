@@ -83,16 +83,21 @@
 			request.adSlotWidth = umiwiMediaPlayback.mediaContainer.width;
 			request.adSlotHeight = umiwiMediaPlayback.mediaContainer.height;
 			//request.adType = AdsRequestType.VIDEO;
-            request.adType = getAdsTypeRandomly();
+            //request.adType = getAdsTypeRandomly();
             request.adTimePosition = 0;
            // request.adType = "video_fullscreen"
-			//request.adType = AdsRequestType.GRAPHICAL_FULL_SLOT;
+            
+            
+			request.adType = AdsRequestType.GRAPHICAL_FULL_SLOT;
+            adsType = AdsRequestType.GRAPHICAL_FULL_SLOT;
+            
+            
 			//request.channels = ["angela"];
             request.channels = ["angela"];
 			request.contentId = "123";
-			request.publisherId = "ca-video-googletest1";
+			//request.publisherId = "ca-video-googletest1";
             //request.publisherId = "ca-video-afvtest"; 
-            //request.publisherId = "ca-video-pub-8477572604480528"; 
+            request.publisherId = "ca-video-pub-8477572604480528"; 
             //request.maxTotalAdDuration = 30;
 			// Checks the companion type from flashVars to decides whether to use GUT
 			// or getCompanionAds() to load companions.
@@ -308,7 +313,11 @@
             resumeStream()
         }
 		
+        private var resumeOnce:Boolean = false;
 		public function resumeStream():void {
+            if(resumeOnce)
+                return;
+            resumeOnce = true;
 			umiwiMediaPlayback.stopPlayerQuietly();
 			umiwiMediaPlayback.enablePlayControl();
 			umiwiMediaPlayback.player.play();
@@ -417,11 +426,6 @@
             {
                 umiwiMediaPlayback.removeChild(video);
                 video = null;
-            }
-            
-            if(umiwiMediaPlayback.clickMovieClip)
-            {
-                umiwiMediaPlayback.removeChild(umiwiMediaPlayback.clickMovieClip);
             }
             
             // Remove clickTrackingElement before playing content or a different ad.
