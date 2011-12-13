@@ -16,6 +16,7 @@ package com.umiwi.control
 		public function TraitControl()
 		{
 			super();
+            buttonMode = true;
 			mouseEnabled = true;
 			addEventListener(MouseEvent.CLICK, onMouseClick);
 		}

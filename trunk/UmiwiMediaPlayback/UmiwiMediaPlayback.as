@@ -1,6 +1,8 @@
 ﻿package
 {
+	import com.umiwi.control.ShareButton;
 	import com.umiwi.control.TraitControl;
+	import com.umiwi.util.Constatns;
 	import com.umiwi.util.ControlUtil;
 	import com.umiwi.util.IMAManager;
 	import com.umiwi.util.UConfigurationLoader;
@@ -168,6 +170,19 @@
 						miniatureMC.gotoAndStop(1);
 					}
 				}
+                
+                var logo:Object = configuration.logo;
+                logoLoader.x = logo.x;
+                logoLoader.y = logo.y;
+                logoLoader.alpha = logo.alpha;
+                var request:URLRequest = new URLRequest(logo.src);
+                logoLoader.scaleContent = false;            
+                logoLoader.load(request);
+                logoLoader.buttonMode = true;
+                logoLoader.addEventListener(MouseEvent.MOUSE_DOWN,function(e:MouseEvent)
+                {
+                    navigateToURL(new URLRequest(configuration.logo.link));
+                });
 			}
 			
 			configuration = new PlayerConfiguration();
@@ -216,7 +231,7 @@
 			player.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
 			player.autoPlay 			= configuration.autoPlay;
 			
-			if(configuration.autoPlay)
+			if(configuration.autoPlay && configuration.showAds)
 			{
 				//Waiting for ads completed.
 				disablePlayControl();
@@ -284,42 +299,15 @@
 			bottomHeight=toolBar.toolBarBack.height;
 			//loading flvID
 			bufferingMC.visible = true;
-			
-			
-			toolBar.brightNessBtn.adjustBar.visible=false;
+            
 			//初始化推荐视频不可见
 			miniatureMC.visible=false;
 			toolBar.scrubBar.visible = false;
-					
-			toolBar.umiwilink.visible = true;//isOut = (this.loaderInfo.parameters.out == '1');
-			toolBar.umiwilink.buttonMode = true;
-			toolBar.umiwilink.addEventListener(MouseEvent.CLICK,function()
-			{
-				var d = new Date();
-				var m = d.getMonth()+1;
-				var year = d.getFullYear();
-				var day = d.getDate();
-				if ( m < 10) m = '0'+m;
-				if ( day < 10) day = '0'+day;
-				year = year%100;
-				navigateToURL(new URLRequest('http://www.umiwi.com/?utm_source=umv&utm_medium=videoshare&utm_content='+_loaderInfo.parameters.flvID+'&utm_campaign='+year+m+day));
-			});
 			
-			if(configuration.colorFilter == "reverse")
+			if(true)
 			{
 				var filterObj:ColorMatrixFilter = new ColorMatrixFilter();    
 				filterObj.matrix = new Array(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);  
-				
-				
-				
-				for(var i:int=0; i<toolBar.numChildren; i++)
-				{
-					toolBar.getChildAt(i).filters = [filterObj];
-				}
-				//toolBar.filters = [filterObj]; 
-				
-				//bufferingMC.filters = [filterObj]; 
-				
 				
 				var matrix:Array = new Array();
 				matrix = matrix.concat([1, 0, 0, 0, 0]); // red
@@ -327,8 +315,7 @@
 				matrix = matrix.concat([0, 0, 1, 0, 0]); // blue
 				matrix = matrix.concat([0, 0, 0, 1, 0]); // alpha
 				var rawFilter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
-				toolBar.umiwilink.filters = [rawFilter];
-                toolBar.umiwilink.gotoAndStop(3);
+                bufferingMC.filters = [filterObj];
 			}
  
 			
@@ -343,8 +330,31 @@
 			visibilityTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onVisibilityTimerComplete);
 			addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenEvent);
-			
+            
+            addEventListener(Constatns.OPEN_SHARE_PANEL, openSharePanel);
+            addEventListener(Constatns.CLOSE_LIGHT, closeLight);
+            addEventListener(Constatns.CHANGE_DEFINITION, openConfigPanel);
+            addEventListener(Constatns.OPEN_CONFIG_PANEL, openConfigPanel);
 		}
+        
+        private function openSharePanel(event:Event):void
+        {
+            player.pause();
+            sharePanel.visible = true;
+            configPanel.visible = false;
+        }
+        
+        private function closeLight(event:Event):void
+        {
+            UConfigurationLoader.callExternal("switchLight");
+        }
+        
+        private function openConfigPanel(event:Event):void
+        {
+            sharePanel.visible = false;
+            configPanel.visible = true;
+            //select definition tab.
+        }
 
 		
 		private function enableToolBar(en:Boolean):void
@@ -411,32 +421,10 @@
 			
 			toolBar.y=swfHeight-toolBar.height-PADDING;			
 			toolBar.toolBarBack.width=swfWidth;
-			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-37;
+			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-toolBar.fullScrBtn.width;
 			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width -10;
-			toolBar.brightNessBtn.x=toolBar.volumeButton.x-36.15;
-			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 128;			
-			
-			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
-			
-			if(swfWidth < 480)
-			{
-				if(swfWidth > 430)
-				{
-                    if(configuration.colorFilter == "reverse")
-                    {
-                        toolBar.umiwilink.gotoAndStop(4);
-                    }
-                    else
-                    {
-                        toolBar.umiwilink.gotoAndStop(2);
-                    }
-				}
-				else
-				{
-					toolBar.umiwilink.visible = false;
-				}
+            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.width -10;
 				
-			}		
 			
 			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
 			
@@ -640,6 +628,8 @@
 			}
 		
 			controlUtil.setElement(element);
+            
+            configPanel.setElement(element);
 			
             if(configuration.showAds)
             {

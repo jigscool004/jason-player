@@ -134,5 +134,7 @@ package org.osmf.player.configuration
         public var showRecommend:Boolean = true;
         
         public var showAds:Boolean = true;
+        
+        public var logo:Object = {src:"http://images.umiwi.com/u/public/images/footer-2.gif", x:10, y:10, alpha:0.7, link:"http://www.umiwi.com"};
 	}
 }
