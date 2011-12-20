@@ -216,7 +216,7 @@
 			player.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
 			player.autoPlay 			= configuration.autoPlay;
 			
-			if(configuration.autoPlay)
+			if(configuration.autoPlay && configuration.showAds)
 			{
 				//Waiting for ads completed.
 				disablePlayControl();
