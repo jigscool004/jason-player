@@ -75,7 +75,7 @@
 	import org.osmf.traits.TimeTrait;
 	import org.osmf.utils.OSMFStrings;
 	
-	[SWF(backgroundColor="0xFFFFFF", frameRate="25", width="610", height="523")]
+	[SWF(backgroundColor="0x000000", frameRate="25", width="610", height="523")]
 	public class UmiwiMediaPlayback extends Sprite
 	{
 		public function UmiwiMediaPlayback()
@@ -107,10 +107,6 @@
 			{				
 				_loaderInfo = loaderInfo;
 			}
-			
-			Security.allowDomain("*.csbew.com");
-			Security.allowDomain("*.acs86.com");
-			Security.allowDomain("*.umiwi.com");
             
 			Security.loadPolicyFile("http://upload.umiwi.com/crossdomain.xml");
 			
@@ -120,21 +116,19 @@
 
 			function loadConfigurationFromParameters(params:Object):void{
 				videoInfoLoaded = true;
-				//configuration.autoPlay = true;
-				/*if(params.autoPlay == "0")
-				{
-					configuration.autoPlay = false;
-				}
-				else
-				{
-					configuration.autoPlay = true;
-				}*/
+
+                for each(var domainString:String in configuration.domains)
+                {
+                    Security.allowDomain(domainString);
+                }
+
 				if(configuration.src != params.src)
 				{
 					configuration.src = params.src;
 					configuration.poster = params.poster;
 					loadMedia();
 				}
+
 				
 				uc.getRecommendFlv(params, loadRecommendFlv);
 				function loadRecommendFlv(params:XML):void
@@ -335,6 +329,10 @@
             addEventListener(Constatns.CLOSE_LIGHT, closeLight);
             addEventListener(Constatns.CHANGE_DEFINITION, openConfigPanel);
             addEventListener(Constatns.OPEN_CONFIG_PANEL, openConfigPanel);
+            
+            addEventListener(Constatns.ZOOM50, zoomVideo);
+            addEventListener(Constatns.ZOOM75, zoomVideo);
+            addEventListener(Constatns.ZOOM100, zoomVideo);
 		}
         
         private function openSharePanel(event:Event):void
@@ -354,6 +352,31 @@
             sharePanel.visible = false;
             configPanel.visible = true;
             //select definition tab.
+        }
+        
+        private function zoomVideo(event:Event):void
+        {
+            var zoomFactor:Number;
+            switch(event.type)
+            {
+                case Constatns.ZOOM50:
+                    zoomFactor = 0.5;
+                    break;
+                case Constatns.ZOOM75:
+                    zoomFactor = 0.75;
+                    break;
+                case Constatns.ZOOM100:
+                    zoomFactor = 1;
+                    break;
+                default:
+                    zoomFactor = 1;
+            }
+            mediaContainer.width = stage.stageWidth * zoomFactor;
+            mediaContainer.height = stage.stageHeight * zoomFactor;
+            
+            var positionFactor:Number = (1 - zoomFactor) * 0.5
+            mainContainer.x = stage.stageWidth * positionFactor;
+            mainContainer.y = stage.stageHeight * positionFactor;
         }
 
 		
@@ -394,6 +417,13 @@
 				mediaContainer.height = _stage.stageHeight;
 				bufferingMC.height = _stage.stageHeight;
 				miniatureMC.y=(swfHeight-miniatureMC.height)/2;
+                
+                topBar.topBarBG.width = swfWidth;
+                topBar.zoom50.x = swfWidth/2 - topBar.zoom50.width*2;
+                topBar.zoom75.x = swfWidth/2 - topBar.zoom75.width/2;
+                topBar.zoom100.x = swfWidth/2 + topBar.zoom100.width;
+                topBar.y = 0;
+                
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
@@ -421,9 +451,9 @@
 			
 			toolBar.y=swfHeight-toolBar.height-PADDING;			
 			toolBar.toolBarBack.width=swfWidth;
-			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-toolBar.fullScrBtn.width;
-			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width -10;
-            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.width -10;
+			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-toolBar.fullScrBtn.width - 10;
+			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width -20;
+            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.width - 20;
 				
 			
 			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
@@ -431,19 +461,31 @@
 			
 			
 			//缩放时进度条不可见
-			//toolBar.scrubBar.scrubber.visible=toolBar.scrubBar.visible=toolBar.scrubBar.scrubBarPlayedTrack.visible=toolBar.scrubBar.scrubBarLoadedTrack.visible=false;
-			//toolBar.scrubBar.width=toolBar.scrubBar.scrubBarTrack.width=toolBar.scrubBar.scrubBarPlayedTrack.width=toolBar.scrubBar.scrubBarLoadedTrack.width=mainContainer.width-20;
-			toolBar.scrubBar.setWidth(swfWidth-20);
+			
+            toolBar.scrubBar.setWidth(swfWidth-20);
 			
 			bigPlayBtn.x=(swfWidth-bigPlayBtn.width) - 50;
 			bigPlayBtn.y=(swfHeight-bigPlayBtn.height) - 37 - toolBar.toolBarBack.height;
 			
 		    localVideoMC.width = _stage.stageWidth;
 			localVideoMC.height = _stage.stageHeight;
+            
+            rightSideDrawer.x = swfWidth - rightSideDrawer.width;
+            rightSideDrawer.y = swfHeight/2 - rightSideDrawer.height/2;
+            
+            putInCenter(configPanel);
+            putInCenter(sharePanel);
+            
 			
 			var toolbarIndex = this.getChildIndex(toolBar);
 			this.setChildIndex(mainContainer, 0);
 		}
+        
+        private function putInCenter(movieClip:MovieClip):void
+        {
+            movieClip.x = (_stage.stageWidth - movieClip.width) * 0.5;
+            movieClip.y = (_stage.stageHeight - movieClip.height) * 0.5;
+        }
 		
 		private var preResource:String = "http://pagead2.googlesyndication.com/" +  
 			"pagead/scache/googlevideoadslibraryas3.swf";
@@ -613,9 +655,10 @@
 			var i:int;
 			for(i=0; i<this.numChildren; i++)
 			{
-				if(this.getChildAt(i) is TraitControl)
+                var dObject:DisplayObject = getChildAt(i);
+				if(dObject is TraitControl)
 				{
-					(getChildAt(i) as TraitControl).setElement(element);
+					(dObject as TraitControl).setElement(element);
 				}
 			}
 			
@@ -778,33 +821,12 @@
 			
 			if (_stage.displayState == StageDisplayState.NORMAL) 
 			{		
-				/*				if (controlBar)
-				{										
-				// Set the autoHide property to the value set by the user.
-				// If the autoHide property changed we need to adjust the layout settings
-				if (controlBar.autoHide!=configuration.controlBarAutoHide)
-				{
-				controlBar.autoHide = configuration.controlBarAutoHide;	
-				layout();
-				}
-				}*/
+                mainContainer.x = 0;
+                mainContainer.y = 0;
 				Mouse.show();	
 			}
 			else if (_stage.displayState == StageDisplayState.FULL_SCREEN)
 			{	
-				/*				if (controlBar)
-				{
-				// We force the autohide of the controlBar in fullscreen
-				controlBarWidth = controlBar.width;
-				controlBarHeight = controlBar.height;
-				
-				controlBar.autoHide = true;		
-				// If the autoHide property changed we need to adjust the layout settings					
-				if (controlBar.autoHide!=configuration.controlBarAutoHide)
-				{
-				layout();
-				}
-				}*/
 				addChild(mainContainer);	
 				mainContainer.validateNow();			
 			}

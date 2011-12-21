@@ -37,7 +37,7 @@ package com.umiwi.control
             this.visible = false;
             mouseEnabled = true;
             addEventListener(Constatns.CLOSE_ME, closeMe);
-            addEventListener(Constatns.SIMPLE_CONFIRM, closeMe);
+            okButton.addEventListener(MouseEvent.CLICK, closeMe);
             addEventListener(ButtonEvent.TOGGLE_BUTTON, changeSelectedIndex);
             
             initButton();

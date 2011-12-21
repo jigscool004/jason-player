@@ -136,5 +136,11 @@ package org.osmf.player.configuration
         public var showAds:Boolean = true;
         
         public var logo:Object = {src:"http://images.umiwi.com/u/public/images/footer-2.gif", x:10, y:10, alpha:0.7, link:"http://www.umiwi.com"};
+        
+        public var domains:Array = ["*.umiwi.com"];
+        
+        public var flashURL:String = "http://vod2.umiwi.com/vod/2010/05/21/a1fcf3594be0b2aca4809bcaf6687098.ssm/a1fcf3594be0b2aca4809bcaf6687098.f4m";
+        
+        public var htmlURL:String = "http://vod2.umiwi.com/vod/2010/05/21/a1fcf3594be0b2aca4809bcaf6687098.ssm/a1fcf3594be0b2aca4809bcaf6687098.f4m";
 	}
 }

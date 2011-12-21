@@ -10,6 +10,10 @@
         
         public static const OPEN_CONFIG_PANEL:String = "ConfigButton";
         
+        public static const ZOOM50:String = "P50";
+        public static const ZOOM75:String = "P75";
+        public static const ZOOM100:String = "P00";
+        
         public static const TINT_COLOR:Number = 0x99FF33;
         
         public function Constatns()
