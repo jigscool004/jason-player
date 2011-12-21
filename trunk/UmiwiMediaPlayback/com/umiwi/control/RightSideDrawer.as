@@ -41,8 +41,8 @@ package com.umiwi.control
         {
             if(!isDrawOut)
             {
-                var myTween:Tween = new Tween(this, "x", Regular.easeIn, stage.stageWidth, stage.stageWidth - width, .6, true);
                 isDrawOut = true;
+                var myTween:Tween = new Tween(this, "x", Regular.easeIn, stage.stageWidth, stage.stageWidth - width, .6, true);
             }
             timer.reset();
             timer.start();
@@ -53,8 +53,8 @@ package com.umiwi.control
             timer.stop();
             if(isDrawOut)
             {
-                var myTween:Tween = new Tween(this, "x", Regular.easeIn, stage.width - width, stage.width, .6, true);
                 isDrawOut = false;
+                var myTween:Tween = new Tween(this, "x", Regular.easeIn, stage.width - width, stage.width, .6, true);
             }
         }
     }

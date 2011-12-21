@@ -5,14 +5,14 @@ package com.umiwi.control
     import flash.display.MovieClip;
     import flash.events.MouseEvent;
 
-    public class BaseWindow extends MovieClip
+    public class SharePanel extends MovieClip
     {
-        public function BaseWindow()
+        public function SharePanel()
         {
             super();
             this.visible = false;
             mouseEnabled = true;
-            addEventListener(Constatns.CLOSE_ME, closeMe);
+            okButton.addEventListener(MouseEvent.CLICK, closeMe);
             addEventListener(Constatns.SIMPLE_CONFIRM, closeMe);
             
         }

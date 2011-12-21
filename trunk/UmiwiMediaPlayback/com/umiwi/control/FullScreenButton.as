@@ -13,6 +13,7 @@ package com.umiwi.control
 		{
 			super();
 			mouseEnabled = true;
+            buttonMode = true;
 			addEventListener(MouseEvent.CLICK, onMouseClick);
 			
             stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenEvent, false, 0, true);
