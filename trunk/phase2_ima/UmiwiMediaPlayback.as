@@ -378,16 +378,16 @@
 			
 			mediaContainer.width = _stage.stageWidth;
 			bufferingMC.width = _stage.stageWidth;
-            bufferingMC.height = _stage.stageHeight - toolBar.toolBarBack.height;
-            
 			miniatureMC.x=(swfWidth-miniatureMC.width)/2;
 			if(_stage.displayState == "fullScreen")
 			{
 				mediaContainer.height = _stage.stageHeight;
+                bufferingMC.height = _stage.stageHeight;
 				miniatureMC.y=(swfHeight-miniatureMC.height)/2;
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
+                bufferingMC.height = _stage.stageHeight - toolBar.toolBarBack.height;
 				miniatureMC.y=(swfHeight-toolBar.toolBarBack.height-miniatureMC.height)/2;
 			}
 			
