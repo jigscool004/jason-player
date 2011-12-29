@@ -2,8 +2,10 @@
 {
 	import com.umiwi.control.ShareButton;
 	import com.umiwi.control.TraitControl;
-	import com.umiwi.util.Constatns;
+	import com.umiwi.event.ButtonEvent;
+	import com.umiwi.util.Constants;
 	import com.umiwi.util.ControlUtil;
+	import com.umiwi.util.DisplayUtil;
 	import com.umiwi.util.IMAManager;
 	import com.umiwi.util.UConfigurationLoader;
 	
@@ -177,10 +179,12 @@
                 {
                     navigateToURL(new URLRequest(configuration.logo.link));
                 });
+                
+                sharePanel.loadConfiguration();
 			}
 			
 			configuration = new PlayerConfiguration();
-			
+            ControlUtil.configuration = this.configuration;
 			var configurationXMLLoader:XMLFileLoader = new XMLFileLoader();
 			var configurationLoader:ConfigurationLoader = new ConfigurationLoader(configurationXMLLoader);			
 			configurationLoader.addEventListener(Event.COMPLETE, onConfigurationReady);			
@@ -241,8 +245,6 @@
 		{			
 			// Set the SWF scale mode, and listen to the stage change
 			// dimensions:
-			ControlUtil.configuration = this.configuration;
-			
 			_stage.scaleMode = StageScaleMode.NO_SCALE;
 			_stage.align = StageAlign.TOP_LEFT;
 			_stage.addEventListener(Event.RESIZE, onStageResize);
@@ -298,41 +300,24 @@
 			miniatureMC.visible=false;
 			toolBar.scrubBar.visible = false;
 			
-			if(true)
-			{
-				var filterObj:ColorMatrixFilter = new ColorMatrixFilter();    
-				filterObj.matrix = new Array(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);  
-				
-				var matrix:Array = new Array();
-				matrix = matrix.concat([1, 0, 0, 0, 0]); // red
-				matrix = matrix.concat([0, 1, 0, 0, 0]); // green
-				matrix = matrix.concat([0, 0, 1, 0, 0]); // blue
-				matrix = matrix.concat([0, 0, 0, 1, 0]); // alpha
-				var rawFilter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
-                bufferingMC.filters = [filterObj];
-			}
- 
-			
 			controlUtil = new ControlUtil(this);
             
             if(!configuration.showAds)
             {
                 removeChild(clickMovieClip);
             }
-			
-			visibilityTimer = new Timer(VISIBILITY_DELAY, 1);
-			visibilityTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onVisibilityTimerComplete);
-			addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-			stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenEvent);
             
-            addEventListener(Constatns.OPEN_SHARE_PANEL, openSharePanel);
-            addEventListener(Constatns.CLOSE_LIGHT, closeLight);
-            addEventListener(Constatns.CHANGE_DEFINITION, openConfigPanel);
-            addEventListener(Constatns.OPEN_CONFIG_PANEL, openConfigPanel);
+            addEventListener(Constants.OPEN_SHARE_PANEL, openSharePanel);
+            addEventListener(Constants.CLOSE_SHARE_PANEL, closeSharePanel);
+            addEventListener(Constants.CLOSE_LIGHT, closeLight);
+            addEventListener(Constants.OPEN_DISPLAY_PANEL, openDisplayPanel);
+            addEventListener(Constants.OPEN_BITRATE_PANEL, openBitratePanel);
             
-            addEventListener(Constatns.ZOOM50, zoomVideo);
-            addEventListener(Constatns.ZOOM75, zoomVideo);
-            addEventListener(Constatns.ZOOM100, zoomVideo);
+            addEventListener(Constants.ZOOM50, zoomVideo);
+            addEventListener(Constants.ZOOM75, zoomVideo);
+            addEventListener(Constants.ZOOM100, zoomVideo);
+            
+            addEventListener(ButtonEvent.SET_DISPLAY, setDisplay);
 		}
         
         private function openSharePanel(event:Event):void
@@ -342,12 +327,31 @@
             configPanel.visible = false;
         }
         
+        private function closeSharePanel(event:Event):void
+        {
+            player.play();
+            sharePanel.visible = false;
+            configPanel.visible = false;
+        }
+        
         private function closeLight(event:Event):void
         {
             UConfigurationLoader.callExternal("switchLight");
         }
         
-        private function openConfigPanel(event:Event):void
+        private function openBitratePanel(event:Event):void
+        {
+            configPanel.selectedIndex = 1;
+            openConfigPanel();
+        }
+        
+        private function openDisplayPanel(event:Event):void
+        {
+            configPanel.selectedIndex = 2;
+            openConfigPanel();
+        }
+        
+        private function openConfigPanel():void
         {
             sharePanel.visible = false;
             configPanel.visible = true;
@@ -359,13 +363,13 @@
             var zoomFactor:Number;
             switch(event.type)
             {
-                case Constatns.ZOOM50:
+                case Constants.ZOOM50:
                     zoomFactor = 0.5;
                     break;
-                case Constatns.ZOOM75:
+                case Constants.ZOOM75:
                     zoomFactor = 0.75;
                     break;
-                case Constatns.ZOOM100:
+                case Constants.ZOOM100:
                     zoomFactor = 1;
                     break;
                 default:
@@ -377,6 +381,11 @@
             var positionFactor:Number = (1 - zoomFactor) * 0.5
             mainContainer.x = stage.stageWidth * positionFactor;
             mainContainer.y = stage.stageHeight * positionFactor;
+        }
+        
+        private function setDisplay(event:ButtonEvent):void
+        {
+            displayUtil.setDisplay(event.data);
         }
 
 		
@@ -410,13 +419,16 @@
 			swfHeight=_stage.stageHeight;
 			
 			mediaContainer.width = _stage.stageWidth;
-			bufferingMC.width = _stage.stageWidth;
+			//bufferingMC.width = _stage.stageWidth;
+            //bufferingMC.height = _stage.stageHeight - toolBar.toolBarBack.height;
+            bufferingMC.x = (_stage.stageWidth - bufferingMC.width) * 0.5;
+            
 			miniatureMC.x=(swfWidth-miniatureMC.width)/2;
 			if(_stage.displayState == "fullScreen")
 			{
 				mediaContainer.height = _stage.stageHeight;
-				bufferingMC.height = _stage.stageHeight;
 				miniatureMC.y=(swfHeight-miniatureMC.height)/2;
+                bufferingMC.y = (_stage.stageWidth - bufferingMC.height) * 0.5;
                 
                 topBar.topBarBG.width = swfWidth;
                 topBar.zoom50.x = swfWidth/2 - topBar.zoom50.width*2;
@@ -427,7 +439,7 @@
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
-				bufferingMC.height = _stage.stageHeight - toolBar.toolBarBack.height;
+                bufferingMC.y = (_stage.stageWidth - bufferingMC.height - toolBar.toolBarBack.height) * 0.5;
 				miniatureMC.y=(swfHeight-toolBar.toolBarBack.height-miniatureMC.height)/2;
 			}
 			
@@ -453,7 +465,7 @@
 			toolBar.toolBarBack.width=swfWidth;
 			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-toolBar.fullScrBtn.width - 10;
 			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width -20;
-            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.width - 20;
+            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 20;
 				
 			
 			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
@@ -471,7 +483,7 @@
 			localVideoMC.height = _stage.stageHeight;
             
             rightSideDrawer.x = swfWidth - rightSideDrawer.width;
-            rightSideDrawer.y = swfHeight/2 - rightSideDrawer.height/2;
+            rightSideDrawer.y = (swfHeight - toolBar.toolBarBack.height - rightSideDrawer.height) * .5;
             
             putInCenter(configPanel);
             putInCenter(sharePanel);
@@ -483,6 +495,10 @@
         
         private function putInCenter(movieClip:MovieClip):void
         {
+            if(!movieClip)
+            {
+                return;
+            }
             movieClip.x = (_stage.stageWidth - movieClip.width) * 0.5;
             movieClip.y = (_stage.stageHeight - movieClip.height) * 0.5;
         }
@@ -589,7 +605,6 @@
 					
 					_stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreen);
 					mainContainer.addEventListener(MouseEvent.DOUBLE_CLICK, onFullScreenRequest);
-					mediaContainer.doubleClickEnabled = true;
 					mainContainer.doubleClickEnabled = true;
 				}
 				else
@@ -671,8 +686,7 @@
 			}
 		
 			controlUtil.setElement(element);
-            
-            configPanel.setElement(element);
+            displayUtil.setElement(element);
 			
             if(configuration.showAds)
             {
@@ -1074,53 +1088,6 @@
             removeChild(clickMovieClip);
 		}
 		
-		private var visibilityTimer:Timer;
-		
-		private static const VISIBILITY_DELAY:int = 3000;
-		
-		public function Toolbar()
-		{
-
-		}
-		
-		protected function onMouseMove(event:MouseEvent=null):void
-		{
-/*			if( (stage.height - event.stageY) < 5)
-			{*/
-				toolBar.visible = true;
-				if (visibilityTimer.running)
-				{
-					visibilityTimer.stop();
-				}
-				visibilityTimer.reset();
-				if (stage.displayState == "fullScreen")
-				{
-					visibilityTimer.start();
-				}
-/*			}*/
-		}
-		
-		private function onVisibilityTimerComplete(event:TimerEvent):void
-		{
-			if (stage.displayState == "fullScreen")
-			{
-				toolBar.visible = false;		
-			}
-		}
-		
-		private function onFullScreenEvent(event:FullScreenEvent):void
-		{
-			if (stage.displayState == StageDisplayState.NORMAL)
-			{
-				toolBar.visible = true;
-			}
-			else
-			{
-				visibilityTimer.reset();
-				visibilityTimer.start();
-			}
-		}
-		
 		private function loadPic(url:String,mc:MovieClip):void
 		{
 			if (mc.getChildAt(0)!=null)
@@ -1176,6 +1143,7 @@
 		}
 		
 		private var uc:UConfigurationLoader = new UConfigurationLoader();
+        private var displayUtil:DisplayUtil = new DisplayUtil();
 		
 		public var factory:StrobeMediaFactory;		
 		public var configuration:PlayerConfiguration;

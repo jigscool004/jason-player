@@ -1,12 +1,14 @@
 package com.umiwi.control
 {
     import com.umiwi.event.ButtonEvent;
-    import com.umiwi.util.Constatns;
+    import com.umiwi.util.Constants;
     
     import fl.controls.RadioButton;
     import fl.core.UIComponent;
     
     import flash.display.MovieClip;
+    import flash.display.SimpleButton;
+    import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.text.TextFieldAutoSize;
     import flash.text.TextFormat;
@@ -14,14 +16,19 @@ package com.umiwi.control
     import org.osmf.media.MediaElement;
     import org.osmf.traits.MediaTraitType;
     
-    public class ConfigPanel extends TraitControl
+    public class ConfigPanel extends MovieClip
     {   
         private var isBrightSet:Boolean = false;
         private var selectedIndex_:int;
         
         public function set selectedIndex(i:int):void
         {
-            selectedIndex_ = i;
+            if(i != selectedIndex_)
+            {
+                selectedIndex_ = i;
+                changeSelectedIndex(selectedIndex_);
+            }
+            
         }
         
         public function get selectedIndex():int
@@ -32,31 +39,26 @@ package com.umiwi.control
         public function ConfigPanel()
         {
             super();
-            traitType = MediaTraitType.DISPLAY_OBJECT;
             
             this.visible = false;
             mouseEnabled = true;
-            addEventListener(Constatns.CLOSE_ME, closeMe);
-            okButton.addEventListener(MouseEvent.CLICK, closeMe);
-            addEventListener(ButtonEvent.TOGGLE_BUTTON, changeSelectedIndex);
+            addEventListener(Constants.CLOSE_ME, closeMe);
+            closeButton.addEventListener(MouseEvent.CLICK, closeMe);
             
-            initButton();
+            addEventListener(ButtonEvent.TOGGLE_BUTTON, onToggleButton);
+            
+            addEventListener(Event.ADDED_TO_STAGE, onAdded2Stage);
         }
         
-        private function initButton():void
-        {
-            definitionTab.label.text = "清晰度";
-            lightTab.label.text = "亮度调节";
-            playTab.label.text = "播放";
+        private function onAdded2Stage(event:Event):void
+        {   
+            definitionTab.buttonText.text = "清晰度";
+            lightTab.buttonText.text = "亮度调节";
+            playTab.buttonText.text = "播放";
             
             definitionTab.buttonIndex = 1;
             lightTab.buttonIndex = 2;
             playTab.buttonIndex = 3;
-            
-            changeColor(nomalRadio);
-            changeColor(highRadio);
-            changeColor(autoRadio);
-            changeColor(okButton);
         }
         
         private function changeColor(rb:UIComponent):void
@@ -74,26 +76,24 @@ package com.umiwi.control
             visible = false;
         }
         
-        public function changeSelectedIndex(event:ButtonEvent):void
+        private function onToggleButton(event:ButtonEvent):void
         {
-            gotoAndStop(event.index);
+            changeSelectedIndex(event.index);
+        }
+        
+        private function changeSelectedIndex(index:uint):void
+        {
+            gotoAndStop(index);
             
-            if(!isBrightSet)
-            {
-                (brightnessPanel as BrightnessPanel).setElement(_media);
-                isBrightSet = true;
-            }
-            
-            
-            if(event.target != definitionTab)
+            if(index != 1)
             {
                 definitionTab.selected = false;
             }
-            if(event.target != lightTab)
+            if(index != 2)
             {
                 lightTab.selected = false;
             }
-            if(event.target != playTab)
+            if(index != 3)
             {
                 playTab.selected = false;
             }

@@ -475,7 +475,7 @@
 					
 					var currentTimeString:String = FormatUtils.formatTimeStatus(time, timeTrait.duration)[0];
 					seekTimeDisMC.seekTimeTxt.text = currentTimeString;
-					seekTimeDisMC.x = this.mouseX + seekTimeDisMC.width * 0.3;
+					seekTimeDisMC.x = this.mouseX;
 				}
 			}
 		}

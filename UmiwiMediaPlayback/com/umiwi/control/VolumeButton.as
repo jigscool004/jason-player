@@ -15,11 +15,11 @@
 		public function VolumeButton()
 		{
 			super();
+            buttonMode = true;
 			traitType = MediaTraitType.AUDIO; 
 			
-			toolTipMC.tip.text = "静音";
+			toolTipMC.tip.text = "静音设置";
 			toolTipMC.visible = false;
-			toolTipMC.width = toolTipMC.width/2;
 			volumeBtn.addEventListener(MouseEvent.MOUSE_OVER,showTooltip);
 			volumeBtn.addEventListener(MouseEvent.MOUSE_OUT,hideTooltip);
 		}

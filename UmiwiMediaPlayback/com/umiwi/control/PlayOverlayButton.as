@@ -14,6 +14,7 @@
 		public function PlayOverlayButton()
 		{
 			super();
+            buttonMode = true;
 			traitType = MediaTraitType.PLAY;
 		}
 		

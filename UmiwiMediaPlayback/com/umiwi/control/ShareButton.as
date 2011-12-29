@@ -1,6 +1,6 @@
 package com.umiwi.control
 {
-    import com.umiwi.util.Constatns;
+    import com.umiwi.util.Constants;
     
     import flash.events.Event;
     import flash.events.MouseEvent;
@@ -15,7 +15,7 @@ package com.umiwi.control
         
         override protected function onMouseClick(event:MouseEvent):void
         {
-            var shareEvent:Event = new Event(Constatns.OPEN_SHARE_PANEL, true);
+            var shareEvent:Event = new Event(Constants.OPEN_SHARE_PANEL, true);
             dispatchEvent(shareEvent);
         }
     }
