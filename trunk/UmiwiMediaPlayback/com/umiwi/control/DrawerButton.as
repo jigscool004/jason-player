@@ -1,33 +1,25 @@
 package com.umiwi.control
 {
-    import com.umiwi.event.ButtonEvent;
     import com.umiwi.util.Constants;
     
+    import fl.motion.Color;
+    
     import flash.display.MovieClip;
+    import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.filters.BitmapFilter;
     import flash.filters.BitmapFilterQuality;
     import flash.filters.ColorMatrixFilter;
     import flash.filters.GlowFilter;
+    import flash.geom.ColorTransform;
+    import flash.utils.getQualifiedClassName;
     
-    public class ToggleTextButton extends MovieClip
+    public class DrawerButton extends MovieClip
     {
-        public var buttonIndex:uint;
-        private var selected_:Boolean = false;
+        
         private var myFilters:Array = [];
         
-        public function set selected(b:Boolean):void
-        {
-            selected_ = b;
-            changeStatus(b);
-        }
-        
-        public function get selected():Boolean
-        {
-            return selected_;
-        }
-        
-        public function ToggleTextButton()
+        public function DrawerButton()
         {
             super();
             mouseEnabled = true;
@@ -42,33 +34,19 @@ package com.umiwi.control
         
         protected function onRollOver(event:MouseEvent):void
         {   
-            //filters = myFilters;
+            filters = myFilters;
         }
         
         protected function onRollOut(event:MouseEvent):void
         {   
-            //filters = [];
-        }
-        
-        private function changeStatus(b:Boolean):void
-        {
-            if(b)
-            {
-                gotoAndStop(2);
-            }
-            else
-            {
-                gotoAndStop(1);
-            }
+            filters = [];
         }
         
         protected function onMouseClick(event:MouseEvent):void
         {
-            var bEvent:ButtonEvent = new ButtonEvent(ButtonEvent.TOGGLE_BUTTON, true);
-            bEvent.index = buttonIndex;
-            dispatchEvent(bEvent);
-            
-            selected = true;
+            var eventName:String = getQualifiedClassName(this);
+            var shareEvent:Event = new Event(eventName, true);
+            dispatchEvent(shareEvent);
         }
         
         private function getBitmapFilter():BitmapFilter {
@@ -76,7 +54,7 @@ package com.umiwi.control
             var alpha:Number = 0.8;
             var blurX:Number = 2;
             var blurY:Number = 2;
-            var strength:Number = 1;
+            var strength:Number = 2;
             var inner:Boolean = false;
             var knockout:Boolean = false;
             var quality:Number = BitmapFilterQuality.HIGH;

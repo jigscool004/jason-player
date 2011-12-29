@@ -1,6 +1,6 @@
 ﻿package com.umiwi.control
 {
-    import com.umiwi.util.Constatns;
+    import com.umiwi.util.Constants;
     
     import fl.transitions.Tween;
     import fl.transitions.easing.Regular;
@@ -83,18 +83,18 @@
         
         protected function onClick50(event:MouseEvent):void
         {
-            var shareEvent:Event = new Event(Constatns.ZOOM50, true);
+            var shareEvent:Event = new Event(Constants.ZOOM50, true);
             dispatchEvent(shareEvent);
         }
         
         protected function onClick75(event:MouseEvent):void
         {
-            var shareEvent:Event = new Event(Constatns.ZOOM75, true);
+            var shareEvent:Event = new Event(Constants.ZOOM75, true);
             dispatchEvent(shareEvent);
         }
         protected function onClick100(event:MouseEvent):void
         {
-            var shareEvent:Event = new Event(Constatns.ZOOM100, true);
+            var shareEvent:Event = new Event(Constants.ZOOM100, true);
             dispatchEvent(shareEvent);
         }
     }

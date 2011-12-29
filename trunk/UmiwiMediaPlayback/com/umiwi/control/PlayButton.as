@@ -14,8 +14,23 @@
 		public function PlayButton()
 		{
 			super();
+            buttonMode = true;
 			traitType = MediaTraitType.PLAY;
-		}
+            
+            toolTipMC.tip.text = "点击播放";
+            toolTipMC.visible = false;
+            addEventListener(MouseEvent.ROLL_OVER,showTooltip);
+            addEventListener(MouseEvent.ROLL_OUT,hideTooltip);
+        }
+        
+        private function showTooltip(event:MouseEvent):void{
+            toolTipMC.visible = true;
+        }
+        
+        private function hideTooltip(event:MouseEvent):void{
+            toolTipMC.visible = false;
+        }
+            
 		
 		override protected function onMouseClick(event:MouseEvent):void
 		{
@@ -24,10 +39,12 @@
 			{
 				playTrait.play();
 				gotoAndStop(2);
+                toolTipMC.tip.text = "点击播放";
 			}
 			else{
 				playTrait.pause();
 				gotoAndStop(1);
+                toolTipMC.tip.text = "点击暂停";
 			}
 		}
 		

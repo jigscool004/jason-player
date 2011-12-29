@@ -6,7 +6,10 @@ package com.umiwi.event
     {
         public static const TOGGLE_BUTTON:String = "toggleButton";
         
+        public static const SET_DISPLAY:String = "setDisplay";
+        
         public var index:int;
+        public var data:Object;
         
         public function ButtonEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
         {

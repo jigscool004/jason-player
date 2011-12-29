@@ -54,7 +54,7 @@ package com.umiwi.control
             if(isDrawOut)
             {
                 isDrawOut = false;
-                var myTween:Tween = new Tween(this, "x", Regular.easeIn, stage.width - width, stage.width, .6, true);
+                var myTween:Tween = new Tween(this, "x", Regular.easeIn, stage.stageWidth - width, stage.stageWidth, .6, true);
             }
         }
     }
