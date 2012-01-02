@@ -4,17 +4,20 @@ package com.umiwi.control
     import com.umiwi.util.Constants;
     
     import flash.display.MovieClip;
+    import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.filters.BitmapFilter;
     import flash.filters.BitmapFilterQuality;
     import flash.filters.ColorMatrixFilter;
     import flash.filters.GlowFilter;
+    import flash.text.TextField;
     
     public class ToggleTextButton extends MovieClip
     {
         public var buttonIndex:uint;
         private var selected_:Boolean = false;
         private var myFilters:Array = [];
+        public var buttonText:String = "清晰度";
         
         public function set selected(b:Boolean):void
         {
@@ -35,9 +38,16 @@ package com.umiwi.control
             addEventListener(MouseEvent.ROLL_OVER, onRollOver);
             addEventListener(MouseEvent.ROLL_OUT, onRollOut);
             addEventListener(MouseEvent.CLICK, onMouseClick);
-            
+            addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
             var filter:BitmapFilter = getBitmapFilter();
             myFilters.push(filter);
+        }
+        
+        protected function onAddedToStage(event:Event):void
+        {
+            var obj:Object = getChildByName("textField");
+            var tf:TextField = getChildByName("textField") as TextField;
+            //tf.text = buttonText;
         }
         
         protected function onRollOver(event:MouseEvent):void

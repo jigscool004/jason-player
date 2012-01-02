@@ -6,50 +6,43 @@ package com.umiwi.control
     import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.filters.ColorMatrixFilter;
+    import flash.text.TextField;
     import flash.utils.getQualifiedClassName;
     
     public class BaseTextButton extends MovieClip
-    {
-        //protected var icon:MovieClip;
-        //private var highlightColor:Color;
-        //protected var colorValue:Number = 
+    {   
+        public var buttonText:String = "确定";
         
         public function BaseTextButton()
         {
             super();
             mouseEnabled = true;
+            buttonMode = true;
             addEventListener(MouseEvent.ROLL_OVER, onRollOver);
             addEventListener(MouseEvent.ROLL_OUT, onRollOut);
-            addEventListener(MouseEvent.CLICK, onMouseClick);
+            addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+            addEventListener(Event.ADDED_TO_STAGE, onAdded2Stage);
+        }
+        
+        private function onAdded2Stage(event:Event):void
+        {
+            var tf:TextField = getChildByName("textField") as TextField;
+            tf.text = buttonText;
         }
         
         protected function onRollOver(event:MouseEvent):void
         {
-            var filterObj:ColorMatrixFilter = new ColorMatrixFilter();    
-            filterObj.matrix = new Array(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);  
-            
-            var matrix:Array = new Array();
-            matrix = matrix.concat([0, 0, 0, 0, 0]); // red
-            matrix = matrix.concat([0, 1, 0, 0, 0]); // green
-            matrix = matrix.concat([0, 0, 0, 0, 0]); // blue
-            matrix = matrix.concat([0, 0, 0, 1, 0]); // alpha
-            var rawFilter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
-            filters = [filterObj];
-            
-            //highlightColor   =   new   Color(icon);
-            //highlightColor.setTint(0x993366); 
+            this.gotoAndStop(2);
         }
         
         protected function onRollOut(event:MouseEvent):void
         {
-            filters = [];
+            this.gotoAndStop(1);
         }
         
-        protected function onMouseClick(event:MouseEvent):void
+        protected function onMouseDown(event:MouseEvent):void
         {
-            var eventName:String = getQualifiedClassName(this);
-            var shareEvent:Event = new Event(eventName, true);
-            dispatchEvent(shareEvent);
+            gotoAndStop(3);
         }
     }
 }

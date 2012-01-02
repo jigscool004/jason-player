@@ -85,17 +85,26 @@
         {
             var shareEvent:Event = new Event(Constants.ZOOM50, true);
             dispatchEvent(shareEvent);
+            
+            zoom75.selected = false;
+            zoom100.selected = false;
         }
         
         protected function onClick75(event:MouseEvent):void
         {
             var shareEvent:Event = new Event(Constants.ZOOM75, true);
             dispatchEvent(shareEvent);
+            
+            zoom50.selected = false;
+            zoom100.selected = false;
         }
         protected function onClick100(event:MouseEvent):void
         {
             var shareEvent:Event = new Event(Constants.ZOOM100, true);
             dispatchEvent(shareEvent);
+            
+            zoom50.selected = false;
+            zoom75.selected = false;
         }
     }
 }

@@ -6,6 +6,7 @@
     import fl.events.SliderEvent;
     
     import flash.display.MovieClip;
+    import flash.display.SimpleButton;
     import flash.events.Event;
     import flash.events.MouseEvent;
     
@@ -25,6 +26,7 @@
             removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
             okButton.addEventListener(MouseEvent.CLICK, closePanel);
             restoreButton.addEventListener(MouseEvent.CLICK, restoreDisplay);
+            restoreButton.buttonText = "恢复默认";
             brightnessSlider.addEventListener(SliderEvent.CHANGE, brightnessChanged);
             contrastSlider.addEventListener(SliderEvent.CHANGE, contrastChanged);
         }
