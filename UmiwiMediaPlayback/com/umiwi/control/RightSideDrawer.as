@@ -1,9 +1,12 @@
 package com.umiwi.control
 {
+    import com.umiwi.util.UConfigurationLoader;
+    
     import fl.transitions.Tween;
     import fl.transitions.easing.Regular;
     
     import flash.display.MovieClip;
+    import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.events.TimerEvent;
     import flash.utils.Timer;
@@ -20,6 +23,29 @@ package com.umiwi.control
             stage.addEventListener(MouseEvent.ROLL_OUT, onRollOut1);
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerCompleted);
             x = stage.stageWidth - width;
+            
+            addEventListener(Event.ADDED_TO_STAGE, onAdded2Stage);
+        }
+        
+        private function onAdded2Stage(event:Event):void
+        {  
+            var lb:ToggleIconButton = lightButton as ToggleIconButton;
+            lb.normalText = "关灯";
+            lb.selectedText = "开灯";
+            lb.addEventListener(MouseEvent.CLICK, onLightButtonClick);
+        }
+        
+        private function onLightButtonClick(event:MouseEvent):void
+        {
+            var lb:ToggleIconButton = (lightButton as ToggleIconButton);
+            if(lb.selected)
+            {
+                UConfigurationLoader.callExternal("light_off");
+            }
+            else
+            {
+                UConfigurationLoader.callExternal("light_on");
+            }
         }
         
         private function onMouseMove1(event:MouseEvent):void

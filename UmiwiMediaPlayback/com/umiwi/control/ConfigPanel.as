@@ -52,9 +52,9 @@ package com.umiwi.control
         
         private function onAdded2Stage(event:Event):void
         {   
-            definitionTab.buttonText.text = "清晰度";
-            lightTab.buttonText.text = "亮度调节";
-            playTab.buttonText.text = "播放";
+            definitionTab.textField.text = "清晰度";
+            lightTab.textField.text = "亮度调节";
+            playTab.textField.text = "播放";
             
             definitionTab.buttonIndex = 1;
             lightTab.buttonIndex = 2;

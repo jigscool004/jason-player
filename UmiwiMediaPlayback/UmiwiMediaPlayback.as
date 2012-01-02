@@ -77,7 +77,7 @@
 	import org.osmf.traits.TimeTrait;
 	import org.osmf.utils.OSMFStrings;
 	
-	[SWF(backgroundColor="0x000000", frameRate="25", width="610", height="523")]
+	[SWF(backgroundColor="0x000000", frameRate="25", width="610", height="510")]
 	public class UmiwiMediaPlayback extends Sprite
 	{
 		public function UmiwiMediaPlayback()
@@ -418,6 +418,12 @@
 			swfWidth=_stage.stageWidth;
 			swfHeight=_stage.stageHeight;
 			
+            toolBar.y=swfHeight-toolBar.height-PADDING;			
+            toolBar.toolBarBack.width=swfWidth;
+            toolBar.fullScrBtn.x=toolBar.toolBarBack.width - toolBar.fullScrBtn.width;
+            toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width;
+            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 20;
+            
 			mediaContainer.width = _stage.stageWidth;
 			//bufferingMC.width = _stage.stageWidth;
             //bufferingMC.height = _stage.stageHeight - toolBar.toolBarBack.height;
@@ -459,20 +465,6 @@
 			fullScrBtn.width = _stage.stageWidth;
 			fullScrBtn.height = _stage.stageHeight;
 
-
-			
-			toolBar.y=swfHeight-toolBar.height-PADDING;			
-			toolBar.toolBarBack.width=swfWidth;
-			toolBar.fullScrBtn.x=toolBar.toolBarBack.width - 50 - 10;
-			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width;
-            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 20;
-				
-			
-			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
-			
-			
-			
-			//缩放时进度条不可见
 			
             toolBar.scrubBar.setWidth(swfWidth-20);
 			
@@ -1122,7 +1114,15 @@
 		public function stopPlay():void {
 			
 			UConfigurationLoader.updateMsg("Video stop");
-			UConfigurationLoader.callExternal("video_play_over");
+            
+            if(configuration.autoPlayNext)
+            {
+                UConfigurationLoader.callExternal("video_play_next");
+            }
+            else
+            {
+                UConfigurationLoader.callExternal("video_play_over");
+            }
 			
             if(configuration.showRecommend)
             {

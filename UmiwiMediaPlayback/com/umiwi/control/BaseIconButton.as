@@ -18,35 +18,38 @@ package com.umiwi.control
     {
         
         private var myFilters:Array = [];
+        public var normalColor:ColorTransform = new ColorTransform();
+        public var slectedColor:ColorTransform = new ColorTransform();
         
         public function BaseIconButton()
         {
             super();
             mouseEnabled = true;
             buttonMode = true;
-            addEventListener(MouseEvent.ROLL_OVER, onRollOver);
-            addEventListener(MouseEvent.ROLL_OUT, onRollOut);
+            addEventListener(MouseEvent.ROLL_OVER, onRollOver1);
+            addEventListener(MouseEvent.ROLL_OUT, onRollOut1);
             addEventListener(MouseEvent.CLICK, onMouseClick);
             
             var filter:BitmapFilter = getBitmapFilter();
             myFilters.push(filter);
+            
+            slectedColor.color = Constants.TINT_COLOR;
         }
         
-        protected function onRollOver(event:MouseEvent):void
-        {
-            var ct:ColorTransform = new ColorTransform(); 
-            ct.color = Constants.TINT_COLOR; 
-            icon.transform.colorTransform = ct;
+        protected function onRollOver1(event:MouseEvent):void
+        {   
+            var icon:MovieClip = getChildByName("icon") as MovieClip;
+            icon.transform.colorTransform = slectedColor;
             
-            filters = myFilters;
+            //filters = myFilters;
         }
         
-        protected function onRollOut(event:MouseEvent):void
+        protected function onRollOut1(event:MouseEvent):void
         {
-            var ct:ColorTransform = new ColorTransform();
-            icon.transform.colorTransform = ct;
+            var icon:MovieClip = getChildByName("icon") as MovieClip;
+            icon.transform.colorTransform = normalColor;
             
-            filters = [];
+            //filters = [];
         }
         
         protected function onMouseClick(event:MouseEvent):void

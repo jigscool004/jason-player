@@ -142,5 +142,7 @@ package org.osmf.player.configuration
         public var flashURL:String = "http://vod2.umiwi.com/vod/2010/05/21/a1fcf3594be0b2aca4809bcaf6687098.ssm/a1fcf3594be0b2aca4809bcaf6687098.f4m";
         
         public var htmlURL:String = "http://vod2.umiwi.com/vod/2010/05/21/a1fcf3594be0b2aca4809bcaf6687098.ssm/a1fcf3594be0b2aca4809bcaf6687098.f4m";
+        
+        public var autoPlayNext:Boolean = false;
 	}
 }
