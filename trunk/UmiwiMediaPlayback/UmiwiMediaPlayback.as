@@ -463,8 +463,8 @@
 			
 			toolBar.y=swfHeight-toolBar.height-PADDING;			
 			toolBar.toolBarBack.width=swfWidth;
-			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-toolBar.fullScrBtn.width - 10;
-			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width -20;
+			toolBar.fullScrBtn.x=toolBar.toolBarBack.width - 50 - 10;
+			toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width;
             toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 20;
 				
 			
