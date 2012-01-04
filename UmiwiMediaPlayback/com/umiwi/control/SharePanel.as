@@ -30,6 +30,10 @@ package com.umiwi.control
             
             copyFlash.addEventListener(MouseEvent.CLICK, copy2Flash);
             copyHtml.addEventListener(MouseEvent.CLICK, copy2Html);
+            
+            okButton.textField.text = "返回播放";
+            copyFlash.textField.text = "复制";
+            copyHtml.textField.text = "复制";
         }
         
         public function loadConfiguration():void

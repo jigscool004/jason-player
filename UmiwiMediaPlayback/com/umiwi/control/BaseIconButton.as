@@ -24,7 +24,7 @@ package com.umiwi.control
         public function BaseIconButton()
         {
             super();
-            mouseEnabled = true;
+            mouseChildren = false;
             buttonMode = true;
             addEventListener(MouseEvent.ROLL_OVER, onRollOver1);
             addEventListener(MouseEvent.ROLL_OUT, onRollOut1);
