@@ -425,16 +425,16 @@
             toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 20;
             
 			mediaContainer.width = _stage.stageWidth;
-			//bufferingMC.width = _stage.stageWidth;
-            //bufferingMC.height = _stage.stageHeight - toolBar.toolBarBack.height;
-            bufferingMC.x = (_stage.stageWidth - bufferingMC.width) * 0.5;
+			bufferingMC.width = _stage.stageWidth;
+            bufferingMC.height = _stage.stageHeight;
+            //bufferingMC.x = (_stage.stageWidth - bufferingMC.width) * 0.5;
             
 			miniatureMC.x=(swfWidth-miniatureMC.width)/2;
 			if(_stage.displayState == "fullScreen")
 			{
 				mediaContainer.height = _stage.stageHeight;
 				miniatureMC.y=(swfHeight-miniatureMC.height)/2;
-                bufferingMC.y = (_stage.stageWidth - bufferingMC.height) * 0.5;
+                //bufferingMC.y = (_stage.stageHeight - bufferingMC.height) * 0.5;
                 
                 topBar.topBarBG.width = swfWidth;
                 topBar.zoom50.x = swfWidth/2 - topBar.zoom50.width*2;
@@ -445,7 +445,7 @@
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
-                bufferingMC.y = (_stage.stageWidth - bufferingMC.height - toolBar.toolBarBack.height) * 0.5;
+                //bufferingMC.y = (_stage.stageWidth - bufferingMC.height - toolBar.toolBarBack.height) * 0.5;
 				miniatureMC.y=(swfHeight-toolBar.toolBarBack.height-miniatureMC.height)/2;
 			}
 			
@@ -1070,6 +1070,7 @@
             this.setChildIndex(bigPlayBtn, toolbarIndex + 1);
 			fullScrBtn.mouseEnabled = false;
             
+            rightSideDrawer.visible = false;
 		}
 		
 		public function enablePlayControl():void
@@ -1078,6 +1079,8 @@
 			bigPlayBtn.mouseEnabled = true;
 			fullScrBtn.mouseEnabled = true;
             removeChild(clickMovieClip);
+            
+            rightSideDrawer.visible = true;
 		}
 		
 		private function loadPic(url:String,mc:MovieClip):void

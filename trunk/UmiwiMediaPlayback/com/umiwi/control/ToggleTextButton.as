@@ -33,7 +33,7 @@ package com.umiwi.control
         public function ToggleTextButton()
         {
             super();
-            mouseEnabled = true;
+            mouseChildren = false;
             buttonMode = true;
             addEventListener(MouseEvent.ROLL_OVER, onRollOver);
             addEventListener(MouseEvent.ROLL_OUT, onRollOut);
@@ -45,9 +45,6 @@ package com.umiwi.control
         
         protected function onAddedToStage(event:Event):void
         {
-            var obj:Object = getChildByName("textField");
-            var tf:TextField = getChildByName("textField") as TextField;
-            //tf.text = buttonText;
         }
         
         protected function onRollOver(event:MouseEvent):void

@@ -11,12 +11,11 @@ package com.umiwi.control
     
     public class BaseTextButton extends MovieClip
     {   
-        public var buttonText:String = "确定";
         
         public function BaseTextButton()
         {
             super();
-            mouseEnabled = true;
+            mouseChildren = false;
             buttonMode = true;
             addEventListener(MouseEvent.ROLL_OVER, onRollOver);
             addEventListener(MouseEvent.ROLL_OUT, onRollOut);
@@ -27,7 +26,7 @@ package com.umiwi.control
         private function onAdded2Stage(event:Event):void
         {
             var tf:TextField = getChildByName("textField") as TextField;
-            tf.text = buttonText;
+            tf.mouseEnabled = true;
         }
         
         protected function onRollOver(event:MouseEvent):void

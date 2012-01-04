@@ -26,7 +26,7 @@
             removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
             okButton.addEventListener(MouseEvent.CLICK, closePanel);
             restoreButton.addEventListener(MouseEvent.CLICK, restoreDisplay);
-            restoreButton.buttonText = "恢复默认";
+            restoreButton.textField.text = "恢复默认";
             brightnessSlider.addEventListener(SliderEvent.CHANGE, brightnessChanged);
             contrastSlider.addEventListener(SliderEvent.CHANGE, contrastChanged);
         }

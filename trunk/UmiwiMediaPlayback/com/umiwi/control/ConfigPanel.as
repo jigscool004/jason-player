@@ -85,17 +85,21 @@ package com.umiwi.control
         {
             gotoAndStop(index);
             
-            if(index != 1)
+            definitionTab.selected = false;
+            lightTab.selected = false;
+            playTab.selected = false;
+            
+            if(index == 1)
             {
-                definitionTab.selected = false;
+                definitionTab.selected = true;
             }
-            if(index != 2)
+            if(index == 2)
             {
-                lightTab.selected = false;
+                lightTab.selected = true;
             }
-            if(index != 3)
+            if(index == 3)
             {
-                playTab.selected = false;
+                playTab.selected = true;
             }
             
         }
