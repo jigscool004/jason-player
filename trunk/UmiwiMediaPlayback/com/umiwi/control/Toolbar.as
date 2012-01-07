@@ -5,6 +5,7 @@
 	
 	import flash.display.MovieClip;
 	import flash.display.StageDisplayState;
+	import flash.events.Event;
 	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
@@ -21,7 +22,7 @@
         {
             super();
             stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove1);
-            stage.addEventListener(MouseEvent.ROLL_OUT, onRollOut1);
+            stage.addEventListener(Event.MOUSE_LEAVE, onRollOut1);
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerCompleted);
             
             stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenEvent, false, 0, true);
@@ -42,7 +43,7 @@
             }
         }
         
-        private function onRollOut1(event:MouseEvent):void
+        private function onRollOut1(event:Event):void
         {
             if (stage.displayState == StageDisplayState.FULL_SCREEN)
             {

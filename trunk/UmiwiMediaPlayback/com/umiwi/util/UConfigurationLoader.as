@@ -70,21 +70,12 @@
 			}
 			_parameters.poster = item.@thumb.toString();
             
-            info = <PlayList>
-	<item quality="medium" url="http://vod2.umiwi.com/vod/2011/11/29/9ec73d75399a82e721d3a8c4fd778cc3.ssm/9ec73d75399a82e721d3a8c4fd778cc3.f4m" thumb="http://i1.umivi.net/2011/1130/1322629225917.jpg" />
-	<ad hidden="false" player_id="0" swf="http://static.csbew.com/FrameWork/AFP/AFP_tga_zu.swf" keywords="手机" width="0" height="0" />
-  <icon url="http://images.umiwi.com/u/public/images/footer-2.gif" link="http://www.umiwi.com" alpha="0.7" x="10" y="10"/>
-  <domain>
-  	<item>*.umiwi.com</item>
-  </domain>
-  <flashURL>http://chuangye.umiwi.com/2011/1201/50957.shtml</flashURL>
-  <htmlURL>http://chuangye.umiwi.com/2011/1201/50957.shtml</htmlURL>
-</PlayList>;
-            
             getIcon(info);
+            getIsMemeber(info);
             getDomain(info);
             getFlashUrl(info);
             getHtmlUrl(info);
+            getVideoUrl(info);
 			_callback.call(null, _parameters);
 			
 		}
@@ -101,6 +92,19 @@
                     param[attributeName] = item.attribute(attributeName).toString();
                 }
                 ControlUtil.configuration.logo = param;
+            }
+        }
+        
+        private function getIsMemeber(info:XML):void
+        {
+            var item:XML = info.isMember[0];
+            if(item != null && item.toString()=="true")
+            {
+                ControlUtil.configuration.isMember = true;
+            }
+            else
+            {
+                ControlUtil.configuration.isMember = false;
             }
         }
         
@@ -133,6 +137,15 @@
             if(item != null)
             {
                 ControlUtil.configuration.htmlURL = item.toString();
+            }
+        }
+        
+        private function getVideoUrl(info:XML):void
+        {
+            var item:XML = info.videoURL[0];
+            if(item != null)
+            {
+                ControlUtil.configuration.videoURL = item.toString();
             }
         }
         

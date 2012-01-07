@@ -1,5 +1,8 @@
 ﻿package com.umiwi.control
 {
+	import com.umiwi.util.Constants;
+	
+	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
@@ -22,6 +25,11 @@
 			toolTipMC.visible = false;
 			volumeBtn.addEventListener(MouseEvent.MOUSE_OVER,showTooltip);
 			volumeBtn.addEventListener(MouseEvent.MOUSE_OUT,hideTooltip);
+            volumeBtn.addEventListener(MouseEvent.CLICK, onMute);
+            volumeBar.addEventListener(Constants.SLIDER_CHANGE, onVolumeChanged);
+            
+            volumeBar.min = 0;
+            volumeBar.max = 1;
 		}
 		
 		private function showTooltip(event:MouseEvent):void{
@@ -31,35 +39,34 @@
 		private function hideTooltip(event:MouseEvent):void{
 			toolTipMC.visible = false;
 		}		
+        
+        private function onVolumeChanged(event:Event):void
+        {
+            var audioTrait:AudioTrait = traitInstance as AudioTrait;
+            audioTrait.muted = false;
+            (volumeBtn as MovieClip).gotoAndStop(1);
+            audioTrait.volume = volumeBar.value;
+        }
 		
-		override protected function onMouseClick(event:MouseEvent):void
-		{
-			var audioTrait:AudioTrait = traitInstance as AudioTrait;
-			if (event.target.name == "volumeBar")
-			{
-				audioTrait.muted = false;
-				audioTrait.volume = event.localX / volumeBar.width;
-				volumeBar.maskMC.width = event.localX * 1.1;
-				
-			}
-			else if(event.localX < MUTE_BUTTON_WIDTH)
-			{
-				if(audioTrait.muted){
-					audioTrait.muted = false;
-					volumeBar.maskMC.width = audioTrait.volume * volumeBar.width;
-				}else
-				{
-					audioTrait.muted = true;
-					volumeBar.maskMC.width = 0;
-				}
-			}
-
-		}
+        protected function onMute(event:MouseEvent):void
+        {
+            var audioTrait:AudioTrait = traitInstance as AudioTrait;
+            if(audioTrait.muted){
+                audioTrait.muted = false;
+                volumeBar.value = audioTrait.volume;
+                (volumeBtn as MovieClip).gotoAndStop(1);
+            }else
+            {
+                audioTrait.muted = true;
+                volumeBar.value = 0;
+                (volumeBtn as MovieClip).gotoAndStop(2);
+            }
+        }
 		
 		override protected function addElement():void{
 			this.visible = true;
 			var audioTrait:AudioTrait = traitInstance as AudioTrait;
-			volumeBar.maskMC.width = volumeBar.width * 0.5;
+			volumeBar.value = 0.5;
 			audioTrait.volume = 0.5;
 		}
 		

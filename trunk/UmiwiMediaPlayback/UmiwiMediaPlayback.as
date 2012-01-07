@@ -421,8 +421,8 @@
             toolBar.y=swfHeight-toolBar.height-PADDING;			
             toolBar.toolBarBack.width=swfWidth;
             toolBar.fullScrBtn.x=toolBar.toolBarBack.width - toolBar.fullScrBtn.width;
-            toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width;
-            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 20;
+            toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width - 5;
+            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 30;
             
 			mediaContainer.width = _stage.stageWidth;
 			bufferingMC.width = _stage.stageWidth;
@@ -474,7 +474,16 @@
 		    localVideoMC.width = _stage.stageWidth;
 			localVideoMC.height = _stage.stageHeight;
             
-            rightSideDrawer.x = swfWidth - rightSideDrawer.width;
+            if(_stage.displayState == "fullScreen")
+            {
+                rightSideDrawer.x = swfWidth - rightSideDrawer.width;
+                rightSideDrawer.isDrawOut = true;
+            }
+            else
+            {
+                rightSideDrawer.x = swfWidth;
+                rightSideDrawer.isDrawOut = false;
+            }
             rightSideDrawer.y = (swfHeight - toolBar.toolBarBack.height - rightSideDrawer.height) * .5;
             
             putInCenter(configPanel);
@@ -1096,14 +1105,14 @@
 				{
 					var img:Bitmap = new Bitmap(evt.target.content.bitmapData);
 					img.smoothing = true;
-					img.width = 104;
-					img.height = 78;
+					img.width = 110;
+					img.height = 86;
 					mc.addChild(img);
 				}
 				else
 				{
-					loader.width = 104;
-					loader.height = 78;
+					loader.width = 110;
+					loader.height = 86;
 				}
 			});
             try {
@@ -1131,6 +1140,7 @@
             {
                 //显示推荐视频
                 miniatureMC.visible=true;
+                configPanel.visible = false;
             }
 		}
 		
@@ -1172,7 +1182,7 @@
 		private var adsManager:IMAManager;
 
 		
-		private static const PADDING:uint = 3;
+		private static const PADDING:uint = 8;
 		private static const POSTER_INDEX:int = 2;
 		private static const MEDIA_PLAYER:String = "org.osmf.media.MediaPlayer";
 		private static const STREAMING_SOURCE:String = "http://vod2.umiwi.com/vod/2011/05/30/26f57ef0c2e1b2d88f04c9c192b9dc6d.ssm/26f57ef0c2e1b2d88f04c9c192b9dc6d.f4m";
