@@ -12,6 +12,7 @@
         public static const OPEN_DISPLAY_PANEL:String = "ConfigButton";
         
         public static const RESTORE_DISPLAY:String = "resoreDisplay";
+        public static const SLIDER_CHANGE:String = "sliderChange";
         
         public static const ZOOM50:String = "P50";
         public static const ZOOM75:String = "P75";

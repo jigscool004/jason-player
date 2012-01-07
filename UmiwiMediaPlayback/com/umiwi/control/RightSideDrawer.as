@@ -14,21 +14,22 @@ package com.umiwi.control
     public class RightSideDrawer extends MovieClip
     {
         private var timer:Timer = new Timer(5000,1);
-        private var isDrawOut:Boolean = false;
+        public var isDrawOut:Boolean = false;
         
         public function RightSideDrawer()
         {
             super();
             stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove1);
-            stage.addEventListener(MouseEvent.ROLL_OUT, onRollOut1);
+            stage.addEventListener(Event.MOUSE_LEAVE, onRollOut1);
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerCompleted);
-            x = stage.stageWidth - width;
             
             addEventListener(Event.ADDED_TO_STAGE, onAdded2Stage);
         }
         
         private function onAdded2Stage(event:Event):void
         {  
+            x = stage.stageWidth;
+            
             var lb:ToggleIconButton = lightButton as ToggleIconButton;
             lb.normalText = "关灯";
             lb.selectedText = "开灯";
@@ -53,7 +54,7 @@ package com.umiwi.control
             drawOut();
         }
         
-        private function onRollOut1(event:MouseEvent):void
+        private function onRollOut1(event:Event):void
         {
             drawIn();
         }

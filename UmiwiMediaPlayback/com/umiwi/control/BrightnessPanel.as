@@ -27,8 +27,8 @@
             okButton.addEventListener(MouseEvent.CLICK, closePanel);
             restoreButton.addEventListener(MouseEvent.CLICK, restoreDisplay);
             restoreButton.textField.text = "恢复默认";
-            brightnessSlider.addEventListener(SliderEvent.CHANGE, brightnessChanged);
-            contrastSlider.addEventListener(SliderEvent.CHANGE, contrastChanged);
+            brightnessSlider.addEventListener(Constants.SLIDER_CHANGE, brightnessChanged);
+            contrastSlider.addEventListener(Constants.SLIDER_CHANGE, contrastChanged);
         }
         
         protected function closePanel(event:MouseEvent):void
@@ -45,12 +45,12 @@
             throwEvent();
         }
         
-        private function brightnessChanged(e:SliderEvent):void {
+        private function brightnessChanged(e:Event):void {
             brightness = e.target.value;
             throwEvent();
         }
         
-        private function contrastChanged(e:SliderEvent):void {
+        private function contrastChanged(e:Event):void {
             contrast = e.target.value
             throwEvent();
         }

@@ -19,8 +19,6 @@ package com.umiwi.control
             this.visible = false;
             mouseEnabled = true;
             addEventListener(Event.ADDED_TO_STAGE, onAdded2Stage);
-            
-
         }
         
         private function onAdded2Stage(event:Event):void
@@ -30,10 +28,12 @@ package com.umiwi.control
             
             copyFlash.addEventListener(MouseEvent.CLICK, copy2Flash);
             copyHtml.addEventListener(MouseEvent.CLICK, copy2Html);
+            copyVideo.addEventListener(MouseEvent.CLICK, copy2Video);
             
             okButton.textField.text = "返回播放";
             copyFlash.textField.text = "复制";
             copyHtml.textField.text = "复制";
+            copyVideo.textField.text = "复制";
         }
         
         public function loadConfiguration():void
@@ -65,7 +65,17 @@ package com.umiwi.control
             
             flashText.text = ControlUtil.configuration.flashURL;
             htmlText.text = ControlUtil.configuration.htmlURL;
-
+            
+            if(!ControlUtil.configuration.isMember)
+            {
+                videoLabel.visible = false;
+                videoText.visible = false;
+                copyVideo.visible = false;
+            }
+            else
+            {
+                videoText.text = ControlUtil.configuration.videoURL;
+            }
         }
         
         protected function closeMe(event:MouseEvent):void
@@ -83,6 +93,12 @@ package com.umiwi.control
         {
             Clipboard.generalClipboard.clear();
             Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, ControlUtil.configuration.htmlURL);
+        }
+        
+        private function copy2Video(event:MouseEvent):void
+        {
+            Clipboard.generalClipboard.clear();
+            Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, ControlUtil.configuration.videoURL);
         }
     }
 }
