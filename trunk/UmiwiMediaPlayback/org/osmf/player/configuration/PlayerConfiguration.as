@@ -148,5 +148,9 @@ package org.osmf.player.configuration
         public var isMember:Boolean = false;
         
         public var autoPlayNext:Boolean = false;
+        
+        public var title:String = "优米网";
+        
+        public var intro:String = "";
 	}
 }

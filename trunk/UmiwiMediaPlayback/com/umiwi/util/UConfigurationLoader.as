@@ -6,6 +6,7 @@
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.external.ExternalInterface;
+	import flash.net.SharedObject;
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
@@ -21,6 +22,8 @@
 		private static const IIS_PATH:String = "http://www.umiwi.com/player/getrecommend.php"
 		private static const GET_LIB_URL:String = "OSMF/library.swf";
 		private static const DEFAULT_FLV_ID:String = "5759";
+        
+        private static const TEST_URL:String = "http://api.v.umiwi.com/api/getvideoinfo/?videoid=13"
 		
 		public static var isOut:Boolean;
 		public static var firstBufferCompleted:Boolean = false;
@@ -41,13 +44,15 @@
 				_parameters.flvID=DEFAULT_FLV_ID;
 			}
 			//http://www.umiwi.com/player/vod/getflvpath.php?id=6509&randomNum=4897
-			var randomNum:Number=int(Math.random()*10000);
+			/*var randomNum:Number=int(Math.random()*10000);
 			var phpRequest:URLRequest=new URLRequest(GET_PATH_URL);
 			phpRequest.method=URLRequestMethod.GET;
 			var parameter:URLVariables=new URLVariables;
 			parameter.randomNum=randomNum;
 			parameter.id=parameters["flvID"];
-			phpRequest.data=parameter;
+			phpRequest.data=parameter;*/
+            var phpRequest:URLRequest=new URLRequest(TEST_URL);
+            phpRequest.method=URLRequestMethod.GET;
 			var phpLoader:URLLoader=new URLLoader  ;
 			phpLoader.addEventListener(Event.COMPLETE,getFlvInfoComplete);
 			phpLoader.addEventListener(IOErrorEvent.IO_ERROR,getFlvInfoError);
@@ -73,9 +78,11 @@
             getIcon(info);
             getIsMemeber(info);
             getDomain(info);
-            getFlashUrl(info);
-            getHtmlUrl(info);
-            getVideoUrl(info);
+            getXMLStringContent(info, "htmlURL");
+            getXMLStringContent(info, "flashURL");
+            getXMLStringContent(info, "videoURL");
+            getXMLStringContent(info, "title");
+            getXMLStringContent(info, "intro");
 			_callback.call(null, _parameters);
 			
 		}
@@ -122,30 +129,12 @@
             }
         }
         
-        private function getFlashUrl(info:XML):void
+        private function getXMLStringContent(info:XML, xpath:String):void
         {
-            var item:XML = info.flashURL[0];
+            var item:XML = info.elements(xpath)[0];
             if(item != null)
             {
-                ControlUtil.configuration.flashURL = item.toString();
-            }
-        }
-        
-        private function getHtmlUrl(info:XML):void
-        {
-            var item:XML = info.htmlURL[0];
-            if(item != null)
-            {
-                ControlUtil.configuration.htmlURL = item.toString();
-            }
-        }
-        
-        private function getVideoUrl(info:XML):void
-        {
-            var item:XML = info.videoURL[0];
-            if(item != null)
-            {
-                ControlUtil.configuration.videoURL = item.toString();
+                ControlUtil.configuration[xpath] = item.toString();
             }
         }
         
@@ -282,5 +271,21 @@
 			}
 		}
 		
+        public static function saveConfig(id:String, content:Object):void
+        {
+            var mySo:SharedObject = SharedObject.getLocal("umiwi");
+            mySo.data[id] = content;
+        }
+        
+        public static function loadConfig(id:String):Object
+        {
+            var content:Object;
+            var mySo:SharedObject = SharedObject.getLocal("umiwi");
+            if(mySo)
+            {
+                content = mySo.data[id];
+            }
+            return content;
+        }
 	}
 }

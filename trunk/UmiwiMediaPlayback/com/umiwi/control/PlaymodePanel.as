@@ -10,6 +10,7 @@ package com.umiwi.control
 
     public class PlaymodePanel extends BasePanel
     {
+        private static const PLAY_NEXT_KEY:String = "playNext";
         public function PlaymodePanel()
         {
             super();
@@ -17,18 +18,31 @@ package com.umiwi.control
         
         override protected function onAddedToStage(event:Event):void{
             super.onAddedToStage(event);
-            (playCheck as CheckBox).addEventListener(MouseEvent.CLICK, onCheck);
+            playCheck.label.text = "自动连播";
+            playCheck.toggle = true;
+            playCheck.addEventListener(MouseEvent.CLICK, onCheck);
+            
+            var pObj:Object = UConfigurationLoader.loadConfig(PLAY_NEXT_KEY);
+            
+            var playNext:Boolean = false;
+            if(pObj != null && pObj == true)
+            {
+                playNext = true;
+            }
+            playCheck.selected = playNext;
+            ControlUtil.configuration.autoPlayNext = playNext;
         }
         
         private function onCheck(event:MouseEvent):void
         {
-            var cb:CheckBox = playCheck as CheckBox;
-            if(cb.selected){
+            if(playCheck.selected){
                 ControlUtil.configuration.autoPlayNext = true;
+                UConfigurationLoader.saveConfig(PLAY_NEXT_KEY, true);
             }
             else
             {
                 ControlUtil.configuration.autoPlayNext = false;
+                UConfigurationLoader.saveConfig(PLAY_NEXT_KEY, false);
             }
         }
     }

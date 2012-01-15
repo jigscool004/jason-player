@@ -6,6 +6,7 @@ package com.umiwi.control
     public class ToggleIconButtonOnColor extends BaseIconButton
     {
         private var selected_:Boolean = false;
+        public var toggle:Boolean = false;
         
         public function set selected(b:Boolean):void
         {
@@ -45,7 +46,14 @@ package com.umiwi.control
         override protected function onMouseClick(event:MouseEvent):void
         {
             super.onMouseClick(event);
-            selected = !selected;
+            if(toggle)
+            {
+                selected = !selected;
+            }
+            else
+            {
+                selected = true;
+            }
         }
     }
 }

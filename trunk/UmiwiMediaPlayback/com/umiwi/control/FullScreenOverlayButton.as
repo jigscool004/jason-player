@@ -14,7 +14,7 @@
 		public function FullScreenOverlayButton()
 		{
 			super();
-			mouseEnabled = false;
+			mouseEnabled = true;
 			traitType = MediaTraitType.DISPLAY_OBJECT;
 			this.doubleClickEnabled = true;
 			addEventListener(MouseEvent.DOUBLE_CLICK, onDoubleClick);

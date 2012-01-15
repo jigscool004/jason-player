@@ -32,22 +32,25 @@ package com.umiwi.util
         }
         
         private function setColor() {
+            var displayTrait:DisplayObjectTrait = traitInstance as DisplayObjectTrait;
+            if(!displayTrait)
+            {
+                return;
+            }
             var color:AdjustColor = new AdjustColor();
             color.brightness = brightness/20 * 255;
             color.contrast = contrast/20 * 100;
             color.hue = 0;
             color.saturation = 0;
             var colorArray:Array = color.CalculateFinalFlatArray();
-            var displayTrait:DisplayObjectTrait = traitInstance as DisplayObjectTrait;
-            if(displayTrait)
-            {
-                displayTrait.displayObject.filters = [new ColorMatrixFilter(colorArray)];
-            }
+            
+            displayTrait.displayObject.filters = [new ColorMatrixFilter(colorArray)];
         }
         
         override protected function addElement():void{
             this.visible = true;
             var displayTrait:DisplayObjectTrait = traitInstance as DisplayObjectTrait;
+            setColor();
         }
         
         override protected function removeElement():void{
