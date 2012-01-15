@@ -14,6 +14,8 @@ package com.umiwi.control
     public class RightSideDrawer extends MovieClip
     {
         private var timer:Timer = new Timer(5000,1);
+        private var drawOutTween:Tween;
+        private var drawInTween:Tween;
         public var isDrawOut:Boolean = false;
         
         public function RightSideDrawer()
@@ -69,7 +71,7 @@ package com.umiwi.control
             if(!isDrawOut)
             {
                 isDrawOut = true;
-                var myTween:Tween = new Tween(this, "x", Regular.easeIn, stage.stageWidth, stage.stageWidth - width, .6, true);
+                drawOutTween = new Tween(this, "x", Regular.easeIn, stage.stageWidth, stage.stageWidth - width, .6, true);
             }
             timer.reset();
             timer.start();
@@ -81,8 +83,24 @@ package com.umiwi.control
             if(isDrawOut)
             {
                 isDrawOut = false;
-                var myTween:Tween = new Tween(this, "x", Regular.easeIn, stage.stageWidth - width, stage.stageWidth, .6, true);
+                drawInTween = new Tween(this, "x", Regular.easeIn, stage.stageWidth - width, stage.stageWidth, .6, true);
             }
+        }
+        
+        public function stopTween(status:Boolean, xPosition:Number, yPosition:Number):void
+        {
+            if(drawOutTween)
+            {
+                drawOutTween.stop();
+            }
+            if(drawInTween)
+            {
+                drawInTween.stop();
+            }
+            isDrawOut = status;
+            timer.stop();
+            x = xPosition;
+            y = yPosition;
         }
     }
 }

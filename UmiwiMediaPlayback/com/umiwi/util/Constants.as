@@ -22,6 +22,9 @@
         public static const HIGH_BITRATE:String = "highBitrate";
         public static const AUTO_BITRATE:String = "autoBitrate";
         
+        public static const BRIGHTNESS_KEY:String = "brightness";
+        public static const CONTRAST_KEY:String = "contrast";
+        
         public static const TINT_COLOR:Number = 0x99FF33;
         public static const GLOW_COLOR:Number = 0xFFFFFF;
         
