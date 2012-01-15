@@ -50,6 +50,17 @@ package com.umiwi.util
         override protected function addElement():void{
             this.visible = true;
             var displayTrait:DisplayObjectTrait = traitInstance as DisplayObjectTrait;
+            
+            var bObj:Object = UConfigurationLoader.loadConfig(Constants.BRIGHTNESS_KEY);
+            if(bObj)
+            {
+                brightness = bObj as Number;
+            }
+            var cObj:Object = UConfigurationLoader.loadConfig(Constants.CONTRAST_KEY);
+            if(cObj)
+            {
+                contrast = cObj as Number;
+            }
             setColor();
         }
         

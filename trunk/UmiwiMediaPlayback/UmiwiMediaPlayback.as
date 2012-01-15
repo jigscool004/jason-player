@@ -474,17 +474,20 @@
 		    localVideoMC.width = _stage.stageWidth;
 			localVideoMC.height = _stage.stageHeight;
             
+            var xPosition:Number;
+            var drawerStatus:Boolean;
             if(_stage.displayState == "fullScreen")
             {
-                rightSideDrawer.x = swfWidth - rightSideDrawer.width;
-                rightSideDrawer.isDrawOut = true;
+                xPosition = swfWidth - rightSideDrawer.width;
+                drawerStatus = true;
             }
             else
             {
-                rightSideDrawer.x = swfWidth;
-                rightSideDrawer.isDrawOut = false;
+                xPosition = swfWidth;
+                drawerStatus = false;
             }
-            rightSideDrawer.y = (swfHeight - toolBar.toolBarBack.height - rightSideDrawer.height) * .5;
+            var yPosition:Number = (swfHeight - toolBar.toolBarBack.height - rightSideDrawer.height) * .5;
+            rightSideDrawer.stopTween(drawerStatus, xPosition, yPosition);
             
             putInCenter(configPanel);
             putInCenter(sharePanel);
