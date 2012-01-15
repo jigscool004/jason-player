@@ -42,14 +42,14 @@ package com.umiwi.control
             poster.scaleContent = true;            
             poster.load(request);
             
-            var a:Array = [qzone, tsina, tqq, tsohu, kaixin001, renren, t163];
+            var a:Array = [tsina, tqq, qzone, renren, kaixin001, tsohu, douban];
             for (var i:int=0; i<a.length; i++)
             {
                 a[i].alpha = 0.8
                 a[i].addEventListener(MouseEvent.CLICK, onClick);
                 function onClick(event:MouseEvent):void {
                     navigateToURL(new URLRequest("http://www.jiathis.com/send/?url=" + ControlUtil.configuration.htmlURL +
-                        "&title=" + "优米网" + 
+                        "&title=" + ControlUtil.configuration.title + " " + ControlUtil.configuration.intro + 
                         "&webid=" + String(event.target.name) +
                         "&uid="+ 123));
                 }

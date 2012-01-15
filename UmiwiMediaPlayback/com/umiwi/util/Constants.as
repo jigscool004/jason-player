@@ -18,6 +18,10 @@
         public static const ZOOM75:String = "P75";
         public static const ZOOM100:String = "P00";
         
+        public static const NORMAL_BITRATE:String = "noramlBitrate";
+        public static const HIGH_BITRATE:String = "highBitrate";
+        public static const AUTO_BITRATE:String = "autoBitrate";
+        
         public static const TINT_COLOR:Number = 0x99FF33;
         public static const GLOW_COLOR:Number = 0xFFFFFF;
         

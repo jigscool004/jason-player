@@ -1,6 +1,7 @@
 ﻿package com.umiwi.control
 {
 	import com.umiwi.util.Constants;
+	import com.umiwi.util.UConfigurationLoader;
 	
 	import flash.display.MovieClip;
 	import flash.events.Event;
@@ -14,6 +15,8 @@
 	public class VolumeButton extends TraitControl
 	{
 		private static const MUTE_BUTTON_WIDTH:uint = 24;
+        private static const MUTE_KEY:String = "muted";
+        private static const VOLUME_KEY:String = "volume";
 		
 		public function VolumeButton()
 		{
@@ -46,29 +49,62 @@
             audioTrait.muted = false;
             (volumeBtn as MovieClip).gotoAndStop(1);
             audioTrait.volume = volumeBar.value;
+            
+            UConfigurationLoader.saveConfig(VOLUME_KEY, volumeBar.value);
         }
 		
         protected function onMute(event:MouseEvent):void
         {
             var audioTrait:AudioTrait = traitInstance as AudioTrait;
             if(audioTrait.muted){
-                audioTrait.muted = false;
-                volumeBar.value = audioTrait.volume;
-                (volumeBtn as MovieClip).gotoAndStop(1);
-            }else
+                unMute(audioTrait);
+                UConfigurationLoader.saveConfig(MUTE_KEY, false);
+            }
+            else
             {
-                audioTrait.muted = true;
-                volumeBar.value = 0;
-                (volumeBtn as MovieClip).gotoAndStop(2);
+                mute(audioTrait);
+                UConfigurationLoader.saveConfig(MUTE_KEY, true);
             }
         }
 		
 		override protected function addElement():void{
 			this.visible = true;
 			var audioTrait:AudioTrait = traitInstance as AudioTrait;
-			volumeBar.value = 0.5;
-			audioTrait.volume = 0.5;
+            
+            var vObj:Object = UConfigurationLoader.loadConfig(VOLUME_KEY);
+            var volumeValue:Number;
+            
+            if(vObj)
+            {
+                volumeValue = vObj as Number;
+            }
+            else
+            {
+                volumeValue = 0.5;
+            }
+			volumeBar.value = volumeValue;
+			audioTrait.volume = volumeValue;
+            
+            var muted:Boolean = UConfigurationLoader.loadConfig(MUTE_KEY);
+            if(muted)
+            {
+                mute(audioTrait);
+            }
 		}
+        
+        private function unMute(audioTrait:AudioTrait):void
+        {
+            audioTrait.muted = false;
+            volumeBar.value = audioTrait.volume;
+            (volumeBtn as MovieClip).gotoAndStop(1);
+        }
+        
+        private function mute(audioTrait:AudioTrait):void
+        {
+            audioTrait.muted = true;
+            volumeBar.value = 0;
+            (volumeBtn as MovieClip).gotoAndStop(2);
+        }
 		
 		override protected function removeElement():void{
 			this.visible = false;
