@@ -15,9 +15,11 @@
             var parameterNames = pqs.params(false);
             var parameters = {
             	  flvID: "f8589",
+            	  autoPlay: 0,
                 bufferWindow: 300,
                 bufferThreshold: 180,
-                descriptionUrl: "http://chuangye.umiwi.com/2011/0802/24997.shtml"
+                descriptionUrl: "http://chuangye.umiwi.com/2011/0802/24997.shtml",
+                showAds: 0
             };
             
             for (var i = 0; i < parameterNames.length; i++) {
@@ -43,7 +45,7 @@
 				, "UmiwiMediaPlayback"
 				, 610
 				, 510
-				, "10.2.0"
+				, "9.2.0"
 				, "expressInstall.swf"
 				, parameters
 				, {
@@ -65,6 +67,10 @@
              
              */
             
+						     function playVideo() {
+						         var myFlashMovie = swfobject.getObjectById("UmiwiMediaPlayback");
+						         myFlashMovie.playVideo();
+						     }
         </script>
 
     </head>
@@ -78,6 +84,9 @@
                             Alternative content
                         </p>
                     </div>
+                     <form name="form1" onsubmit="return false;">
+								         <input type="button" value="Play" onclick="playVideo();" />
+								     </form>
                   	<p>
                         <script type="text/javascript">
                             

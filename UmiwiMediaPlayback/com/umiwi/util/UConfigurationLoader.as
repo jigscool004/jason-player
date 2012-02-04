@@ -44,14 +44,14 @@
 				_parameters.flvID=DEFAULT_FLV_ID;
 			}
 			//http://www.umiwi.com/player/vod/getflvpath.php?id=6509&randomNum=4897
-			/*var randomNum:Number=int(Math.random()*10000);
+			var randomNum:Number=int(Math.random()*10000);
 			var phpRequest:URLRequest=new URLRequest(GET_PATH_URL);
 			phpRequest.method=URLRequestMethod.GET;
 			var parameter:URLVariables=new URLVariables;
 			parameter.randomNum=randomNum;
 			parameter.id=parameters["flvID"];
-			phpRequest.data=parameter;*/
-            var phpRequest:URLRequest=new URLRequest(TEST_URL);
+			phpRequest.data=parameter;
+            //var phpRequest:URLRequest=new URLRequest(TEST_URL);
             phpRequest.method=URLRequestMethod.GET;
 			var phpLoader:URLLoader=new URLLoader  ;
 			phpLoader.addEventListener(Event.COMPLETE,getFlvInfoComplete);
