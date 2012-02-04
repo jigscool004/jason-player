@@ -318,6 +318,17 @@
             addEventListener(Constants.ZOOM100, zoomVideo);
             
             addEventListener(ButtonEvent.SET_DISPLAY, setDisplay);
+            
+            if (ExternalInterface.available && !ControlUtil.configuration.out)
+            {
+                try{
+                    ExternalInterface.addCallback("playVideo", playVideo);
+                }
+                catch(_:Error)
+                {
+                    trace(_.toString());
+                }
+            }
 		}
         
         private function openSharePanel(event:Event):void
@@ -1157,6 +1168,13 @@
 			var toolIndex:int = getChildIndex(toolBar);
 			addChildAt(loader, toolIndex); 
 		}
+        
+        private function playVideo():void {
+            if(player)
+            {
+                player.play();
+            }
+        }
 		
 		private var uc:UConfigurationLoader = new UConfigurationLoader();
         private var displayUtil:DisplayUtil = new DisplayUtil();
