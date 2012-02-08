@@ -22,6 +22,8 @@
 
 package org.osmf.player.configuration
 {
+	import fl.data.DataProvider;
+	
 	import org.osmf.layout.ScaleMode;
 	import org.osmf.media.MediaResourceBase;
 	import org.osmf.media.URLResource;
@@ -152,5 +154,7 @@ package org.osmf.player.configuration
         public var title:String = "优米网";
         
         public var intro:String = "";
+        
+        public var albumDataProvider:DataProvider = new DataProvider();
 	}
 }

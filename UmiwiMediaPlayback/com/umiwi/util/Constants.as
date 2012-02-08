@@ -8,6 +8,9 @@
         public static const OPEN_BITRATE_PANEL:String = "DefinitionButton";
         public static const CLOSE_ME:String = "CloseButton";
         public static const SIMPLE_CONFIRM:String = "SimpleConfirmButton";
+        public static const REPLAY_VIDEO:String = "ReplayButton";
+        public static const OPEN_ALBUM_PANEL:String = "AlbumButton";
+        public static const CLOSE_ALBUM_PANEL:String = "closeAlbumPanel";
         
         public static const OPEN_DISPLAY_PANEL:String = "ConfigButton";
         

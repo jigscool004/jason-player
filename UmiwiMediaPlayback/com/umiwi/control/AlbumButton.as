@@ -10,16 +10,16 @@
     import org.osmf.traits.AudioTrait;
     import org.osmf.traits.MediaTraitType;
     
-    public class ConfigButton extends TraitControl
+    public class AlbumButton extends TraitControl
     {
         
-        public function ConfigButton()
+        public function AlbumButton()
         {
             super();
             buttonMode = true;
             traitType = MediaTraitType.DISPLAY_OBJECT; 
             
-            toolTipMC.tip.text = "功能设置";
+            toolTipMC.tip.text = "播放列表";
             toolTipMC.visible = false;
             addEventListener(MouseEvent.ROLL_OVER,showTooltip);
             addEventListener(MouseEvent.ROLL_OUT,hideTooltip);
@@ -35,7 +35,7 @@
         
         override protected function onMouseClick(event:MouseEvent):void
         {
-            var shareEvent:Event = new Event(Constants.OPEN_DISPLAY_PANEL, true);
+            var shareEvent:Event = new Event(Constants.OPEN_ALBUM_PANEL, true);
             dispatchEvent(shareEvent);
             
         }

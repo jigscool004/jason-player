@@ -9,6 +9,8 @@
 	import com.umiwi.util.IMAManager;
 	import com.umiwi.util.UConfigurationLoader;
 	
+	import fl.containers.UILoader;
+	
 	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
@@ -138,7 +140,7 @@
 					for (var i:int=0; i <params.Item.length(); i++) 
 					{
 						var xmlItem:XML = params.Item[i];
-						loadPic(xmlItem.@thumburl,miniatureMC["loader"+(i%4)].childLoader);
+						loadPic(xmlItem.@thumburl,miniatureMC["loader"+(i%4)].poster);
 						miniatureMC["loader"+(i%3)].title.text=xmlItem.@title.toString();
 						miniatureMC["loader"+(i%3)].visible=true;
 						var timeDuration:String = FormatUtils.convertTime(xmlItem.@duration.toString());
@@ -146,10 +148,10 @@
 						miniatureMC["loader"+(i%3)].link = xmlItem.@link.toString();
 						miniatureMC["loader"+(i%3)].wrapper.addEventListener(MouseEvent.MOUSE_DOWN,function(e:MouseEvent)
 						{
-							navigateToURL(new URLRequest(e.currentTarget.parent.link));
+							navigateToURL(new URLRequest(e.currentTarget.parent.link), "_top");
 						});
 					}
-					if(params.Item.length() == 0)
+/*					if(params.Item.length() == 0)
 					{
 						miniatureMC.gotoAndStop(4);
 					}
@@ -164,7 +166,7 @@
 					else
 					{
 						miniatureMC.gotoAndStop(1);
-					}
+					}*/
 				}
                 
                 var logo:Object = configuration.logo;
@@ -181,6 +183,7 @@
                 });
                 
                 sharePanel.loadConfiguration();
+                albumPanel.loadConfiguration();
 			}
 			
 			configuration = new PlayerConfiguration();
@@ -313,11 +316,16 @@
             addEventListener(Constants.OPEN_DISPLAY_PANEL, openDisplayPanel);
             addEventListener(Constants.OPEN_BITRATE_PANEL, openBitratePanel);
             
+            addEventListener(Constants.OPEN_ALBUM_PANEL, openAlbumPanel);
+            addEventListener(Constants.CLOSE_ALBUM_PANEL, closeAlbumPanel);
+            
             addEventListener(Constants.ZOOM50, zoomVideo);
             addEventListener(Constants.ZOOM75, zoomVideo);
             addEventListener(Constants.ZOOM100, zoomVideo);
             
             addEventListener(ButtonEvent.SET_DISPLAY, setDisplay);
+            
+            addEventListener(Constants.REPLAY_VIDEO, playVideo);
             
             if (ExternalInterface.available && !ControlUtil.configuration.out)
             {
@@ -340,9 +348,25 @@
         
         private function closeSharePanel(event:Event):void
         {
-            player.play();
+            if(miniatureMC.visible == false)
+            {
+                player.play();
+            }
             sharePanel.visible = false;
             configPanel.visible = false;
+        }
+        
+        private function openAlbumPanel(event:Event):void
+        {
+            sharePanel.visible = false;
+            configPanel.visible = false;
+            
+            albumPanel.visible = true;
+        }
+        
+        private function closeAlbumPanel(event:Event):void
+        {
+            albumPanel.visible = false;
         }
         
         private function closeLight(event:Event):void
@@ -440,11 +464,9 @@
             bufferingMC.height = _stage.stageHeight;
             //bufferingMC.x = (_stage.stageWidth - bufferingMC.width) * 0.5;
             
-			miniatureMC.x=(swfWidth-miniatureMC.width)/2;
 			if(_stage.displayState == "fullScreen")
 			{
 				mediaContainer.height = _stage.stageHeight;
-				miniatureMC.y=(swfHeight-miniatureMC.height)/2;
                 //bufferingMC.y = (_stage.stageHeight - bufferingMC.height) * 0.5;
                 
                 topBar.topBarBG.width = swfWidth;
@@ -453,11 +475,13 @@
                 topBar.zoom100.x = swfWidth/2 + topBar.zoom100.width;
                 topBar.y = 0;
                 
+                putInCenter(miniatureMC);
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
                 //bufferingMC.y = (_stage.stageWidth - bufferingMC.height - toolBar.toolBarBack.height) * 0.5;
-				miniatureMC.y=(swfHeight-toolBar.toolBarBack.height-miniatureMC.height)/2;
+                miniatureMC.x = 0;
+                miniatureMC.y = 0;
 			}
 			
 			if(adsManager.adsLoader)
@@ -479,7 +503,7 @@
 			
             toolBar.scrubBar.setWidth(swfWidth-20);
 			
-			bigPlayBtn.x=(swfWidth-bigPlayBtn.width) - 50;
+			bigPlayBtn.x= 50;
 			bigPlayBtn.y=(swfHeight-bigPlayBtn.height) - 37 - toolBar.toolBarBack.height;
 			
 		    localVideoMC.width = _stage.stageWidth;
@@ -943,7 +967,6 @@
                     
                     //(bufferingMC as TraitControl).setElement(posterImage);
                     bufferingMC.visible = false;
-                    setChildIndex(bigPlayBtn, this.numChildren - 1);
 
 					// Listen for the main content player to reach a playing, or playback error
 					// state. At that time, we remove the poster:
@@ -1106,35 +1129,14 @@
             rightSideDrawer.visible = true;
 		}
 		
-		private function loadPic(url:String,mc:MovieClip):void
-		{
-			if (mc.getChildAt(0)!=null)
-			{
-				mc.removeChildAt(0);
-			}
-			var loader:Loader=new Loader;
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE,function(evt:Event)
-			{
-				if (isUmiwi)
-				{
-					var img:Bitmap = new Bitmap(evt.target.content.bitmapData);
-					img.smoothing = true;
-					img.width = 110;
-					img.height = 86;
-					mc.addChild(img);
-				}
-				else
-				{
-					loader.width = 110;
-					loader.height = 86;
-				}
-			});
+		private function loadPic(url:String,mc:UILoader):void
+		{	
             try {
-                loader.load(new URLRequest(url), new LoaderContext(true));
+                var request:URLRequest = new URLRequest(url);
+                mc.load(request);
             } catch (error:Error) {
                 UConfigurationLoader.updateMsg("Failed to get recommended thumbnail. " + error.message);
             }
-			if (!isUmiwi) mc.addChild(loader);
 		}
 		
 		public function stopPlay():void {
@@ -1169,7 +1171,7 @@
 			addChildAt(loader, toolIndex); 
 		}
         
-        private function playVideo():void {
+        private function playVideo(event:Event = null):void {
             if(player)
             {
                 player.play();
