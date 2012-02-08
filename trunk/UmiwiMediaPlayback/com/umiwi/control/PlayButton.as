@@ -39,12 +39,12 @@
 			{
 				playTrait.play();
 				gotoAndStop(2);
-                toolTipMC.tip.text = "点击播放";
+                toolTipMC.tip.text = "点击暂停";
 			}
 			else{
 				playTrait.pause();
 				gotoAndStop(1);
-                toolTipMC.tip.text = "点击暂停";
+                toolTipMC.tip.text = "点击播放";
 			}
 		}
 		

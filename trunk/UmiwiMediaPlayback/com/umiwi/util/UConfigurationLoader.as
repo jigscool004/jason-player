@@ -23,7 +23,7 @@
 		private static const GET_LIB_URL:String = "OSMF/library.swf";
 		private static const DEFAULT_FLV_ID:String = "5759";
         
-        private static const TEST_URL:String = "http://api.v.umiwi.com/api/getvideoinfo/?videoid=13"
+        private static const TEST_URL:String = "http://api.v.umiwi.com/getvideoinfo.do?videoid=26"
 		
 		public static var isOut:Boolean;
 		public static var firstBufferCompleted:Boolean = false;
@@ -45,13 +45,13 @@
 			}
 			//http://www.umiwi.com/player/vod/getflvpath.php?id=6509&randomNum=4897
 			var randomNum:Number=int(Math.random()*10000);
-			var phpRequest:URLRequest=new URLRequest(GET_PATH_URL);
+/*			var phpRequest:URLRequest=new URLRequest(GET_PATH_URL);
 			phpRequest.method=URLRequestMethod.GET;
 			var parameter:URLVariables=new URLVariables;
 			parameter.randomNum=randomNum;
 			parameter.id=parameters["flvID"];
-			phpRequest.data=parameter;
-            //var phpRequest:URLRequest=new URLRequest(TEST_URL);
+			phpRequest.data=parameter;*/
+            var phpRequest:URLRequest=new URLRequest(TEST_URL);
             phpRequest.method=URLRequestMethod.GET;
 			var phpLoader:URLLoader=new URLLoader  ;
 			phpLoader.addEventListener(Event.COMPLETE,getFlvInfoComplete);
@@ -83,6 +83,7 @@
             getXMLStringContent(info, "videoURL");
             getXMLStringContent(info, "title");
             getXMLStringContent(info, "intro");
+            getAlbum(info);
 			_callback.call(null, _parameters);
 			
 		}
@@ -135,6 +136,20 @@
             if(item != null)
             {
                 ControlUtil.configuration[xpath] = item.toString();
+            }
+        }
+        
+        private function getAlbum(info:XML):void
+        {
+            var items:XMLList = info.album.item;
+            if(items != null && items.length()>0)
+            {
+                for each(var item:XML in items)
+                {
+                    var obj:Object = {label:item.@title.toString(), link:item.@link.toString()};
+                    ControlUtil.configuration.albumDataProvider.addItem(obj);
+                }
+                
             }
         }
         
