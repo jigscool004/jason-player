@@ -5,10 +5,14 @@ package com.umiwi.util
     import fl.events.SliderEvent;
     import fl.motion.AdjustColor;
     
+    import flash.display.Bitmap;
+    import flash.display.BitmapData;
+    import flash.display.DisplayObject;
     import flash.display.MovieClip;
     import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.filters.ColorMatrixFilter;
+    import flash.geom.Matrix;
     import flash.geom.Rectangle;
     
     import org.osmf.traits.DisplayObjectTrait;
@@ -19,6 +23,18 @@ package com.umiwi.util
         
         private var brightness:Number = 0;
         private var contrast:Number = 0;
+        
+        private static var instance:DisplayUtil;
+        
+        public static function getInstance():DisplayUtil
+        {
+            if(!instance)
+            {
+                instance = new DisplayUtil();
+            }
+            return instance;
+        }
+        
         public function DisplayUtil()
         {
             super();
@@ -45,6 +61,23 @@ package com.umiwi.util
             var colorArray:Array = color.CalculateFinalFlatArray();
             
             displayTrait.displayObject.filters = [new ColorMatrixFilter(colorArray)];
+        }
+        
+        public function capture():Bitmap
+        {
+            var displayTrait:DisplayObjectTrait = traitInstance as DisplayObjectTrait;
+            if(!displayTrait)
+            {
+                return null;
+            }
+            var videoObject:DisplayObject = displayTrait.displayObject;
+            var bitmapData:BitmapData = new BitmapData(videoObject.width, videoObject.height, true, 0x000000);
+            var matrix:Matrix = videoObject.transform.matrix.clone();
+            matrix.scale(videoObject.width / videoObject.width, videoObject.height / videoObject.height);
+            matrix.tx = 0;
+            matrix.ty = 0;
+            bitmapData.draw(videoObject, matrix);
+            return new Bitmap(bitmapData);
         }
         
         override protected function addElement():void{

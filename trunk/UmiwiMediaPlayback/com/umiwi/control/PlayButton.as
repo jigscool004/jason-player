@@ -34,6 +34,9 @@
 		
 		override protected function onMouseClick(event:MouseEvent):void
 		{
+            if ( traitInstance == null) {
+                return;
+            }
 			var playTrait:PlayTrait = traitInstance as PlayTrait;
 			if(playTrait.playState == PlayState.STOPPED || playTrait.playState == PlayState.PAUSED)
 			{

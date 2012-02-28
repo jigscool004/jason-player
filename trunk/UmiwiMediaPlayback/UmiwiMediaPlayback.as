@@ -12,10 +12,12 @@
 	import fl.containers.UILoader;
 	
 	import flash.display.Bitmap;
+	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
+	import flash.display.PixelSnapping;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.display.StageAlign;
@@ -50,6 +52,7 @@
 	import org.osmf.events.TimeEvent;
 	import org.osmf.layout.HorizontalAlign;
 	import org.osmf.layout.LayoutMetadata;
+	import org.osmf.layout.ScaleMode;
 	import org.osmf.layout.VerticalAlign;
 	import org.osmf.media.MediaElement;
 	import org.osmf.media.MediaFactory;
@@ -112,8 +115,17 @@
 				_loaderInfo = loaderInfo;
 			}
             
+            //For rtmp capture image, server side: Application.xml
+            //<VideoSampleAccess enabled="true">low_quality;high_quality</VideoSampleAccess>
 			Security.loadPolicyFile("http://upload.umiwi.com/crossdomain.xml");
+            Security.loadPolicyFile("http://vod2.umiwi.com/crossdomain.xml");
+            Security.loadPolicyFile("http://i1.umivi.net/crossdomain.xml");
+            Security.loadPolicyFile("http://58.68.129.69/crossdomain.xml");
 			
+            Security.allowDomain(".umiwi.com");
+            Security.allowDomain(".umiwi.net");
+            Security.allowDomain("58.68.129.69");
+            
 			adsManager = new IMAManager(this)
 			
 			uc.getFlvInfo(parameters, loadConfigurationFromParameters);
@@ -126,12 +138,10 @@
                     Security.allowDomain(domainString);
                 }
 
-				if(configuration.src != params.src)
-				{
-					configuration.src = params.src;
-					configuration.poster = params.poster;
-					loadMedia();
-				}
+
+				configuration.src = params.src;
+				configuration.poster = params.poster;
+				loadMedia();
 
 				
 				uc.getRecommendFlv(params, loadRecommendFlv);
@@ -143,11 +153,12 @@
 						loadPic(xmlItem.@thumburl,miniatureMC["loader"+(i%4)].poster);
 						miniatureMC["loader"+(i%3)].title.text=xmlItem.@title.toString();
 						miniatureMC["loader"+(i%3)].visible=true;
-						var timeDuration:String = FormatUtils.convertTime(xmlItem.@duration.toString());
-						miniatureMC["loader"+(i%3)].otherMsg.text="时长:"+ timeDuration +"   播放:"+ xmlItem.@playcount.toString();
+						//var timeDuration:String = FormatUtils.convertTime(xmlItem.@duration.toString());
+						//miniatureMC["loader"+(i%3)].otherMsg.text="时长:"+ timeDuration +"   播放:"+ xmlItem.@playcount.toString();
 						miniatureMC["loader"+(i%3)].link = xmlItem.@link.toString();
 						miniatureMC["loader"+(i%3)].wrapper.addEventListener(MouseEvent.MOUSE_DOWN,function(e:MouseEvent)
 						{
+                            UConfigurationLoader.updateMsg(e.currentTarget.parent.link);
 							navigateToURL(new URLRequest(e.currentTarget.parent.link), "_top");
 						});
 					}
@@ -184,6 +195,7 @@
                 
                 sharePanel.loadConfiguration();
                 albumPanel.loadConfiguration();
+                onEnterFrameCallback();
 			}
 			
 			configuration = new PlayerConfiguration();
@@ -193,7 +205,7 @@
 			configurationLoader.addEventListener(Event.COMPLETE, onConfigurationReady);			
 			configurationLoader.load(parameters, configuration);
 			
-			function onConfigurationReady(event:Event):void
+			function onConfigurationReady(event:Event=null):void
 			{	
 				CONFIG::LOGGING
 				{
@@ -319,9 +331,13 @@
             addEventListener(Constants.OPEN_ALBUM_PANEL, openAlbumPanel);
             addEventListener(Constants.CLOSE_ALBUM_PANEL, closeAlbumPanel);
             
+            addEventListener(Constants.OPEN_NOTE_PANEL, openNotePanel);
+            addEventListener(Constants.CLOSE_NOTE_PANEL, closeNotePanel);
+            
             addEventListener(Constants.ZOOM50, zoomVideo);
             addEventListener(Constants.ZOOM75, zoomVideo);
             addEventListener(Constants.ZOOM100, zoomVideo);
+            addEventListener(Constants.ZOOM_FULL, zoomVideo);
             
             addEventListener(ButtonEvent.SET_DISPLAY, setDisplay);
             
@@ -341,9 +357,9 @@
         
         private function openSharePanel(event:Event):void
         {
+            hidePanels();
             player.pause();
             sharePanel.visible = true;
-            configPanel.visible = false;
         }
         
         private function closeSharePanel(event:Event):void
@@ -353,20 +369,58 @@
                 player.play();
             }
             sharePanel.visible = false;
-            configPanel.visible = false;
         }
         
         private function openAlbumPanel(event:Event):void
         {
+            if(albumPanel.visible)
+            {
+                hidePanels();
+                player.play();
+            }
+            else
+            {
+                hidePanels();
+                albumPanel.visible = true;
+                player.pause();
+            }
+        }
+        
+        private function openNotePanel(event:Event):void
+        {
+            if(notePanel.visible)
+            {
+                hidePanels();
+                player.play();
+            }
+            else
+            {
+                hidePanels();
+                player.pause();
+                notePanel.currentTime = player.currentTime;
+                notePanel.visible = true;
+            }
+        }
+        
+        private function closeNotePanel(event:Event):void
+        {
+            player.play();
+            notePanel.visible = false;
+        }
+        
+        private function hidePanels():void
+        {
             sharePanel.visible = false;
             configPanel.visible = false;
+            albumPanel.visible = false;
+            notePanel.visible = false;
             
-            albumPanel.visible = true;
         }
         
         private function closeAlbumPanel(event:Event):void
         {
             albumPanel.visible = false;
+            player.play();
         }
         
         private function closeLight(event:Event):void
@@ -388,14 +442,22 @@
         
         private function openConfigPanel():void
         {
-            sharePanel.visible = false;
-            configPanel.visible = true;
-            //select definition tab.
+            if(configPanel.visible)
+            {
+                hidePanels();
+            }
+            else
+            {
+                hidePanels();
+                configPanel.visible = true;
+            }
         }
         
         private function zoomVideo(event:Event):void
         {
             var zoomFactor:Number;
+            LayoutMetadata(player.media.getMetadata(LayoutMetadata.LAYOUT_NAMESPACE))
+                .scaleMode = configuration.scaleMode;
             switch(event.type)
             {
                 case Constants.ZOOM50:
@@ -407,6 +469,12 @@
                 case Constants.ZOOM100:
                     zoomFactor = 1;
                     break;
+                case Constants.ZOOM_FULL:
+                    zoomFactor = 1;
+                    
+                    LayoutMetadata(player.media.getMetadata(LayoutMetadata.LAYOUT_NAMESPACE))
+                        .scaleMode = ScaleMode.STRETCH;
+                    break;
                 default:
                     zoomFactor = 1;
             }
@@ -416,6 +484,8 @@
             var positionFactor:Number = (1 - zoomFactor) * 0.5
             mainContainer.x = stage.stageWidth * positionFactor;
             mainContainer.y = stage.stageHeight * positionFactor;
+            
+            mediaContainer.layout(stage.stageWidth * zoomFactor, stage.stageHeight * zoomFactor);
         }
         
         private function setDisplay(event:ButtonEvent):void
@@ -447,7 +517,7 @@
 			_stage.addEventListener(Event.ENTER_FRAME, onEnterFrameCallback);
 		}		
 		
-		private function onEnterFrameCallback(event:Event):void{
+		private function onEnterFrameCallback(event:Event=null):void{
 			_stage.removeEventListener(Event.ENTER_FRAME, onEnterFrameCallback);
 			
 			swfWidth=_stage.stageWidth;
@@ -455,6 +525,21 @@
 			
             toolBar.y=swfHeight-toolBar.height-PADDING;			
             toolBar.toolBarBack.width=swfWidth;
+            //hide albume button
+            if(configuration.albumDataProvider.length <= 0)
+            {
+                toolBar.allTimeLabel.x = toolBar.albumButton.x;
+                toolBar.albumButton.visible = false;
+                
+            }
+            else
+            {
+                toolBar.allTimeLabel.x = 115;
+                toolBar.albumButton.visible = true;
+                
+                albumPanel.x = toolBar.albumButton.x;
+                albumPanel.y = swfHeight-toolBar.height-PADDING-albumPanel.height;
+            }
             toolBar.fullScrBtn.x=toolBar.toolBarBack.width - toolBar.fullScrBtn.width;
             toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width - 5;
             toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 30;
@@ -468,11 +553,13 @@
 			{
 				mediaContainer.height = _stage.stageHeight;
                 //bufferingMC.y = (_stage.stageHeight - bufferingMC.height) * 0.5;
-                
+                var padding:Number = 20;
+                var buttonWidth:Number = 65;
                 topBar.topBarBG.width = swfWidth;
-                topBar.zoom50.x = swfWidth/2 - topBar.zoom50.width*2;
-                topBar.zoom75.x = swfWidth/2 - topBar.zoom75.width/2;
-                topBar.zoom100.x = swfWidth/2 + topBar.zoom100.width;
+                topBar.zoom50.x = swfWidth/2 - buttonWidth*2 - padding*1.5;
+                topBar.zoom75.x = swfWidth/2 - buttonWidth - padding*0.5;
+                topBar.zoom100.x = swfWidth/2 + padding*0.5;
+                topBar.zoomFull.x = swfWidth/2 + buttonWidth + padding*1.5;
                 topBar.y = 0;
                 
                 putInCenter(miniatureMC);
@@ -526,7 +613,8 @@
             
             putInCenter(configPanel);
             putInCenter(sharePanel);
-            
+            //putInCenter(albumPanel);
+            putInCenter(notePanel);
 			
 			var toolbarIndex = this.getChildIndex(toolBar);
 			this.setChildIndex(mainContainer, 0);
@@ -549,7 +637,7 @@
 		{	
 			
 			//Show buffering overlay.
-			if(configuration.src == null || configuration.src == "")
+			if(configuration.src == null || configuration.src == "" || !videoInfoLoaded)
 			{
 				return;
 			}
@@ -1179,7 +1267,7 @@
         }
 		
 		private var uc:UConfigurationLoader = new UConfigurationLoader();
-        private var displayUtil:DisplayUtil = new DisplayUtil();
+        private var displayUtil:DisplayUtil = DisplayUtil.getInstance();
 		
 		public var factory:StrobeMediaFactory;		
 		public var configuration:PlayerConfiguration;

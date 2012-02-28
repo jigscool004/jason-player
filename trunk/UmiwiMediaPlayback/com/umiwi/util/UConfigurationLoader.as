@@ -18,10 +18,10 @@
 	public class UConfigurationLoader
 	{
 		
-		private static const GET_PATH_URL:String = "http://www.umiwi.com/player/vod/getflvpath.php";
-		private static const IIS_PATH:String = "http://www.umiwi.com/player/getrecommend.php"
+		private static const GET_VIDEO_URL:String = "http://api.v.umiwi.com/getvideoinfo.do";
+		private static const IIS_PATH:String = "http://api.v.umiwi.com/recommendvideo.do"
 		private static const GET_LIB_URL:String = "OSMF/library.swf";
-		private static const DEFAULT_FLV_ID:String = "5759";
+		private static const DEFAULT_FLV_ID:String = "154";
         
         private static const TEST_URL:String = "http://api.v.umiwi.com/getvideoinfo.do?videoid=26"
 		
@@ -45,19 +45,18 @@
 			}
 			//http://www.umiwi.com/player/vod/getflvpath.php?id=6509&randomNum=4897
 			var randomNum:Number=int(Math.random()*10000);
-/*			var phpRequest:URLRequest=new URLRequest(GET_PATH_URL);
-			phpRequest.method=URLRequestMethod.GET;
+			var getVideoRequest:URLRequest=new URLRequest(GET_VIDEO_URL);
+			getVideoRequest.method=URLRequestMethod.GET;
 			var parameter:URLVariables=new URLVariables;
-			parameter.randomNum=randomNum;
-			parameter.id=parameters["flvID"];
-			phpRequest.data=parameter;*/
-            var phpRequest:URLRequest=new URLRequest(TEST_URL);
-            phpRequest.method=URLRequestMethod.GET;
+			parameter.videoid=parameters["flvID"];
+			getVideoRequest.data=parameter;
+            //var phpRequest:URLRequest=new URLRequest(TEST_URL);
+            //getVideoRequest.method=URLRequestMethod.GET;
 			var phpLoader:URLLoader=new URLLoader  ;
 			phpLoader.addEventListener(Event.COMPLETE,getFlvInfoComplete);
 			phpLoader.addEventListener(IOErrorEvent.IO_ERROR,getFlvInfoError);
 			try {
-				phpLoader.load(phpRequest);
+				phpLoader.load(getVideoRequest);
 				//logger.info("正在获取视频信息");
 			} catch (error:Error) {
 				updateMsg("Failed to get info against FlvId.");
@@ -75,6 +74,7 @@
 			}
 			_parameters.poster = item.@thumb.toString();
             
+            parseSource(_parameters.src);
             getIcon(info);
             getIsMemeber(info);
             getDomain(info);
@@ -87,6 +87,51 @@
 			_callback.call(null, _parameters);
 			
 		}
+        
+        /*
+        
+        http://vod2.umiwi.com/vod1/free/2012/02/20/695f0039095e7c45553fc87de2d89275.ssm/695f0039095e7c45553fc87de2d89275.f4m
+        域名是vod2.umiwi.com
+        文件名是vod1/free/2012/02/20/695f0039095e7c45553fc87de2d89275.ssm
+        调用方式应该是
+        http://58.68.129.69/API/getjpgAPI.php?vhost=vod2.umiwi.com&fileName=vod1/free/2012/02/20/695f0039095e7c45553fc87de2d89275.ssm
+            &startTime=10&picWidth=320&picHeight=300&picName=picturename.jpg
+        
+        
+        rtmp://r1.vod.umiwi.com/xueyuan/vip/2012/02/22/88334b79a7e767f75e8ee594bc588617.mp4?token=abcdefghijklm
+        域名是r1.vod.umiwi.com
+        文件名是xueyuan/vip/2012/02/22/88334b79a7e767f75e8ee594bc588617.mp4
+        调用方式应该是
+        http://58.68.129.69/API/getjpgAPI.php?vhost=r1.vod.umiwi.com&fileName=xueyuan/vip/2012/02/22/88334b79a7e767f75e8ee594bc588617.mp4
+            &startTime=10&picWidth=320&picHeight=300&picName=picturename.jpg
+        
+        */
+        private function parseSource(src:String):void
+        {
+            var isHttp:Boolean = (src.indexOf("http") == 0);
+            var doubleSlash:int = src.indexOf("//");
+            var srcContent:String = src.substr(doubleSlash + 2);
+            var fistSlash:int = srcContent.indexOf("/");
+            var lastSlash:int = srcContent.lastIndexOf("/");
+            ControlUtil.configuration.hostName = srcContent.substring(0, fistSlash);
+            updateMsg("host name is " + ControlUtil.configuration.hostName);
+            
+            var fileName:String
+            if(isHttp)
+            {
+                var src1:String = srcContent.substring(fistSlash + 1, lastSlash - 1);
+                var lastDot:int = src1.lastIndexOf(".");
+                fileName = src1.substring(0, lastDot);
+                fileName += ".mp4";
+            }
+            else
+            {
+                fileName = srcContent.substring(fistSlash + 1);
+            }
+            
+            ControlUtil.configuration.fileName = fileName;
+            updateMsg("file name is " + fileName);
+        }
         
         private function getIcon(info:XML):void
         {
@@ -106,13 +151,13 @@
         private function getIsMemeber(info:XML):void
         {
             var item:XML = info.isMember[0];
-            if(item != null && item.toString()=="true")
+            if(item != null)
             {
-                ControlUtil.configuration.isMember = true;
-            }
-            else
-            {
-                ControlUtil.configuration.isMember = false;
+                var isMemberString = item.toString();
+                if(isMemberString == "true")
+                {
+                    ControlUtil.configuration.isMember = true;
+                }
             }
         }
         
@@ -173,9 +218,8 @@
 			phpRequest.method=URLRequestMethod.GET;
 			var parameter:URLVariables=new URLVariables  ;
 			//这里的ChatID需要传过来
-			parameter.randomNum=randomNum;
-			parameter.type="vod";
-			parameter.id=_parameters.flvID;
+			parameter.videoid=_parameters.flvID;
+            parameter.max=4;
 			phpRequest.data=parameter;
 			var phpLoader:URLLoader=new URLLoader  ;
 			phpLoader.addEventListener(Event.COMPLETE,getRecommendFlvComplete);
@@ -205,7 +249,7 @@
 		{
 			updateMsg("Failed to get recommended video.");
 		}
-		
+        
 		private var myURLLoader:URLLoader;
 		public function getLibrary(cback:Function):void
 		{

@@ -30,6 +30,7 @@
             zoom50.addEventListener(MouseEvent.CLICK, onClick50);
             zoom75.addEventListener(MouseEvent.CLICK, onClick75);
             zoom100.addEventListener(MouseEvent.CLICK, onClick100);
+            zoomFull.addEventListener(MouseEvent.CLICK, onClickFull);
             y = 0 - height;
             visible = false;
         }
@@ -86,8 +87,8 @@
             var shareEvent:Event = new Event(Constants.ZOOM50, true);
             dispatchEvent(shareEvent);
             
-            zoom75.selected = false;
-            zoom100.selected = false;
+            unselectButtons();
+            zoom50.selected = true;
         }
         
         protected function onClick75(event:MouseEvent):void
@@ -95,16 +96,32 @@
             var shareEvent:Event = new Event(Constants.ZOOM75, true);
             dispatchEvent(shareEvent);
             
-            zoom50.selected = false;
-            zoom100.selected = false;
+            unselectButtons();
+            zoom75.selected = true;
         }
         protected function onClick100(event:MouseEvent):void
         {
             var shareEvent:Event = new Event(Constants.ZOOM100, true);
             dispatchEvent(shareEvent);
             
+            unselectButtons();
+            zoom100.selected = true;
+        }
+        protected function onClickFull(event:MouseEvent):void
+        {
+            var shareEvent:Event = new Event(Constants.ZOOM_FULL, true);
+            dispatchEvent(shareEvent);
+            
+            unselectButtons();
+            zoomFull.selected = true;
+        }
+        
+        private function unselectButtons():void
+        {
             zoom50.selected = false;
             zoom75.selected = false;
+            zoom100.selected = false;
+            zoomFull.selected = false;
         }
     }
 }
