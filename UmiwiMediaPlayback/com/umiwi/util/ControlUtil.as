@@ -1,8 +1,14 @@
 ﻿package com.umiwi.util
 {
+	import fl.controls.TextArea;
+	
 	import flash.display.Stage;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.net.URLRequest;
+	import flash.net.URLRequestMethod;
+	import flash.net.URLVariables;
+	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
 	
 	import org.osmf.events.PlayEvent;
@@ -15,7 +21,7 @@
 
 	public class ControlUtil extends Object
 	{
-		
+        private static const CAPTURE_URL:String = "http://58.68.129.69/API/getjpgAPI.php";
 		
 		protected var traitType:String = MediaTraitType.PLAY;
 		protected var traitInstance:MediaTraitBase;
@@ -91,5 +97,30 @@
 		{
 			return _media;
 		}
+        
+        public static function captureURL(currentTime:Number):URLRequest
+        {
+            var captureRequest:URLRequest=new URLRequest(CAPTURE_URL);
+            captureRequest.method=URLRequestMethod.GET;
+            var parameter:URLVariables=new URLVariables;
+            parameter.vhost = ControlUtil.configuration.hostName;
+            parameter.fileName = ControlUtil.configuration.fileName;
+            parameter.startTime = currentTime;
+            parameter.picWidth = 200;
+            parameter.picHeight = 150;
+            parameter.picName = "snap";
+            
+            captureRequest.data = parameter;
+            return captureRequest;
+        }
+        
+        public static function formatTA(ta:TextArea):TextArea
+        {
+            ta.textField.opaqueBackground = 0xCCCCCC;
+            var myFormat:TextFormat = new TextFormat();
+            myFormat.size = 14;
+            ta.setStyle("textFormat",myFormat);
+            return ta;
+        }
 	}
 }
