@@ -62,7 +62,15 @@
         private function openCommentPanel(event:Event=null):void
         {
             resetTimer();
-            commentPanel.visible = true;
+            if(!commentPanel.showing)
+            {
+                commentPanel.show();
+            }
+            else
+            {
+                commentPanel.hide();
+                timer.start();
+            }
         }
 		
 		override protected function addElement():void{
@@ -93,13 +101,12 @@
                     visible = true;
                 }
 				UConfigurationLoader.callExternal("video_play_over");
-                if(ControlUtil.configuration.isMember)
+                if(ControlUtil.configuration.commentDefault)
                 {
                     openCommentPanel();
                 }
                 else
                 {
-                    commentPanel.visible = false;
                     timer.start();
                 }
 			}

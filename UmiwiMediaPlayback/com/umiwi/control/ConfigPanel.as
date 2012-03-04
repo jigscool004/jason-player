@@ -1,5 +1,6 @@
 package com.umiwi.control
 {
+    import com.umiwi.control.component.BasePanel;
     import com.umiwi.event.ButtonEvent;
     import com.umiwi.util.Constants;
     
@@ -16,7 +17,7 @@ package com.umiwi.control
     import org.osmf.media.MediaElement;
     import org.osmf.traits.MediaTraitType;
     
-    public class ConfigPanel extends MovieClip
+    public class ConfigPanel extends BasePanel
     {   
         private var isBrightSet:Boolean = false;
         private var selectedIndex_:int;
@@ -52,13 +53,13 @@ package com.umiwi.control
         
         private function onAdded2Stage(event:Event):void
         {   
-            definitionTab.textField.text = "清晰度";
+            definitionTab.textField.text = "画质调节";
             lightTab.textField.text = "亮度调节";
-            playTab.textField.text = "播放";
+            playTab.textField.text = "播放设置";
             
-            definitionTab.buttonIndex = 1;
-            lightTab.buttonIndex = 2;
-            playTab.buttonIndex = 3;
+            definitionTab.buttonIndex = 3;
+            lightTab.buttonIndex = 1;
+            playTab.buttonIndex = 2;
         }
         
         private function changeColor(rb:UIComponent):void
@@ -89,15 +90,15 @@ package com.umiwi.control
             lightTab.selected = false;
             playTab.selected = false;
             
-            if(index == 1)
+            if(index == 3)
             {
                 definitionTab.selected = true;
             }
-            if(index == 2)
+            if(index == 1)
             {
                 lightTab.selected = true;
             }
-            if(index == 3)
+            if(index == 2)
             {
                 playTab.selected = true;
             }

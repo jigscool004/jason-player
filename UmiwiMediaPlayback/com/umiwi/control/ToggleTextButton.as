@@ -59,13 +59,17 @@ package com.umiwi.control
         
         private function changeStatus(b:Boolean):void
         {
+            var tf:TextField = textField as TextField;
+            
             if(b)
             {
                 gotoAndStop(2);
+                tf.textColor = 0xFFFFFF;
             }
             else
             {
                 gotoAndStop(1);
+                tf.textColor = 0xCCCCCC;
             }
         }
         

@@ -7,7 +7,7 @@ package com.umiwi.control
     import flash.events.Event;
     import flash.events.MouseEvent;
     
-    public class BitratePanel extends BasePanel
+    public class BitratePanel extends TabPanel
     {
         private static const BITRATE_KEY:String = "bitrate";
         public function BitratePanel()
@@ -19,9 +19,9 @@ package com.umiwi.control
         {
             super.onAddedToStage(event);
             
-            normalRadio.label.text = "流畅";
-            highRadio.label.text = "高清";
-            autoRadio.label.text = "智能";
+            normalRadio.label.text = "流 畅";
+            highRadio.label.text = "高 清";
+            autoRadio.label.text = "智 能";
             
             normalRadio.addEventListener(MouseEvent.CLICK, onClick50);
             highRadio.addEventListener(MouseEvent.CLICK, onClick75);

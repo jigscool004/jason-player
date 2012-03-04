@@ -9,6 +9,7 @@
 	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
+	import flash.text.TextField;
 	import flash.utils.Timer;
 	
 	public class Toolbar extends MovieClip
@@ -28,6 +29,7 @@
             stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenEvent, false, 0, true);
             
             fullScrBtn.addEventListener(MouseEvent.CLICK, onClickFullScreen);
+            fullScrBtn.buttonMode = true;
             y = stage.stageHeight - toolBarBack.height;
         }
         
@@ -98,15 +100,19 @@
         
         protected function onClickFullScreen(event:MouseEvent):void
         {
+            var tf:TextField = fullScrBtn.textField as TextField;
             switch (stage.displayState) {
                 case StageDisplayState.NORMAL:
                     stage.displayState=StageDisplayState.FULL_SCREEN;
+                    tf.text = "退出全屏"
                     break;
                 case StageDisplayState.FULL_SCREEN:
                     stage.displayState=StageDisplayState.NORMAL;
+                    tf.text = "全屏"
                     break;
                 default :
                     stage.displayState=StageDisplayState.NORMAL;
+                    tf.text = "全屏"
             }
         }
 	}

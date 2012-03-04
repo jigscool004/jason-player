@@ -2,6 +2,7 @@
 {
 	import com.umiwi.control.ShareButton;
 	import com.umiwi.control.TraitControl;
+	import com.umiwi.control.component.BasePanel;
 	import com.umiwi.event.ButtonEvent;
 	import com.umiwi.util.Constants;
 	import com.umiwi.util.ControlUtil;
@@ -10,6 +11,7 @@
 	import com.umiwi.util.UConfigurationLoader;
 	
 	import fl.containers.UILoader;
+	import fl.transitions.TransitionManager;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -150,13 +152,13 @@
 					for (var i:int=0; i <params.Item.length(); i++) 
 					{
 						var xmlItem:XML = params.Item[i];
-						loadPic(xmlItem.@thumburl,miniatureMC["loader"+(i%4)].poster);
-						miniatureMC["loader"+(i%3)].title.text=xmlItem.@title.toString();
-						miniatureMC["loader"+(i%3)].visible=true;
+						loadPic(xmlItem.@thumburl,recommendPanel["loader"+(i%4)].poster);
+						recommendPanel["loader"+(i%3)].title.text=xmlItem.@title.toString();
+						recommendPanel["loader"+(i%3)].visible=true;
 						//var timeDuration:String = FormatUtils.convertTime(xmlItem.@duration.toString());
-						//miniatureMC["loader"+(i%3)].otherMsg.text="时长:"+ timeDuration +"   播放:"+ xmlItem.@playcount.toString();
-						miniatureMC["loader"+(i%3)].link = xmlItem.@link.toString();
-						miniatureMC["loader"+(i%3)].wrapper.addEventListener(MouseEvent.MOUSE_DOWN,function(e:MouseEvent)
+						//recommendPanel["loader"+(i%3)].otherMsg.text="时长:"+ timeDuration +"   播放:"+ xmlItem.@playcount.toString();
+						recommendPanel["loader"+(i%3)].link = xmlItem.@link.toString();
+						recommendPanel["loader"+(i%3)].wrapper.addEventListener(MouseEvent.MOUSE_DOWN,function(e:MouseEvent)
 						{
                             UConfigurationLoader.updateMsg(e.currentTarget.parent.link);
 							navigateToURL(new URLRequest(e.currentTarget.parent.link), "_top");
@@ -164,19 +166,19 @@
 					}
 /*					if(params.Item.length() == 0)
 					{
-						miniatureMC.gotoAndStop(4);
+						recommendPanel.gotoAndStop(4);
 					}
 					else if(params.Item.length() == 1)
 					{
-						miniatureMC.gotoAndStop(3);
+						recommendPanel.gotoAndStop(3);
 					}
 					else if(params.Item.length() == 2)
 					{
-						miniatureMC.gotoAndStop(2);
+						recommendPanel.gotoAndStop(2);
 					}
 					else
 					{
-						miniatureMC.gotoAndStop(1);
+						recommendPanel.gotoAndStop(1);
 					}*/
 				}
                 
@@ -312,7 +314,7 @@
 			bufferingMC.visible = true;
             
 			//初始化推荐视频不可见
-			miniatureMC.visible=false;
+			recommendPanel.visible=false;
 			toolBar.scrubBar.visible = false;
 			
 			controlUtil = new ControlUtil(this);
@@ -320,6 +322,11 @@
             if(!configuration.showAds)
             {
                 removeChild(clickMovieClip);
+            }
+            
+            if(!configuration.hasMBR)
+            {
+                configPanel.definitionTab.visible = false;
             }
             
             addEventListener(Constants.OPEN_SHARE_PANEL, openSharePanel);
@@ -357,69 +364,86 @@
         
         private function openSharePanel(event:Event):void
         {
-            hidePanels();
             player.pause();
-            sharePanel.visible = true;
+            if(!sharePanel.showing)
+            {
+                hidePanels();
+                sharePanel.show();
+            }
+            else
+            {
+                sharePanel.hide();
+            }
+            
         }
         
         private function closeSharePanel(event:Event):void
         {
-            if(miniatureMC.visible == false)
+            if(recommendPanel.visible == false)
             {
                 player.play();
             }
-            sharePanel.visible = false;
+            sharePanel.hide();
         }
         
         private function openAlbumPanel(event:Event):void
         {
-            if(albumPanel.visible)
+            
+            if(albumPanel.showing)
             {
-                hidePanels();
                 player.play();
+                albumPanel.hide();
             }
             else
             {
                 hidePanels();
-                albumPanel.visible = true;
+                albumPanel.show();
                 player.pause();
             }
         }
         
         private function openNotePanel(event:Event):void
         {
-            if(notePanel.visible)
+            if(notePanel.showing)
             {
-                hidePanels();
                 player.play();
+                notePanel.hide();
             }
             else
             {
                 hidePanels();
                 player.pause();
                 notePanel.currentTime = player.currentTime;
-                notePanel.visible = true;
+                notePanel.show();
             }
         }
         
         private function closeNotePanel(event:Event):void
         {
             player.play();
-            notePanel.visible = false;
+            notePanel.hide();
         }
         
         private function hidePanels():void
         {
-            sharePanel.visible = false;
-            configPanel.visible = false;
-            albumPanel.visible = false;
-            notePanel.visible = false;
+            layoutPanels();
+            for(var i:int = 0; i < numChildren; i++)
+            {
+                if(getChildAt(i) is BasePanel)
+                {
+                    var panel:BasePanel = getChildAt(i) as BasePanel;
+                    if(panel.showing)
+                    {
+                        panel.hide();
+                    }
+                }
+            }
             
         }
         
         private function closeAlbumPanel(event:Event):void
         {
-            albumPanel.visible = false;
+            albumPanel.hide();
             player.play();
         }
         
@@ -430,27 +454,49 @@
         
         private function openBitratePanel(event:Event):void
         {
-            configPanel.selectedIndex = 1;
-            openConfigPanel();
+            if(configPanel.showing) {
+                if(configPanel.selectedIndex == 1) 
+                {
+                    hidePanels();
+                    configPanel.hide();
+                }
+                else
+                {
+                    configPanel.selectedIndex = 1;
+                }
+            }
+            else
+            {
+                configPanel.selectedIndex = 1;
+                openConfigPanel();
+            }
+            
         }
         
         private function openDisplayPanel(event:Event):void
         {
-            configPanel.selectedIndex = 2;
-            openConfigPanel();
+            if(configPanel.showing) {
+                if(configPanel.selectedIndex == 2) 
+                {
+                    hidePanels();
+                    configPanel.hide();
+                }
+                else
+                {
+                    configPanel.selectedIndex = 2;
+                }
+            }
+            else
+            {
+                configPanel.selectedIndex = 2;
+                openConfigPanel();
+            }
         }
         
         private function openConfigPanel():void
         {
-            if(configPanel.visible)
-            {
-                hidePanels();
-            }
-            else
-            {
-                hidePanels();
-                configPanel.visible = true;
-            }
+            hidePanels();
+            configPanel.show();
         }
         
         private function zoomVideo(event:Event):void
@@ -519,7 +565,7 @@
 		
 		private function onEnterFrameCallback(event:Event=null):void{
 			_stage.removeEventListener(Event.ENTER_FRAME, onEnterFrameCallback);
-			
+
 			swfWidth=_stage.stageWidth;
 			swfHeight=_stage.stageHeight;
 			
@@ -538,11 +584,9 @@
                 toolBar.albumButton.visible = true;
                 
                 albumPanel.x = toolBar.albumButton.x;
-                albumPanel.y = swfHeight-toolBar.height-PADDING-albumPanel.height;
+                albumPanel.y = swfHeight-toolBar.toolBarBack.height;
             }
-            toolBar.fullScrBtn.x=toolBar.toolBarBack.width - toolBar.fullScrBtn.width;
-            toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width - 5;
-            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 30;
+
             
 			mediaContainer.width = _stage.stageWidth;
 			bufferingMC.width = _stage.stageWidth;
@@ -562,14 +606,16 @@
                 topBar.zoomFull.x = swfWidth/2 + buttonWidth + padding*1.5;
                 topBar.y = 0;
                 
-                putInCenter(miniatureMC);
+                toolBar.fullScrBtn.x=toolBar.toolBarBack.width - 80;
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
                 //bufferingMC.y = (_stage.stageWidth - bufferingMC.height - toolBar.toolBarBack.height) * 0.5;
-                miniatureMC.x = 0;
-                miniatureMC.y = 0;
+                toolBar.fullScrBtn.x=toolBar.toolBarBack.width - 40;
 			}
+            
+            toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width - 5;
+            toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 30;
 			
 			if(adsManager.adsLoader)
 			{
@@ -611,14 +657,33 @@
             var yPosition:Number = (swfHeight - toolBar.toolBarBack.height - rightSideDrawer.height) * .5;
             rightSideDrawer.stopTween(drawerStatus, xPosition, yPosition);
             
-            putInCenter(configPanel);
-            putInCenter(sharePanel);
-            //putInCenter(albumPanel);
-            putInCenter(notePanel);
+            layoutPanels();
 			
 			var toolbarIndex = this.getChildIndex(toolBar);
 			this.setChildIndex(mainContainer, 0);
 		}
+        
+        private function layoutPanels():void
+        {
+            putInCenterAbsolutely(configPanel);
+            putInCenterAbsolutely(sharePanel);
+            putInCenterAbsolutely(notePanel);
+            
+            if(configuration.albumDataProvider.length > 0)
+            {
+                albumPanel.x = toolBar.albumButton.x;
+                albumPanel.y = swfHeight-toolBar.toolBarBack.height;
+            }
+            
+            if(_stage.displayState == "fullScreen")
+            {
+                putInCenter(recommendPanel);
+            }else
+            {
+                recommendPanel.x = 0;
+                recommendPanel.y = 0;
+            }
+        }
         
         private function putInCenter(movieClip:MovieClip):void
         {
@@ -628,6 +693,16 @@
             }
             movieClip.x = (_stage.stageWidth - movieClip.width) * 0.5;
             movieClip.y = (_stage.stageHeight - movieClip.height) * 0.5;
+        }
+        
+        private function putInCenterAbsolutely(movieClip:MovieClip):void
+        {
+            if(!movieClip)
+            {
+                return;
+            }
+            movieClip.x = _stage.stageWidth * 0.5;
+            movieClip.y = _stage.stageHeight * 0.5;
         }
 		
 		private var preResource:String = "http://pagead2.googlesyndication.com/" +  
@@ -1243,13 +1318,13 @@
             if(configuration.showRecommend)
             {
                 //显示推荐视频
-                miniatureMC.visible=true;
+                recommendPanel.visible=true;
                 configPanel.visible = false;
             }
 		}
 		
 		public function hideRecommend():void{
-			miniatureMC.visible=false;
+			recommendPanel.visible=false;
 		}
 		
 		//Add ads behind tool bar.

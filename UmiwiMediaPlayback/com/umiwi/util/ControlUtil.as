@@ -5,6 +5,7 @@
 	import flash.display.Stage;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.external.ExternalInterface;
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 	import flash.net.URLVariables;
@@ -91,6 +92,14 @@
 				//playback.hideRecommend();
 			}*/
 			playStatus = (traitInstance as PlayTrait).playState;
+            
+            if(playStatus == PlayState.STOPPED)
+            {
+                if(ControlUtil.configuration.albumDataProvider.length > 0)
+                {
+                    playNext();
+                }
+            }
 		}
 		
 		public function get media():MediaElement
@@ -121,6 +130,31 @@
             myFormat.size = 14;
             ta.setStyle("textFormat",myFormat);
             return ta;
+        }
+        
+        
+        private function playNext():void
+        {
+            var nextIndex:int = configuration.albumIndex + 1;
+            if(nextIndex > 0 && nextIndex < configuration.albumDataProvider.length)
+            {
+                var item:Object = configuration.albumDataProvider.getItemAt(nextIndex);
+                /*                var request:URLRequest = new URLRequest(item["link"]);
+                navigateToURL(request, "_top");
+                UConfigurationLoader.updateMsg("Play next video " + item["title"]);*/
+                
+                if (ExternalInterface.available && !ControlUtil.configuration.out)
+                {
+                    try{
+                        ExternalInterface.call("jumpToURL", item["link"]);
+                        UConfigurationLoader.updateMsg("Play next video " + item["title"]);
+                    }
+                    catch(_:Error)
+                    {
+                        trace(_.toString());
+                    }
+                }
+            }
         }
 	}
 }

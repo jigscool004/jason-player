@@ -1,5 +1,6 @@
 package com.umiwi.container
 {
+    import com.umiwi.control.component.BasePanel;
     import com.umiwi.util.Constants;
     import com.umiwi.util.ControlUtil;
     import com.umiwi.util.UConfigurationLoader;
@@ -11,7 +12,7 @@ package com.umiwi.container
     import flash.external.ExternalInterface;
     import flash.utils.Timer;
     
-    public class CommentPanel extends MovieClip
+    public class CommentPanel extends BasePanel
     {
         var timer:Timer = new Timer(3000, 1);
         public function CommentPanel()
@@ -27,6 +28,7 @@ package com.umiwi.container
             okButton.addEventListener(MouseEvent.CLICK, submitComment);
             closeButton.addEventListener(MouseEvent.CLICK, closeMe);
             alert.visible = false;
+            visible = false;
             ControlUtil.formatTA(ta);
         }
         
@@ -64,7 +66,7 @@ package com.umiwi.container
         
         private function hideMe():void
         {
-            visible = false;
+            hide();
             ta.text = "";
             dispatchEvent(new Event(Constants.START_TIMER, true));
         }

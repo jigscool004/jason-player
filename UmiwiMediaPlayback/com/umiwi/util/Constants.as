@@ -34,7 +34,7 @@
         public static const BRIGHTNESS_KEY:String = "brightness";
         public static const CONTRAST_KEY:String = "contrast";
         
-        public static const TINT_COLOR:Number = 0x99FF33;
+        public static const TINT_COLOR:Number = 0xAFEB39;
         public static const GLOW_COLOR:Number = 0xFFFFFF;
         
         public static const START_TIMER:String = "startTimer";
