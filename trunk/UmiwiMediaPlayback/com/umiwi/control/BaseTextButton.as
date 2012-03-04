@@ -1,5 +1,7 @@
 package com.umiwi.control
 {
+    import com.umiwi.util.Constants;
+    
     import fl.motion.Color;
     
     import flash.display.MovieClip;
@@ -31,12 +33,17 @@ package com.umiwi.control
         
         protected function onRollOver(event:MouseEvent):void
         {
-            this.gotoAndStop(2);
+            gotoAndStop(2);
+            var tf:TextField = textField as TextField;
+            tf.textColor = Constants.TINT_COLOR;
+
         }
         
         protected function onRollOut(event:MouseEvent):void
         {
             this.gotoAndStop(1);
+            var tf:TextField = textField as TextField;
+            tf.textColor = 0xCCCCCC;
         }
         
         protected function onMouseDown(event:MouseEvent):void

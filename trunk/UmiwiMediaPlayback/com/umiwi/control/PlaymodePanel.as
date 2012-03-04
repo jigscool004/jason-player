@@ -8,7 +8,7 @@ package com.umiwi.control
     import flash.events.Event;
     import flash.events.MouseEvent;
 
-    public class PlaymodePanel extends BasePanel
+    public class PlaymodePanel extends TabPanel
     {
         private static const PLAY_NEXT_KEY:String = "playNext";
         public function PlaymodePanel()

@@ -157,10 +157,16 @@ package org.osmf.player.configuration
         
         public var albumDataProvider:DataProvider = new DataProvider();
         
+        public var albumIndex:int = -1;
+        
         public var hostName:String;
         
         public var fileName:String;
         
         public var token:String;
+        
+        public var hasMBR:Boolean = false;
+        
+        public var commentDefault:Boolean = true;
 	}
 }

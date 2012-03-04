@@ -21,9 +21,9 @@
 		private static const GET_VIDEO_URL:String = "http://api.v.umiwi.com/getvideoinfo.do";
 		private static const IIS_PATH:String = "http://api.v.umiwi.com/recommendvideo.do"
 		private static const GET_LIB_URL:String = "OSMF/library.swf";
-		private static const DEFAULT_FLV_ID:String = "154";
+		private static const DEFAULT_FLV_ID:String = "m154";
         
-        private static const TEST_URL:String = "http://api.v.umiwi.com/getvideoinfo.do?videoid=26"
+        private static const TEST_URL:String = "http://api.v.umiwi.com/getvideoinfo.do?videoid=m154"
 		
 		public static var isOut:Boolean;
 		public static var firstBufferCompleted:Boolean = false;
@@ -76,7 +76,8 @@
             
             parseSource(_parameters.src);
             getIcon(info);
-            getIsMemeber(info);
+            getBooleanContent(info, "isMember");
+            getBooleanContent(info, "hasMBR");
             getDomain(info);
             getXMLStringContent(info, "htmlURL");
             getXMLStringContent(info, "flashURL");
@@ -148,15 +149,15 @@
             }
         }
         
-        private function getIsMemeber(info:XML):void
+        private function getBooleanContent(info:XML, xpath:String):void
         {
             var item:XML = info.isMember[0];
             if(item != null)
             {
-                var isMemberString = item.toString();
-                if(isMemberString == "true")
+                var booleanString = item.toString();
+                if(booleanString == "true")
                 {
-                    ControlUtil.configuration.isMember = true;
+                    ControlUtil.configuration[xpath] = true;
                 }
             }
         }
@@ -189,12 +190,13 @@
             var items:XMLList = info.album.item;
             if(items != null && items.length()>0)
             {
-                for each(var item:XML in items)
+                var item:XML;
+                var obj:Object
+                for each(item in items)
                 {
-                    var obj:Object = {label:item.@title.toString(), link:item.@link.toString()};
+                    obj = {label:item.@title.toString(), link:item.@link.toString()};
                     ControlUtil.configuration.albumDataProvider.addItem(obj);
                 }
-                
             }
         }
         

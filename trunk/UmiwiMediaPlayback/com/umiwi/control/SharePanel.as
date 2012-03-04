@@ -1,5 +1,6 @@
 package com.umiwi.control
 {
+    import com.umiwi.control.component.BasePanel;
     import com.umiwi.util.Constants;
     import com.umiwi.util.ControlUtil;
     
@@ -11,7 +12,7 @@ package com.umiwi.control
     import flash.net.URLRequest;
     import flash.net.navigateToURL;
 
-    public class SharePanel extends MovieClip
+    public class SharePanel extends BasePanel
     {   
         public function SharePanel()
         {
@@ -100,5 +101,6 @@ package com.umiwi.control
             Clipboard.generalClipboard.clear();
             Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, ControlUtil.configuration.videoURL);
         }
+
     }
 }

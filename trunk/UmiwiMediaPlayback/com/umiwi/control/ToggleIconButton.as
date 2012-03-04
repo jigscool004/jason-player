@@ -19,11 +19,11 @@ package com.umiwi.control
             selected = !selected;
             if(selected)
             {
-                text.text = selectedText;
+                gotoAndStop(2);
             }
             else
             {
-                text.text = normalText;
+                gotoAndStop(1);
             }
         }
     }

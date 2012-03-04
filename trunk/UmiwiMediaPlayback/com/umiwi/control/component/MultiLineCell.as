@@ -14,7 +14,7 @@ package com.umiwi.control.component
             format = new TextFormat();
             format.font = "Arial";
             format.color = 0xFFFFFF;
-            format.size = 12;
+            format.size = 14;
             //format.align = TextFormatAlign.CENTER;
             
             textField.wordWrap = true; 
