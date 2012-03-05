@@ -683,6 +683,10 @@
 				case "NetStream.Buffer.Flush" :
 					break;
 				case "NetStream.Play.Stop" :
+                    if(totalTimes == 0 || myNS.time < totalTimes)
+                    {
+                        return;
+                    }
 					myNS.close();
 					isPlaying=false;
 					playState="stop";
