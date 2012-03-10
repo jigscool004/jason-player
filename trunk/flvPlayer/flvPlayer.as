@@ -1,48 +1,47 @@
 ﻿package {
-	import flash.display.MovieClip;
-	import flash.display.Loader;
-	import flash.display.Stage;
-	import flash.display.StageScaleMode;
-	import flash.display.StageAlign;
-	import flash.ui.ContextMenu;
+	import com.umiwi.control.SharePanel;
+	import com.umiwi.control.component.BasePanel;
+	import com.umiwi.util.Constants;
+	import com.umiwi.util.UConfigurationLoader;
+	
 	import fl.data.DataProvider;
 	import fl.managers.StyleManager;
-	import fl.managers.StyleManager;
-	import flash.text.TextFormat;
+	
+	import flash.display.Bitmap;
+	import flash.display.Loader;
+	import flash.display.MovieClip;
+	import flash.display.Stage;
+	import flash.display.StageAlign;
+	import flash.display.StageScaleMode;
+	import flash.events.AsyncErrorEvent;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.system.Security;
-    import flash.system.LoaderContext;
-    import flash.filters.ColorMatrixFilter;
-
 	import flash.events.HTTPStatusEvent;
+	import flash.events.IOErrorEvent;
+	import flash.events.MouseEvent;
+	import flash.events.NetStatusEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.external.ExternalInterface;
+	import flash.filters.*;
+	import flash.filters.ColorMatrixFilter;
+	import flash.geom.Rectangle;
+	import flash.media.SoundTransform;
+	import flash.net.NetConnection;
+	import flash.net.NetStream;
+	import flash.net.ObjectEncoding;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 	import flash.net.URLVariables;
 	import flash.net.navigateToURL;
-
-
-	import flash.events.AsyncErrorEvent;
-	import flash.events.MouseEvent;
-	import flash.events.NetStatusEvent;
-	import flash.events.SecurityErrorEvent;
-	import flash.net.NetConnection;
-	import flash.net.NetStream;
-	import flash.net.ObjectEncoding;
-	import flash.media.SoundTransform;
-	import flash.geom.Rectangle;
-	import flash.filters.*;
-	
-	import flash.utils.setTimeout
-	import flash.utils.clearTimeout
-	import flash.utils.setInterval
-	import flash.utils.clearInterval
-	import flash.external.ExternalInterface;
-	import flash.display.Bitmap;
-    import flash.events.ErrorEvent;
-    import flash.events.Event;
-    import flash.events.MouseEvent;
+	import flash.system.LoaderContext;
+	import flash.system.Security;
+	import flash.text.TextFormat;
+	import flash.ui.ContextMenu;
+	import flash.utils.clearInterval;
+	import flash.utils.clearTimeout;
+	import flash.utils.setInterval;
+	import flash.utils.setTimeout;
 	
 	public class flvPlayer extends MovieClip 
 	{
@@ -89,7 +88,7 @@
 		private var aspectRatioOfVideo:Number;
 		private var hasGotFileSize:Boolean
 		private var hasGotMetaData:Boolean
-		private var fileType:String
+		private var fileType:String = "mp4";
 		private var fileDownLoadStartTime:Number
 		private var fileDownLoadEndTime:Number
 		private var autoHideToolBarTimeOutID:uint
@@ -115,6 +114,8 @@
 		private var disableAD:Boolean = true; //是否播放过广告
 		private var isOut:Boolean = false;
 		private var isUmiwi:Boolean = true;
+        
+        private var configurationLoader:UConfigurationLoader = new UConfigurationLoader();
 		
 		public function flvPlayer() 
 		{
@@ -122,8 +123,7 @@
 			updateMsg('flvPlayer()');
 			init();
 			resizeDisplay();
-			bufferingMC.x=Math.round((localVideoMC.width-bufferingMC.width)/2);
-			bufferingMC.y=Math.round((localVideoMC.height-bufferingMC.height)*0.7);
+            putInCenterAbsolutely(bufferingMC);
 		}
 		private function setCommonStyle() {
 			var myTF:TextFormat=new TextFormat  ;
@@ -140,10 +140,16 @@
 		private function init() 
 		{
 			updateMsg('init()');
+            
+            Security.loadPolicyFile("http://upload.umiwi.com/crossdomain.xml");
+            Security.loadPolicyFile("http://vod2.umiwi.com/crossdomain.xml");
+            Security.loadPolicyFile("http://i1.umivi.net/crossdomain.xml");
+            Security.loadPolicyFile("http://58.68.129.69/crossdomain.xml");
 
 			Security.allowDomain("*.csbew.com");
 			Security.allowDomain("*.acs86.com");
 			Security.allowDomain("*.umiwi.com");
+            Security.allowDomain("*.umiwi.net");
 			
 			var myMenu:ContextMenu= new ContextMenu();
 			myMenu.hideBuiltInItems();
@@ -215,8 +221,6 @@
 				resizeDisplay();
 			});
 			toolBar.brightNessBtn.adjustBar.visible=false;
-			//初始化qualityBar按钮不可见
-			toolBar.qualityBar.highQualityBtn.visible=toolBar.qualityBar.mediumQualityBtn.visible=toolBar.qualityBar.lowQualityBtn.visible=false;
 			//初始化推荐视频不可见
 			miniatureMC.visible=false;
 			//初始化进度条不可见
@@ -246,20 +250,6 @@
 			//autoPlay="0"
 			if (!flvID) flvID="5759";
 			
-			toolBar.umiwilink.visible = true;//isOut = (this.loaderInfo.parameters.out == '1');
-			toolBar.umiwilink.buttonMode = true;
-			toolBar.umiwilink.addEventListener(MouseEvent.CLICK,function()
-			{
-				var d = new Date();
-				var m = d.getMonth()+1;
-				var year = d.getFullYear();
-				var day = d.getDate();
-				if ( m < 10) m = '0'+m;
-				if ( day < 10) day = '0'+day;
-				year = year%100;
-				navigateToURL(new URLRequest('http://www.umiwi.com/?utm_source=umv&utm_medium=videoshare&utm_content='+flvID+'&utm_campaign='+year+m+day));
-			});
-			
 			if (flvID==null) 
 			{
 				updateMsg("need flvID");
@@ -277,32 +267,88 @@
 				
 			}
             
-            if(loaderInfo.parameters.colorFilter == "reverse")
-            {
-                var filterObj:ColorMatrixFilter = new ColorMatrixFilter();    
-                filterObj.matrix = new Array(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);  
+            toolBar.volumeBar.min = 0;
+            toolBar.volumeBar.max = 1;
+            toolBar.volumeBar.value = 0.5
                 
-                
-                
-                for(var i:int=0; i<toolBar.numChildren; i++)
-                {
-                    toolBar.getChildAt(i).filters = [filterObj];
-                }
-                //toolBar.filters = [filterObj]; 
-                
-                //bufferingMC.filters = [filterObj]; 
-                
-                
-                var matrix:Array = new Array();
-                matrix = matrix.concat([1, 0, 0, 0, 0]); // red
-                matrix = matrix.concat([0, 1, 0, 0, 0]); // green
-                matrix = matrix.concat([0, 0, 1, 0, 0]); // blue
-                matrix = matrix.concat([0, 0, 0, 1, 0]); // alpha
-                var rawFilter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
-                toolBar.umiwilink.filters = [rawFilter];
-                toolBar.umiwilink.gotoAndStop(3);
-            }
+            toolBar.brightNessBtn.visible = false;
+            
+            addEventListener(Constants.OPEN_SHARE_PANEL, openSharePanel);
+            addEventListener(Constants.CLOSE_SHARE_PANEL, closeSharePanel);
 		}
+        
+        private function openSharePanel(event:Event):void
+        {
+            myNS.pause();
+            if(!sharePanel.showing)
+            {
+                hidePanels();
+                sharePanel.show();
+            }
+            else
+            {
+                sharePanel.hide();
+            }
+            
+        }
+        
+        private function hidePanels():void
+        {
+            layoutPanels();
+            for(var i:int = 0; i < numChildren; i++)
+            {
+                if(getChildAt(i) is BasePanel)
+                {
+                    var panel:BasePanel = getChildAt(i) as BasePanel;
+                    if(panel.showing)
+                    {
+                        panel.hide();
+                    }
+                }
+            }
+            
+        }
+        
+        private function layoutPanels():void
+        {
+            //putInCenterAbsolutely(configPanel);
+            putInCenterAbsolutely(sharePanel);
+            //putInCenterAbsolutely(notePanel);
+            
+/*            if(configuration.albumDataProvider.length > 0)
+            {
+                albumPanel.x = toolBar.albumButton.x;
+                albumPanel.y = swfHeight-toolBar.toolBarBack.height;
+            }
+            
+            if(_stage.displayState == "fullScreen")
+            {
+                putInCenter(recommendPanel);
+            }else
+            {
+                recommendPanel.x = 0;
+                recommendPanel.y = 0;
+            }*/
+        }
+        
+        private function putInCenterAbsolutely(movieClip:MovieClip):void
+        {
+            if(!movieClip)
+            {
+                return;
+            }
+            movieClip.x = stage.stageWidth * 0.5;
+            movieClip.y = stage.stageHeight * 0.5;
+        }
+        
+        private function closeSharePanel(event:Event):void
+        {
+            if(miniatureMC.visible == false)
+            {
+                myNS.resume();
+            }
+            sharePanel.hide();
+        }
 		
 		private function loadAd(callback,param)
 		{
@@ -394,7 +440,18 @@
 			} catch (error:Error) {
 				updateMsg("获取视频信息失败");
 			}
+            
+            
 		}
+        
+        private function onXmlLoaded(params:Object):void
+        {
+            for each(var domainString:String in Constants.configuration.domains)
+            {
+                Security.allowDomain(domainString);
+            }
+            (sharePanel as SharePanel).loadConfiguration();
+        }
 		
 		private function getFlvInfoComplete(e:Event) {
 			updateMsg("获取视频信息成功!");
@@ -412,10 +469,8 @@
 			adHeight = parseInt(myXML.ad.@height);
 			disableAD = (myXML.ad.@hidden == "true");
 			
-			var tmpBtn=toolBar.qualityBar.mediumQualityBtn;								
-			tmpBtn.flvPath=tmpURL;
-
-			flvListArr = [{quality:tmpQuality,url:tmpURL,NO:2,Btn:tmpBtn}];
+								
+			originFlvPath=tmpURL;
 
 			if (autoPlay == '1')
 			{
@@ -425,6 +480,9 @@
 			{
 				loadThumb(tmpThumb);
 			}
+            
+            Constants.configuration.poster = tmpThumb;
+            configurationLoader.getFlvInfo(loaderInfo.parameters, onXmlLoaded);
 		}
 		
 		private function getFlvInfoError(e:IOErrorEvent) {
@@ -491,27 +549,11 @@
 			toolBar.stopBtn.buttonMode=true;
 			toolBar.stopBtn.useHandCursor=true;
 			toolBar.fullScrBtn.buttonMode=true;
-			toolBar.umiwilink.buttonMode = true;
 			toolBar.fullScrBtn.useHandCursor=true;
 			toolBar.volumeBtn.buttonMode=true;
 			toolBar.volumeBtn.useHandCursor=true;
 			toolBar.volumeBtn.addEventListener(MouseEvent.MOUSE_DOWN,closeVolume);
-			toolBar.volumeBar.addEventListener(MouseEvent.MOUSE_DOWN,volumeAdjust);
-			
-			//质量切换
-			toolBar.qualityBar.highQualityBtn.buttonMode=true;
-			toolBar.qualityBar.highQualityBtn.useHandCursor=true;
-
-			toolBar.qualityBar.mediumQualityBtn.buttonMode=true;
-			toolBar.qualityBar.mediumQualityBtn.useHandCursor=true;
-
-			toolBar.qualityBar.lowQualityBtn.buttonMode=true;
-			toolBar.qualityBar.lowQualityBtn.useHandCursor=true;
-
-			toolBar.qualityBar.highQualityBtn.addEventListener(MouseEvent.MOUSE_DOWN,getHighQualityFLV);
-			toolBar.qualityBar.mediumQualityBtn.addEventListener(MouseEvent.MOUSE_DOWN,getMediumQualityFLV);
-			toolBar.qualityBar.lowQualityBtn.addEventListener(MouseEvent.MOUSE_DOWN,getLowQualityFLV);
-			
+			toolBar.volumeBar.addEventListener("sliderChange",volumeAdjust);
 
 			toolBar.playBtn.addEventListener(MouseEvent.MOUSE_DOWN,ifPlay);
 			toolBar.stopBtn.addEventListener(MouseEvent.MOUSE_DOWN,stopPlay);
@@ -560,8 +602,8 @@
 			
 			//按钮提示
 			
-			//toolBar.playBtn.addEventListener(MouseEvent.MOUSE_MOVE,disToolTipMC);			
-			//toolBar.playBtn.addEventListener(MouseEvent.MOUSE_OUT,hideToolTipMC);
+			toolBar.playBtn.addEventListener(MouseEvent.MOUSE_MOVE,disToolTipMC);			
+			toolBar.playBtn.addEventListener(MouseEvent.MOUSE_OUT,hideToolTipMC);
 			
 			//toolBar.stopBtn.addEventListener(MouseEvent.MOUSE_MOVE,disToolTipMC);
 			//toolBar.stopBtn.addEventListener(MouseEvent.MOUSE_OUT,hideToolTipMC);
@@ -797,13 +839,13 @@
 			//调节音量
 			var mySound:SoundTransform=myNS.soundTransform;
 			if (hasVolume) {
-				nowVolume=toolBar.volumeBar.maskMC.width/toolBar.volumeBar.width;
-				mySound.volume=nowVolume*2;
+				nowVolume=toolBar.volumeBar.value;
+				mySound.volume=nowVolume;
 				myNS.soundTransform=mySound;
 			} else {
 				mySound.volume=0;
 				myNS.soundTransform=mySound;
-				toolBar.volumeBar.maskMC.width=0;
+				toolBar.volumeBar.value=0;
 			}
 		}
 		
@@ -1086,13 +1128,15 @@
 			hasVolume=! hasVolume;
 			var mySound:SoundTransform=myNS.soundTransform;
 			if (hasVolume) {
-				mySound.volume=nowVolume*2;
+                toolBar.volumeBtn.gotoAndStop(1);
+				mySound.volume=nowVolume;
 				myNS.soundTransform=mySound;
-				toolBar.volumeBar.maskMC.width=nowVolume*toolBar.volumeBar.width;
+                toolBar.volumeBar.value = mySound.volume;
 			} else {
+                toolBar.volumeBtn.gotoAndStop(2);
 				mySound.volume=0;
 				myNS.soundTransform=mySound;
-				toolBar.volumeBar.maskMC.width=0;
+                toolBar.volumeBar.value = 0;
 			}
 			toolBar.toolTipMC.visible=false
 
@@ -1101,14 +1145,12 @@
 		private function volumeAdjust(e:Event) {
 			updateMsg(e.target.mouseX);
 			updateMsg(e.target.name);
-			e.target.maskMC.width=e.target.mouseX;
-			updateMsg("**"+(e.target.mouseX/e.target.width));
-			nowVolume=e.target.mouseX/e.target.width;
+			nowVolume=toolBar.volumeBar.value;;
 			var mySound:SoundTransform=myNS.soundTransform;
-			mySound.volume=nowVolume*2;
+			mySound.volume=nowVolume;
 			myNS.soundTransform=mySound;
 			hasVolume=true;
-
+            toolBar.volumeBtn.gotoAndStop(1);
 		}
 		private function ifDisAdjustBar(e:Event) {
 			toolBar.brightNessBtn.adjustBar.visible=! toolBar.brightNessBtn.adjustBar.visible;
@@ -1352,7 +1394,7 @@
 		private function disSeekTime(e:MouseEvent){
 			var seekPercent:Number=((toolBar.seekBar.mouseX)/590);	
 			toolBar.seekTimeDisMC.seekTimeTxt.text=convertTime(seekPercent*totalTimes)
-			toolBar.seekTimeDisMC.x=this.mouseX+18;
+			toolBar.seekTimeDisMC.x=this.mouseX;
 			toolBar.seekTimeDisMC.visible=true
 			
 		}	
@@ -1398,12 +1440,7 @@
 					autoHideToolBarTimeOutID=setTimeout(autoHideToolBar,3000);
 					break;				
 			}
-			
-			
-			//trace('swfWidth='+swfWidth);
-			toolBar.umiwilink.visible = (swfWidth >= 478);
-			toolBar.brightNessBtn.visible = (swfWidth >= 346);
-			toolBar.playTime.visible = toolBar.totalTime.visible = toolBar.timeBg.visible = toolBar.timeSlash.visible = (swfWidth >= 310);
+			toolBar.playTime.visible = toolBar.totalTime.visible = toolBar.timeSlash.visible = (swfWidth >= 310);
 			var newVideoHeight:Number=swfHeight-bottomHeight;
 			localVideoMC.backOfVideo.width=swfWidth;
 			localVideoMC.backOfVideo.height=newVideoHeight;
@@ -1434,16 +1471,13 @@
 			ad.height = stage.height;
 			
 			
-			toolBar.y=swfHeight-toolBar.height - 3;			
+			toolBar.y=swfHeight-toolBar.height;			
 			toolBar.toolBarBack.width=swfWidth;
-			toolBar.fullScrBtn.x=toolBar.toolBarBack.width-37;
-			toolBar.volumeBar.x=toolBar.fullScrBtn.x-60;
+			toolBar.fullScrBtn.x=toolBar.toolBarBack.width - toolBar.fullScrBtn.width - 10;
+			toolBar.volumeBar.x=toolBar.fullScrBtn.x-80;
 			toolBar.volumeBtn.x=toolBar.volumeBar.x-18.35;
-			toolBar.volume_bg_mask.x = toolBar.volumeBtn.x + (toolBar.volumeBtn.width - toolBar.volume_bg_mask.width);
 			toolBar.brightNessBtn.x=toolBar.volumeBtn.x-36.15;
-			toolBar.cursorBtn.y = toolBar.seekBar.y;
-			toolBar.umiwilink.x = toolBar.brightNessBtn.x - 133;
-			toolBar.qualityBar.x=(toolBar.toolBarBack.width-toolBar.qualityBar.width)/2;			
+			toolBar.cursorBtn.y = toolBar.seekBar.y + 3;
 			
 			//toolBar.totalTime.x=toolBar.toolBarBack.width-71.4;
 
@@ -1465,7 +1499,22 @@
                 toolBar.umiwilink.visible = false;
             }	
 			
-			
+            var xPosition:Number;
+            var drawerStatus:Boolean;
+            if(stage.displayState == "fullScreen")
+            {
+                xPosition = swfWidth - rightSideDrawer.width;
+                drawerStatus = true;
+            }
+            else
+            {
+                xPosition = swfWidth;
+                drawerStatus = false;
+            }
+            var yPosition:Number = (swfHeight - toolBar.toolBarBack.height - rightSideDrawer.height) * .5;
+            rightSideDrawer.stopTween(drawerStatus, xPosition, yPosition);
+            
+            layoutPanels();
 		}
 		private function toggleFullScreen(event:MouseEvent):void
 		{
@@ -1522,24 +1571,11 @@
 				nowProgress=0
 			}
 			lastProgress=nowProgress;
-			toolBar.qualityBar.highQualityBtn.mouseEnabled=false
-			toolBar.qualityBar.mediumQualityBtn.mouseEnabled=false
-			toolBar.qualityBar.lowQualityBtn.mouseEnabled=false
 		}
 
 		private function getHighQualityFLV(...arg) 
 		{
 			prepareNewProcedure();
-			toolBar.qualityBar.mediumQualityBtn.mouseEnabled=true
-			toolBar.qualityBar.lowQualityBtn.mouseEnabled=true
-
-			toolBar.qualityBar.highQualityBtn.gotoAndStop(2);
-			toolBar.qualityBar.mediumQualityBtn.gotoAndStop(1);
-			toolBar.qualityBar.lowQualityBtn.gotoAndStop(1);
-			
-			//先检验是否需要切换
-			//tmpOriginFlvPath=toolBar.qualityBar.highQualityBtn.flvPath;
-			originFlvPath=toolBar.qualityBar.highQualityBtn.flvPath;
 			//initTmpNC()
 			initNC();
 		}
@@ -1549,18 +1585,7 @@
 			loadingFLV = true;
 			updateMsg('getMedium FLV');
 			prepareNewProcedure();
-			toolBar.qualityBar.highQualityBtn.mouseEnabled=true
-			toolBar.qualityBar.lowQualityBtn.mouseEnabled=true
-			toolBar.qualityBar.highQualityBtn.gotoAndStop(1);
-			toolBar.qualityBar.mediumQualityBtn.gotoAndStop(2);
-			toolBar.qualityBar.lowQualityBtn.gotoAndStop(1);
-
-			
 			//flvPath = 'kaifu.mp4';
-			//toolBar.qualityBar.mediumQualityBtn.flvPath = 'kaifu.mp4';
-			//先检验是否需要切换
-			//tmpOriginFlvPath=toolBar.qualityBar.mediumQualityBtn.flvPath;
-			originFlvPath=toolBar.qualityBar.mediumQualityBtn.flvPath;
 			flvPath = originFlvPath;
 			//initTmpNC();
 			initNC();
@@ -1568,15 +1593,7 @@
 		}
 		private function getLowQualityFLV(...arg) {
 			prepareNewProcedure();
-			toolBar.qualityBar.highQualityBtn.mouseEnabled=true
-			toolBar.qualityBar.mediumQualityBtn.mouseEnabled=true
-			toolBar.qualityBar.highQualityBtn.gotoAndStop(1);
-			toolBar.qualityBar.mediumQualityBtn.gotoAndStop(1);
-			toolBar.qualityBar.lowQualityBtn.gotoAndStop(2);
 
-			//先检验是否需要切换
-			//tmpOriginFlvPath=toolBar.qualityBar.lowQualityBtn.flvPath;
-			originFlvPath=toolBar.qualityBar.lowQualityBtn.flvPath;
 			//initTmpNC()
 			initNC();
 		}
@@ -1745,7 +1762,7 @@
 				toolBar.toolTipMC.toolTipBack2.x=-toolBar.toolTipMC.toolTipBack2.width/2				
 				toolBar.toolTipMC.toolTipBack1.x=-toolBar.toolTipMC.toolTipBack1.width/2
 				toolBar.toolTipMC.x=e.target.x+toolBar.toolTipMC.toolTipBack1.width/2
-				toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
+				//toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
 				toolBar.toolTipMC.visible=true
 				break;
 				case "stopBtn":				
@@ -1755,7 +1772,7 @@
 				toolBar.toolTipMC.toolTipBack2.x=-toolBar.toolTipMC.toolTipBack2.width/2				
 				toolBar.toolTipMC.toolTipBack1.x=-toolBar.toolTipMC.toolTipBack1.width/2
 				toolBar.toolTipMC.x=e.target.x+toolBar.toolTipMC.toolTipBack1.width/2
-				toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
+				//toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
 				if(playState=="stop"){
 					toolBar.toolTipMC.visible=false
 				}else{
@@ -1769,7 +1786,7 @@
 				toolBar.toolTipMC.toolTipBack2.x=-toolBar.toolTipMC.toolTipBack2.width/2				
 				toolBar.toolTipMC.toolTipBack1.x=-toolBar.toolTipMC.toolTipBack1.width/2
 				toolBar.toolTipMC.x=e.target.parent.x+toolBar.toolTipMC.toolTipBack1.width/2-15
-				toolBar.toolTipMC.y=e.target.parent.y-toolBar.toolTipMC.height
+				//toolBar.toolTipMC.y=e.target.parent.y-toolBar.toolTipMC.height
 				toolBar.toolTipMC.visible=true
 				break;
 				case "volumeBtn":				
@@ -1779,14 +1796,14 @@
 				toolBar.toolTipMC.toolTipBack2.x=-toolBar.toolTipMC.toolTipBack2.width/2				
 				toolBar.toolTipMC.toolTipBack1.x=-toolBar.toolTipMC.toolTipBack1.width/2
 				toolBar.toolTipMC.x=e.target.x+toolBar.toolTipMC.toolTipBack1.width/2-5
-				toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
+				//toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
 				if(hasVolume){
 					toolBar.toolTipMC.visible=true
 				}else{
 					toolBar.toolTipMC.visible=false
 				}
 				break;
-				case "fullScrBtn":
+/*				case "fullScrBtn":
 				if(stage.displayState=="fullScreen"){					
 					toolBar.toolTipMC.tipTxt.text="退出全屏"
 					toolBar.toolTipMC.toolTipBack2.width=toolBar.toolTipMC.tipTxt.length*14
@@ -1794,7 +1811,7 @@
 					toolBar.toolTipMC.toolTipBack2.x=-toolBar.toolTipMC.toolTipBack2.width/2	
 					toolBar.toolTipMC.toolTipBack1.x=-toolBar.toolTipMC.toolTipBack1.width/2
 					toolBar.toolTipMC.x=e.target.x+toolBar.toolTipMC.toolTipBack1.width/2-15
-					toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
+					//toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
 					toolBar.toolTipMC.visible=true
 				}else{					
 					toolBar.toolTipMC.tipTxt.text="全屏"
@@ -1803,10 +1820,10 @@
 					toolBar.toolTipMC.toolTipBack2.x=-toolBar.toolTipMC.toolTipBack2.width/2
 					toolBar.toolTipMC.toolTipBack1.x=-toolBar.toolTipMC.toolTipBack1.width/2
 					toolBar.toolTipMC.x=e.target.x+toolBar.toolTipMC.toolTipBack1.width/2
-					toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
+					//toolBar.toolTipMC.y=e.target.y-toolBar.toolTipMC.height
 				}			
 				toolBar.toolTipMC.visible=true
-				break;			
+				break;	*/		
 				
 			}
 			
@@ -1909,8 +1926,7 @@
 
 		private function centerBufferingMC()
 		{
-			bufferingMC.x=Math.round((localVideoMC.width-bufferingMC.width)/2);
-			bufferingMC.y=Math.round((localVideoMC.height-bufferingMC.height)/1.5);
+            putInCenterAbsolutely(bufferingMC);
 		}
 		
 		private function showBuffering()
