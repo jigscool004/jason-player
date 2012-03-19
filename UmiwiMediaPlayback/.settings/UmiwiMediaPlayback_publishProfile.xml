@@ -125,6 +125,10 @@
         <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
         <rsl-url>osmf_1.0.0.16316.swz</rsl-url>
       </library-path-entry>
+      <library-path-entry>
+        <swc-path>./libs</swc-path>
+        <linkage>merge</linkage>
+      </library-path-entry>
     </LibraryPath>
     <LibraryVersions>
       <library-version>
@@ -145,7 +149,7 @@
   </PublishFlashProperties>
   <PublishJpegProperties enabled="true">
     <Width>610</Width>
-    <Height>523</Height>
+    <Height>510</Height>
     <Progressive>0</Progressive>
     <DPI>4718592</DPI>
     <Size>0</Size>
@@ -171,7 +175,7 @@
   </PublishRNWKProperties>
   <PublishGifProperties enabled="true">
     <Width>610</Width>
-    <Height>523</Height>
+    <Height>510</Height>
     <Animated>0</Animated>
     <MatchMovieDim>1</MatchMovieDim>
     <Loop>1</Loop>
@@ -190,7 +194,7 @@
   </PublishGifProperties>
   <PublishPNGProperties enabled="true">
     <Width>610</Width>
-    <Height>523</Height>
+    <Height>510</Height>
     <OptimizeColors>1</OptimizeColors>
     <Interlace>0</Interlace>
     <Transparent>0</Transparent>
@@ -207,7 +211,7 @@
   </PublishPNGProperties>
   <PublishQTProperties enabled="true">
     <Width>610</Width>
-    <Height>523</Height>
+    <Height>510</Height>
     <MatchMovieDim>1</MatchMovieDim>
     <UseQTSoundCompression>0</UseQTSoundCompression>
     <AlphaOption></AlphaOption>

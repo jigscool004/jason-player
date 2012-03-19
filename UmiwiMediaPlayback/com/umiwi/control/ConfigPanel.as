@@ -74,7 +74,7 @@ package com.umiwi.control
         
         protected function closeMe(event:MouseEvent):void
         {
-            visible = false;
+            super.hide();
         }
         
         private function onToggleButton(event:ButtonEvent):void

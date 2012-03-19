@@ -295,7 +295,8 @@
 		}
 		
 		public function setWidth(newWidth:Number):void{
-			scrubBarTrack.width = newWidth;
+            scrubBarTrackBG.width = newWidth;
+			scrubBarTrack.width = newWidth - 13;
 			scrubberEnd = scrubBarTrack.x + scrubBarTrack.width - scrubber.width/2;
             setClickArea();
 			updateScrubberPosition();

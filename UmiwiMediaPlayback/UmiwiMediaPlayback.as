@@ -122,11 +122,12 @@
 			Security.loadPolicyFile("http://upload.umiwi.com/crossdomain.xml");
             Security.loadPolicyFile("http://vod2.umiwi.com/crossdomain.xml");
             Security.loadPolicyFile("http://i1.umivi.net/crossdomain.xml");
-            Security.loadPolicyFile("http://58.68.129.69/crossdomain.xml");
+            //Security.loadPolicyFile("http://r1.vod.umiwi.com/crossdomain.xml");
+            
+            //Security.loadPolicyFile("http://screenshots1.v.umiwi.com/crossdomain.xml");
 			
             Security.allowDomain(".umiwi.com");
             Security.allowDomain(".umiwi.net");
-            Security.allowDomain("58.68.129.69");
             
 			adsManager = new IMAManager(this)
 			
@@ -153,12 +154,12 @@
 					{
 						var xmlItem:XML = params.Item[i];
 						loadPic(xmlItem.@thumburl,recommendPanel["loader"+(i%4)].poster);
-						recommendPanel["loader"+(i%3)].title.text=xmlItem.@title.toString();
-						recommendPanel["loader"+(i%3)].visible=true;
+						recommendPanel["loader"+(i%4)].title.text=xmlItem.@title.toString();
+						recommendPanel["loader"+(i%4)].visible=true;
 						//var timeDuration:String = FormatUtils.convertTime(xmlItem.@duration.toString());
-						//recommendPanel["loader"+(i%3)].otherMsg.text="时长:"+ timeDuration +"   播放:"+ xmlItem.@playcount.toString();
-						recommendPanel["loader"+(i%3)].link = xmlItem.@link.toString();
-						recommendPanel["loader"+(i%3)].wrapper.addEventListener(MouseEvent.MOUSE_DOWN,function(e:MouseEvent)
+						//recommendPanel["loader"+(i%4)].otherMsg.text="时长:"+ timeDuration +"   播放:"+ xmlItem.@playcount.toString();
+						recommendPanel["loader"+(i%4)].link = xmlItem.@link.toString();
+						recommendPanel["loader"+(i%4)].wrapper.addEventListener(MouseEvent.MOUSE_DOWN,function(e:MouseEvent)
 						{
                             UConfigurationLoader.updateMsg(e.currentTarget.parent.link);
 							navigateToURL(new URLRequest(e.currentTarget.parent.link), "_top");
@@ -572,22 +573,7 @@
             toolBar.y=swfHeight-toolBar.height-PADDING;			
             toolBar.toolBarBack.width=swfWidth;
             //hide albume button
-            if(configuration.albumDataProvider.length <= 0)
-            {
-                toolBar.allTimeLabel.x = toolBar.albumButton.x;
-                toolBar.albumButton.visible = false;
-                
-            }
-            else
-            {
-                toolBar.allTimeLabel.x = 115;
-                toolBar.albumButton.visible = true;
-                
-                albumPanel.x = toolBar.albumButton.x;
-                albumPanel.y = swfHeight-toolBar.toolBarBack.height;
-            }
 
-            
 			mediaContainer.width = _stage.stageWidth;
 			bufferingMC.width = _stage.stageWidth;
             bufferingMC.height = _stage.stageHeight;
@@ -616,6 +602,18 @@
             
             toolBar.volumeButton.x=toolBar.fullScrBtn.x - toolBar.volumeButton.width - 5;
             toolBar.configButton.x=toolBar.volumeButton.x - toolBar.configButton.icon.width - 30;
+            
+            if(configuration.albumDataProvider.length <= 0)
+            {
+                toolBar.albumButton.visible = false;
+            }
+            else
+            {
+                toolBar.albumButton.visible = true;
+                toolBar.albumButton.x = toolBar.configButton.x - 40;
+                albumPanel.x = toolBar.albumButton.x;
+                albumPanel.y = swfHeight-toolBar.toolBarBack.height;
+            }
 			
 			if(adsManager.adsLoader)
 			{
@@ -1368,7 +1366,7 @@
 		private var adsManager:IMAManager;
 
 		
-		private static const PADDING:uint = 8;
+		private static const PADDING:uint = 6;
 		private static const POSTER_INDEX:int = 2;
 		private static const MEDIA_PLAYER:String = "org.osmf.media.MediaPlayer";
 		private static const STREAMING_SOURCE:String = "http://vod2.umiwi.com/vod/2011/05/30/26f57ef0c2e1b2d88f04c9c192b9dc6d.ssm/26f57ef0c2e1b2d88f04c9c192b9dc6d.f4m";

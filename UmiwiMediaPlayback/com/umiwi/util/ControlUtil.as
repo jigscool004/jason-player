@@ -22,8 +22,6 @@
 
 	public class ControlUtil extends Object
 	{
-        private static const CAPTURE_URL:String = "http://58.68.129.69/API/getjpgAPI.php";
-		
 		protected var traitType:String = MediaTraitType.PLAY;
 		protected var traitInstance:MediaTraitBase;
 		
@@ -109,15 +107,22 @@
         
         public static function captureURL(currentTime:Number):URLRequest
         {
-            var captureRequest:URLRequest=new URLRequest(CAPTURE_URL);
+            var captureRequest:URLRequest=new URLRequest(UConfigurationLoader.CAPTURE_URL);
             captureRequest.method=URLRequestMethod.GET;
             var parameter:URLVariables=new URLVariables;
             parameter.vhost = ControlUtil.configuration.hostName;
-            parameter.fileName = ControlUtil.configuration.fileName;
+            if(ControlUtil.configuration.isRTMP)
+            {
+                parameter.videoid = ControlUtil.configuration.flvID;
+            }
+            else
+            {
+                parameter.fileName = ControlUtil.configuration.fileName;
+            }
+            
             parameter.startTime = currentTime;
             parameter.picWidth = 200;
             parameter.picHeight = 150;
-            parameter.picName = "snap";
             
             captureRequest.data = parameter;
             return captureRequest;
