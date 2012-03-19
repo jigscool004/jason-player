@@ -89,6 +89,27 @@ package com.umiwi.control
                 }
             }
             tl.addEventListener(Event.CHANGE, onChange);
+            
+            resizeMe();
+        }
+        
+        private function resizeMe():void
+        {
+            var length:Number = ControlUtil.configuration.albumDataProvider.length;
+            if(length < 6)
+            {
+                var tl:List = tileList as List;
+                var rawHeight:Number = tl.height;
+                tl.height = tl.rowHeight * length;
+                var offset:Number = rawHeight - tl.height;
+                albumBG.height -= offset;
+                albumBG.y += offset;
+                tl.y += offset;
+                closeButton.y += offset;
+                upButton.visible = false;
+                downButton.visible = false;
+            }
+
         }
         
         private function onChange(event:Event):void

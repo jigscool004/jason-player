@@ -19,11 +19,14 @@
 	{
 		
 		private static const GET_VIDEO_URL:String = "http://api.v.umiwi.com/getvideoinfo.do";
-		private static const IIS_PATH:String = "http://api.v.umiwi.com/recommendvideo.do"
+		private static const IIS_PATH:String = "http://api.v.umiwi.com/recommendvideo.do";
 		private static const GET_LIB_URL:String = "OSMF/library.swf";
 		private static const DEFAULT_FLV_ID:String = "m154";
         
-        private static const TEST_URL:String = "http://api.v.umiwi.com/getvideoinfo.do?videoid=m154"
+        private static const TEST_URL:String = "http://api.v.umiwi.com/getvideoinfo.do?videoid=m154";
+        
+        public static const CAPTURE_URL:String = "http://screenshots1.v.umiwi.com:9889/Screenshots/getImg";
+        private static const CAPTURE_URL_RTMP:String = "http://61.135.204.153/API/getjpgAPI.php";
 		
 		public static var isOut:Boolean;
 		public static var firstBufferCompleted:Boolean = false;
@@ -124,10 +127,22 @@
                 var lastDot:int = src1.lastIndexOf(".");
                 fileName = src1.substring(0, lastDot);
                 fileName += ".mp4";
+                ControlUtil.configuration.isRTMP = false;
             }
+            //RTMP
             else
             {
                 fileName = srcContent.substring(fistSlash + 1);
+                
+                //Remove "mp4:"
+                fileName = fileName.replace("mp4:","");
+                
+                if(_parameters.token)
+                {
+                    _parameters.src += "?token=" + _parameters.token;
+                }
+                updateMsg("RTMP URL is " + _parameters.src);
+                ControlUtil.configuration.isRTMP = true;
             }
             
             ControlUtil.configuration.fileName = fileName;

@@ -9,17 +9,22 @@ package com.umiwi.control
     import flash.display.MovieClip;
     import flash.events.Event;
     import flash.events.MouseEvent;
+    import flash.events.TimerEvent;
     import flash.net.URLRequest;
     import flash.net.navigateToURL;
+    import flash.utils.Timer;
 
     public class SharePanel extends BasePanel
     {   
+        private var timer:Timer = new Timer(3000, 1);
+        
         public function SharePanel()
         {
             super();
             this.visible = false;
             mouseEnabled = true;
             addEventListener(Event.ADDED_TO_STAGE, onAdded2Stage);
+            timer.addEventListener(TimerEvent.TIMER_COMPLETE, hideAlert);
         }
         
         private function onAdded2Stage(event:Event):void
@@ -35,6 +40,8 @@ package com.umiwi.control
             copyFlash.textField.text = "复制";
             copyHtml.textField.text = "复制";
             copyVideo.textField.text = "复制";
+            
+            copyInfo.visible = false;
         }
         
         public function loadConfiguration():void
@@ -88,18 +95,34 @@ package com.umiwi.control
         {
             Clipboard.generalClipboard.clear();
             Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, ControlUtil.configuration.flashURL);
+            copyed(event.target.y);
         }
         
         private function copy2Html(event:MouseEvent):void
         {
             Clipboard.generalClipboard.clear();
             Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, ControlUtil.configuration.htmlURL);
+            copyed(event.target.y);
         }
         
         private function copy2Video(event:MouseEvent):void
         {
             Clipboard.generalClipboard.clear();
             Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, ControlUtil.configuration.videoURL);
+            copyed(event.target.y);
+        }
+        
+        private function copyed(yPosition:Number):void
+        {
+            copyInfo.y = yPosition + 6;
+            copyInfo.visible = true;
+            timer.reset();
+            timer.start();
+        }
+        
+        private function hideAlert(event:TimerEvent):void
+        {
+            copyInfo.visible = false;
         }
 
     }

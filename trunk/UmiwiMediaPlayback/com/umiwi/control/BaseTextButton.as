@@ -28,22 +28,33 @@ package com.umiwi.control
         private function onAdded2Stage(event:Event):void
         {
             var tf:TextField = getChildByName("textField") as TextField;
-            tf.mouseEnabled = true;
+            if(tf)
+            {
+                tf.mouseEnabled = true;
+            }
         }
         
         protected function onRollOver(event:MouseEvent):void
         {
             gotoAndStop(2);
-            var tf:TextField = textField as TextField;
-            tf.textColor = Constants.TINT_COLOR;
+            var tf:TextField = getChildByName("textField") as TextField;
+            if(tf)
+            {
+                tf.textColor = Constants.TINT_COLOR;
+            }
+            
 
         }
         
         protected function onRollOut(event:MouseEvent):void
         {
             this.gotoAndStop(1);
-            var tf:TextField = textField as TextField;
-            tf.textColor = 0xCCCCCC;
+            var tf:TextField = getChildByName("textField") as TextField;
+            if(tf)
+            {
+                tf.textColor = 0xCCCCCC;
+            }
+            
         }
         
         protected function onMouseDown(event:MouseEvent):void

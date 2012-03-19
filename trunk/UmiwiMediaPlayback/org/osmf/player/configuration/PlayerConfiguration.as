@@ -168,5 +168,7 @@ package org.osmf.player.configuration
         public var hasMBR:Boolean = false;
         
         public var commentDefault:Boolean = true;
+        
+        public var isRTMP:Boolean = false;
 	}
 }

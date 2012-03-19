@@ -29,13 +29,26 @@
 			super();
 			traitType = MediaTraitType.PLAY;
 			visible = false;
-            addEventListener(Constants.OPEN_COMMENT_PANEL, openCommentPanel);
-            replayButton.addEventListener(MouseEvent.CLICK, resetTimer);
-            shareButton.addEventListener(MouseEvent.CLICK, resetTimer);
-            commentButton.addEventListener(MouseEvent.CLICK, resetTimer);
+            replayButton.addEventListener(MouseEvent.CLICK, replay);
+            shareButton.addEventListener(MouseEvent.CLICK, onShareClick);
+            commentButton.addEventListener(MouseEvent.CLICK, openCommentPanel);
             addEventListener(Constants.START_TIMER, startTimer);
             timer.addEventListener(TimerEvent.TIMER, updateLabel);
 		}
+        
+        private function replay(event:MouseEvent):void
+        {
+            var e:Event = new Event(Constants.REPLAY_VIDEO, true);
+            dispatchEvent(e);
+            resetTimer();
+        }
+        
+        private function onShareClick(event:MouseEvent):void
+        {
+            var e:Event = new Event(Constants.OPEN_SHARE_PANEL, true);
+            dispatchEvent(e);
+            resetTimer();
+        }
         
         private function updateLabel(event:TimerEvent):void
         {

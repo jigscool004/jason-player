@@ -18,6 +18,8 @@ package com.umiwi.control
         private var drawInTween:Tween;
         public var isDrawOut:Boolean = false;
         
+        private static const PADDING:Number = 6;
+        
         public function RightSideDrawer()
         {
             super();
@@ -71,7 +73,7 @@ package com.umiwi.control
             if(!isDrawOut)
             {
                 isDrawOut = true;
-                drawOutTween = new Tween(this, "x", Regular.easeIn, stage.stageWidth, stage.stageWidth - width, .6, true);
+                drawOutTween = new Tween(this, "x", Regular.easeIn, stage.stageWidth, stage.stageWidth - width + PADDING, .6, true);
             }
             timer.reset();
             timer.start();
@@ -83,7 +85,7 @@ package com.umiwi.control
             if(isDrawOut)
             {
                 isDrawOut = false;
-                drawInTween = new Tween(this, "x", Regular.easeIn, stage.stageWidth - width, stage.stageWidth, .6, true);
+                drawInTween = new Tween(this, "x", Regular.easeIn, stage.stageWidth - width + PADDING, stage.stageWidth, .6, true);
             }
         }
         

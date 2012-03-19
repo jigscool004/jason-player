@@ -67,13 +67,13 @@
                 timer.reset();
                 timer.start();
                 
-                fullScrBtn.selected = true;
+                setFullScreenButton2();
             }
             else
             {
                 y = stage.stageHeight - height;
                 
-                fullScrBtn.selected = false;
+                setFullScreenButton1();
             }
         }
         
@@ -100,20 +100,31 @@
         
         protected function onClickFullScreen(event:MouseEvent):void
         {
-            var tf:TextField = fullScrBtn.textField as TextField;
             switch (stage.displayState) {
                 case StageDisplayState.NORMAL:
                     stage.displayState=StageDisplayState.FULL_SCREEN;
-                    tf.text = "退出全屏"
+                    setFullScreenButton2();
                     break;
                 case StageDisplayState.FULL_SCREEN:
                     stage.displayState=StageDisplayState.NORMAL;
-                    tf.text = "全屏"
+                    setFullScreenButton1();
                     break;
                 default :
                     stage.displayState=StageDisplayState.NORMAL;
-                    tf.text = "全屏"
+                    setFullScreenButton1();
             }
+        }
+        
+        private function setFullScreenButton1():void
+        {
+            var tf:TextField = fullScrBtn.textField as TextField;
+            tf.text = "全屏";
+        }
+        
+        private function setFullScreenButton2():void
+        {
+            var tf:TextField = fullScrBtn.textField as TextField;
+            tf.text = "退出全屏";
         }
 	}
 }
