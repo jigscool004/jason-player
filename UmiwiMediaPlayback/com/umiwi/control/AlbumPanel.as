@@ -77,7 +77,7 @@ package com.umiwi.control
         {
             var tl:List = tileList as List;
             tl.setStyle("cellRenderer", MultiLineCell);
-            tl.opaqueBackground = 0x000000;
+            tl.opaqueBackground = null;
             tl.dataProvider = ControlUtil.configuration.albumDataProvider;
             for(var i:int = 0; i < tl.dataProvider.length; i++)
             {
@@ -105,6 +105,8 @@ package com.umiwi.control
                 albumBG.height -= offset;
                 albumBG.y += offset;
                 tl.y += offset;
+                listBG.height = tl.height;
+                listBG.y = tl.y;
                 closeButton.y += offset;
                 upButton.visible = false;
                 downButton.visible = false;

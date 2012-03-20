@@ -120,6 +120,7 @@
                 }
                 else
                 {
+                    commentButton.visible = false;
                     timer.start();
                 }
 			}

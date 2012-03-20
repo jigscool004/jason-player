@@ -13,8 +13,8 @@ package com.umiwi.control.component
         {     
             format = new TextFormat();
             format.font = "Arial";
-            format.color = 0xFFFFFF;
-            format.size = 14;
+            format.color = 0xCCCCCC;
+            format.size = 12;
             //format.align = TextFormatAlign.CENTER;
             
             textField.wordWrap = true; 

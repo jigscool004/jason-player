@@ -76,6 +76,10 @@ package com.umiwi.control
             
             if(!ControlUtil.configuration.isMember)
             {
+                flashLabel.visible = false;
+                flashText.visible = false;
+                copyFlash.visible = false;
+                
                 videoLabel.visible = false;
                 videoText.visible = false;
                 copyVideo.visible = false;

@@ -25,7 +25,7 @@
         
         private static const TEST_URL:String = "http://api.v.umiwi.com/getvideoinfo.do?videoid=m154";
         
-        public static const CAPTURE_URL:String = "http://screenshots1.v.umiwi.com:9889/Screenshots/getImg";
+        public static const CAPTURE_URL:String = "http://screenshots1.v.umiwi.com/Screenshots/getImg";
         private static const CAPTURE_URL_RTMP:String = "http://61.135.204.153/API/getjpgAPI.php";
 		
 		public static var isOut:Boolean;
@@ -81,6 +81,7 @@
             getIcon(info);
             getBooleanContent(info, "isMember");
             getBooleanContent(info, "hasMBR");
+            getBooleanContent(info, "commentDefault");
             getDomain(info);
             getXMLStringContent(info, "htmlURL");
             getXMLStringContent(info, "flashURL");
@@ -174,6 +175,11 @@
                 {
                     ControlUtil.configuration[xpath] = true;
                 }
+                else if(booleanString == "false")
+                {
+                    ControlUtil.configuration[xpath] = false;
+                }
+                //else use default value.
             }
         }
         
