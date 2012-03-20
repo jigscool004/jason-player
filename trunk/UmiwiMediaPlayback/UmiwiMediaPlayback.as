@@ -124,7 +124,7 @@
             Security.loadPolicyFile("http://i1.umivi.net/crossdomain.xml");
             //Security.loadPolicyFile("http://r1.vod.umiwi.com/crossdomain.xml");
             
-            //Security.loadPolicyFile("http://screenshots1.v.umiwi.com/crossdomain.xml");
+            Security.loadPolicyFile("http://screenshots1.v.umiwi.com/crossdomain.xml");
 			
             Security.allowDomain(".umiwi.com");
             Security.allowDomain(".umiwi.net");
