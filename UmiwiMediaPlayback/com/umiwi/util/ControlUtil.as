@@ -9,6 +9,7 @@
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 	import flash.net.URLVariables;
+	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
 	
@@ -31,6 +32,9 @@
 		
 		public static var configuration:PlayerConfiguration;
 		public static var playStatus:String;
+        
+        public static var playTime:Number;
+        public static var totalTime:Number;
 		
 		public function ControlUtil(pb:UmiwiMediaPlayback)
 		{
@@ -41,6 +45,10 @@
 		
 		protected function onKeyDown(event:KeyboardEvent):void
 		{
+            if(event.target is TextField)
+            {
+                return;
+            }
 			if(event.keyCode == Keyboard.SPACE && traitInstance)
 			{
 				var playTrait = traitInstance as PlayTrait;
@@ -82,17 +90,12 @@
 		
 		private function onPlayStateChange(event:PlayEvent):void
 		{
-/*			if((traitInstance as PlayTrait).playState == PlayState.STOPPED)
-			{
-				//playback.stopPlay();
-			}else
-			{
-				//playback.hideRecommend();
-			}*/
 			playStatus = (traitInstance as PlayTrait).playState;
             
-            if(playStatus == PlayState.STOPPED)
+            var timeOffset:Number =  ControlUtil.totalTime - ControlUtil.playTime;
+            if(playStatus == PlayState.STOPPED && (timeOffset < 5))
             {
+                UConfigurationLoader.updateMsg("Video " + timeOffset + " seconds left.");
                 if(ControlUtil.configuration.albumDataProvider.length > 0)
                 {
                     playNext();
@@ -152,13 +155,28 @@
                 {
                     try{
                         ExternalInterface.call("jumpToURL", item["link"]);
-                        UConfigurationLoader.updateMsg("Play next video " + item["title"]);
+                        UConfigurationLoader.updateMsg("Play next video " + item["label"]);
                     }
                     catch(_:Error)
                     {
                         trace(_.toString());
                     }
+                    return;
                 }
+            }
+            UConfigurationLoader.updateMsg("Album finished.");
+            stopPlay();
+        }
+        
+        public static function stopPlay():void {
+            
+            if(configuration.autoPlayNext)
+            {
+                UConfigurationLoader.callExternal("video_play_next");
+            }
+            else
+            {
+                UConfigurationLoader.callExternal("video_play_over");
             }
         }
 	}

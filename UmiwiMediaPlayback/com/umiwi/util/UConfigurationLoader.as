@@ -119,7 +119,6 @@
             var fistSlash:int = srcContent.indexOf("/");
             var lastSlash:int = srcContent.lastIndexOf("/");
             ControlUtil.configuration.hostName = srcContent.substring(0, fistSlash);
-            updateMsg("host name is " + ControlUtil.configuration.hostName);
             
             var fileName:String
             if(isHttp)
@@ -142,7 +141,6 @@
                 {
                     _parameters.src += "?token=" + _parameters.token;
                 }
-                updateMsg("RTMP URL is " + _parameters.src);
                 ControlUtil.configuration.isRTMP = true;
             }
             
@@ -167,7 +165,7 @@
         
         private function getBooleanContent(info:XML, xpath:String):void
         {
-            var item:XML = info.isMember[0];
+            var item:XML = info.elements(xpath)[0];
             if(item != null)
             {
                 var booleanString = item.toString();
@@ -215,7 +213,7 @@
                 var obj:Object
                 for each(item in items)
                 {
-                    obj = {label:item.@title.toString(), link:item.@link.toString()};
+                    obj = {label:item.@title.toString(), link:item.@link.toString(), videoid:item.@videoid.toString()};
                     ControlUtil.configuration.albumDataProvider.addItem(obj);
                 }
             }

@@ -4,6 +4,7 @@
 	import com.umiwi.util.ControlUtil;
 	import com.umiwi.util.UConfigurationLoader;
 	
+	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
@@ -77,12 +78,24 @@
             resetTimer();
             if(!commentPanel.showing)
             {
+                //Can not input in full screen mode.
+                restorScreen();
+                
                 commentPanel.show();
             }
             else
             {
                 commentPanel.hide();
                 timer.start();
+            }
+        }
+        
+        
+        private function restorScreen():void
+        {
+            if(stage.displayState == StageDisplayState.FULL_SCREEN)
+            {
+                stage.displayState=StageDisplayState.NORMAL;
             }
         }
 		
@@ -107,13 +120,18 @@
 		protected function visibilityDeterminingEventHandler(event:Event = null):void
 		{
 			var playTrait:PlayTrait = traitInstance as PlayTrait;
-			if(playTrait.playState == PlayState.STOPPED)
+            var timeOffset:Number =  ControlUtil.totalTime - ControlUtil.playTime;
+			if(playTrait.playState == PlayState.STOPPED && (timeOffset < 5) &&
+                ControlUtil.configuration.albumDataProvider.length <= 0)
 			{
+                UConfigurationLoader.updateMsg("Video " + timeOffset + " seconds left.");
+                UConfigurationLoader.updateMsg("Video stop");
+                ControlUtil.stopPlay();
+                
                 if(ControlUtil.configuration.showRecommend)
                 {
                     visible = true;
                 }
-				UConfigurationLoader.callExternal("video_play_over");
                 if(ControlUtil.configuration.commentDefault)
                 {
                     openCommentPanel();

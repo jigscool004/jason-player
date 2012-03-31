@@ -124,7 +124,7 @@ package com.umiwi.control
                 {
                     try{
                         ExternalInterface.call("jumpToURL", item["link"]);
-                        UConfigurationLoader.updateMsg("Play next video " + item["title"]);
+                        UConfigurationLoader.updateMsg("Play selected video " + item["title"]);
                     }
                     catch(_:Error)
                     {
