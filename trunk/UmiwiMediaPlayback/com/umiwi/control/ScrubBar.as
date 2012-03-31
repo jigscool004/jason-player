@@ -181,6 +181,9 @@
 				var loadTrait:LoadTrait = media ? media.getTrait(MediaTraitType.LOAD) as LoadTrait : null;
 				var seekTrait:SeekTrait = media ? media.getTrait(MediaTraitType.SEEK) as SeekTrait : null;
 				var duration:Number = timeTrait.duration;
+                
+                ControlUtil.playTime = timeTrait.currentTime;
+                ControlUtil.totalTime = timeTrait.duration;
 			
 				var position:Number = isNaN(seekToTime) ? timeTrait.currentTime : seekToTime;
 				var scrubberX:Number
@@ -218,8 +221,12 @@
 								)
 								/ duration
 								||	0;
-							enlargeBuffer(netStream);
-							applyUmiwiPolicy(netStream);
+                            
+                            if(!ControlUtil.configuration.isRTMP)
+                            {
+                                enlargeBuffer(netStream);
+                                applyUmiwiPolicy(netStream);
+                            }
 						}
 						else
 						{
@@ -297,6 +304,7 @@
 		public function setWidth(newWidth:Number):void{
             scrubBarTrackBG.width = newWidth;
 			scrubBarTrack.width = newWidth - 13;
+            loadedTrack.width = newWidth - 13;
 			scrubberEnd = scrubBarTrack.x + scrubBarTrack.width - scrubber.width/2;
             setClickArea();
 			updateScrubberPosition();

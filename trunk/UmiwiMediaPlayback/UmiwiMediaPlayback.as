@@ -122,6 +122,7 @@
 			Security.loadPolicyFile("http://upload.umiwi.com/crossdomain.xml");
             Security.loadPolicyFile("http://vod2.umiwi.com/crossdomain.xml");
             Security.loadPolicyFile("http://i1.umivi.net/crossdomain.xml");
+            //Security.loadPolicyFile("http://i1.v.umiwi.com/crossdomain.xml");
             //Security.loadPolicyFile("http://r1.vod.umiwi.com/crossdomain.xml");
             
             Security.loadPolicyFile("http://screenshots1.v.umiwi.com/crossdomain.xml");
@@ -412,10 +413,21 @@
             }
             else
             {
+                //Can not input in full screen mode.
+                restorScreen();
+                
                 hidePanels();
                 player.pause();
                 notePanel.currentTime = player.currentTime;
                 notePanel.show();
+            }
+        }
+        
+        private function restorScreen():void
+        {
+            if(stage.displayState == StageDisplayState.FULL_SCREEN)
+            {
+                stage.displayState=StageDisplayState.NORMAL;
             }
         }
         
@@ -575,14 +587,13 @@
             //hide albume button
 
 			mediaContainer.width = _stage.stageWidth;
-			bufferingMC.width = _stage.stageWidth;
-            bufferingMC.height = _stage.stageHeight;
-            //bufferingMC.x = (_stage.stageWidth - bufferingMC.width) * 0.5;
+            
+            centerBufferingMC();
             
 			if(_stage.displayState == "fullScreen")
 			{
 				mediaContainer.height = _stage.stageHeight;
-                //bufferingMC.y = (_stage.stageHeight - bufferingMC.height) * 0.5;
+                
                 var padding:Number = 20;
                 var buttonWidth:Number = 65;
                 topBar.topBarBG.width = swfWidth;
@@ -596,7 +607,7 @@
 			}else
 			{
 				mediaContainer.height = _stage.stageHeight - toolBar.toolBarBack.height;
-                //bufferingMC.y = (_stage.stageWidth - bufferingMC.height - toolBar.toolBarBack.height) * 0.5;
+                
                 toolBar.fullScrBtn.x=toolBar.toolBarBack.width - 40;
 			}
             
@@ -680,6 +691,39 @@
             {
                 recommendPanel.x = 0;
                 recommendPanel.y = 0;
+            }
+            
+            resizePanel(configPanel);
+            resizePanel(sharePanel);
+            resizePanel(notePanel);
+            resizePanel(recommendPanel);
+        }
+        
+        private function resizePanel(movieClip:MovieClip):void
+        {
+            var aWidth:Number = movieClip.width - 20;
+            var aHeight:Number = movieClip.height - 20;
+            if(aWidth > _stage.stageWidth || aHeight > _stage.stageHeight)
+            {
+                if(aHeight == 0 || _stage.stageHeight == 0)
+                {
+                    return;
+                }
+                var aRatio:Number = aWidth/aHeight;
+                var stageRatio:Number = _stage.stageWidth/_stage.stageHeight;
+                var scaleFactor:Number;
+                if(aRatio > stageRatio)
+                {
+                    scaleFactor = _stage.stageWidth/movieClip.width;
+                    movieClip.width = _stage.stageWidth;
+                    movieClip.height = movieClip.height * scaleFactor;
+                }
+                else
+                {
+                    scaleFactor = _stage.height/movieClip.height;
+                    movieClip.width = movieClip.width * scaleFactor;
+                    movieClip.height = _stage.stageHeight;
+                }
             }
         }
         
@@ -1230,8 +1274,20 @@
 		
 		private function centerBufferingMC()
 		{
-			bufferingMC.x=Math.round((mainContainer.width-bufferingMC.width)/2);
-			bufferingMC.y=Math.round((mainContainer.height-bufferingMC.height)/1.5);
+            bufferingMC.bufferBG.x = 0;
+            bufferingMC.bufferBG.y = 0;
+            bufferingMC.bufferBG.width = _stage.stageWidth;
+            bufferingMC.bufferBG.height = _stage.stageHeight;
+            bufferingMC.bufferSymbol.x = _stage.stageWidth * 0.5;
+            
+            if(_stage.displayState == "fullScreen")
+            {
+                bufferingMC.bufferSymbol.y = _stage.stageHeight * 0.5;
+            }
+            else
+            {
+                bufferingMC.bufferSymbol.y = (_stage.stageHeight - toolBar.toolBarBack.height) * 0.5;
+            }
 		}
 		
 		private function showBuffering()
@@ -1300,26 +1356,7 @@
             }
 		}
 		
-		public function stopPlay():void {
-			
-			UConfigurationLoader.updateMsg("Video stop");
-            
-            if(configuration.autoPlayNext)
-            {
-                UConfigurationLoader.callExternal("video_play_next");
-            }
-            else
-            {
-                UConfigurationLoader.callExternal("video_play_over");
-            }
-			
-            if(configuration.showRecommend)
-            {
-                //显示推荐视频
-                recommendPanel.visible=true;
-                configPanel.visible = false;
-            }
-		}
+
 		
 		public function hideRecommend():void{
 			recommendPanel.visible=false;

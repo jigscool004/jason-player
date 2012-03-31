@@ -57,8 +57,10 @@ package com.umiwi.control
                 a[i].addEventListener(MouseEvent.CLICK, onClick);
                 function onClick(event:MouseEvent):void {
                     navigateToURL(new URLRequest("http://www.jiathis.com/send/?url=" + ControlUtil.configuration.htmlURL +
-                        "&title=" + ControlUtil.configuration.title + " " + ControlUtil.configuration.intro + 
+                        "&title=" + ControlUtil.configuration.title + 
+                        "&summary=" + ControlUtil.configuration.intro + 
                         "&webid=" + String(event.target.name) +
+                        "&pic=" + ControlUtil.configuration.poster +
                         "&uid="+ 123));
                 }
                 a[i].addEventListener(MouseEvent.ROLL_OVER,btnMouseOver);
