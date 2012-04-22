@@ -361,6 +361,22 @@
                 {
                     trace(_.toString());
                 }
+                
+                try{
+                    ExternalInterface.addCallback("pauseVideo", pauseVideo);
+                }
+                catch(_:Error)
+                {
+                    trace(_.toString());
+                }
+                
+                try{
+                    ExternalInterface.addCallback("getCurrentTime", getCurrentTime);
+                }
+                catch(_:Error)
+                {
+                    trace(_.toString());
+                }
             }
 		}
         
@@ -1374,6 +1390,17 @@
             {
                 player.play();
             }
+        }
+        
+        private function pauseVideo(event:Event = null):void {
+            if(player)
+            {
+                player.pause();
+            }
+        }
+        
+        private function getCurrentTime():Number {
+            return ControlUtil.playTime;
         }
 		
 		private var uc:UConfigurationLoader = new UConfigurationLoader();
