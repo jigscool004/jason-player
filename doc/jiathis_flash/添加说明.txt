@@ -1,0 +1,17 @@
+插件说明：
+
+1、JiaThis_Flash插件包含两帧，全部为AS3.0版本
+
+2、第一帧为插件收缩状态，第二针为插件展开状态
+
+3、Flash源代码配置参数属性解释如下：
+
+var config:Object = new Object();
+
+config.url = "http://www.sina.com.cn/" //手动设置跳转URL
+
+config.title = "新浪首页"; //手动设置标题
+
+config.uid = "123456" //手动设置uid
+
+config.gettype = 1; //1:为手动设置优先 2：为自动获取当前页面URL和标题 

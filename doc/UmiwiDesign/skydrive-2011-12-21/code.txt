@@ -1,0 +1,69 @@
+stop();
+share_btn_1.addEventListener(MouseEvent.ROLL_OVER,mouseOverEffect);
+function mouseOverEffect(event:Event):void{
+	gotoAndStop(2);
+}
+
+
+
+
+import flash.external.ExternalInterface;
+
+//配置传递参数URL和TITLE
+var config:Object = new Object();
+config.url = "http://www.sina.com.cn/"
+config.title = "新浪首页";
+config.uid = "123456"
+config.gettype = 1; //1:为手动设定 2：为自动获取当前页面URL和标题
+var pageurl:String;
+var pagetitle:String;
+
+var i:int = 0;
+var n:int;
+//配置显示icon数组
+var a:Array = [baidu,buzz,email,kaixin001,qzone,renren,sohu,t163,taobao,tqq,tsina,tsohu];
+//var a:Array = [baidu,buzz,gmail,kaixin001,qzone];
+if (config.gettype == 2)
+{
+	pageurl = ExternalInterface.call('eval', 'window.location.href');
+    pagetitle = ExternalInterface.call('eval', 'window.document.title');
+}
+else
+{
+	pageurl = config.url;
+	pagetitle = config.title;
+}
+
+
+n = a.length;
+//定位分享按钮位置
+share_btn_2.x = stage.stageWidth-20*n-60;
+for (i=0;i<n;i++)
+{
+    a[i].x=stage.stageWidth-20*(i+1);
+    a[i].y=stage.stageHeight-20;
+	a[i].alpha = 0.8
+	a[i].addEventListener(MouseEvent.CLICK, onClick);
+	function onClick(event:MouseEvent):void {
+	    navigateToURL(new URLRequest("http://www.jiathis.com/send/?url="+pageurl+"&title="+pagetitle+"&webid="+String(event.target.name)+"&uid="+config.uid));
+    }
+	a[i].addEventListener(MouseEvent.ROLL_OVER,btnMouseOver);
+	function btnMouseOver(event:MouseEvent):void {
+	    event.target.alpha = 1;
+    }
+	a[i].addEventListener(MouseEvent.ROLL_OUT,btnMouseOut);
+	function btnMouseOut(event:MouseEvent):void {
+	    event.target.alpha = 0.8;
+    }
+	//trace(a[i].x);
+}
+
+//tracetxt.text = pagetitle;
+share_btn_2.addEventListener(MouseEvent.ROLL_OUT,mouseOutEffect);
+function mouseOutEffect(event:Event):void{
+	setTimeout(gotoAndStop,1000,1);
+}
+stage.addEventListener(Event.MOUSE_LEAVE, cursorHide);
+function cursorHide(event:Event):void{
+	setTimeout(gotoAndStop,1000,1);
+}

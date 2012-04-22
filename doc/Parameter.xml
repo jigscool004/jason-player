@@ -1,0 +1,17 @@
+<PlayList>
+	<item videoid="1234" 
+		quality="medium" 
+		url="http://vod2.umiwi.com/vod/2011/11/29/9ec73d75399a82e721d3a8c4fd778cc3.ssm/9ec73d75399a82e721d3a8c4fd778cc3.f4m" 
+		thumb="http://i1.umivi.net/2011/1130/1322629225917.jpg">
+			<title>汪潮涌：改变命运的转折</title>
+			<intro>十年的华尔街投资生涯，让他完成了从普通职员到高管的转变。随后又选择了回国创业，每次选择汪潮涌都与时俱进，走好人生的关键几步</intro>
+			<htmlURL>http://chuangye.umiwi.com/2011/1201/50957.shtml</htmlURL>
+			<flashURL>http://www.umiwi.com/video/56656.swf</flashURL>
+			<videoURL>http://vod.umiwi.com/vod/2012/01/10/3f9bfed9b2e255d727e8b4d22db8ecbc.mp4</videoURL>
+	</item>
+	<icon url="http://i3.umivi.net/u/help/images/logo.gif" link="http://www.umiwi.com" alpha="0.0" x="10" y="10"/>
+	<domain>
+		<item>*.umiwi.com</item>
+	</domain>
+	<isMember>true</isMember>
+</PlayList>
