@@ -14,12 +14,13 @@
             var pqs = new ParsedQueryString();
             var parameterNames = pqs.params(false);
             var parameters = {
-            	  flvID: "f8589",
+            	  showAds: "false",
+            	  flvID: "f58144",
+            	  token: "abcdefghijklm",
             	  autoPlay: 0,
                 bufferWindow: 300,
                 bufferThreshold: 180,
-                descriptionUrl: "http://chuangye.umiwi.com/2011/0802/24997.shtml",
-                showAds: 0
+                descriptionUrl: "http://chuangye.umiwi.com/2011/0802/24997.shtml"
             };
             
             for (var i = 0; i < parameterNames.length; i++) {
@@ -45,7 +46,7 @@
 				, "UmiwiMediaPlayback"
 				, 610
 				, 510
-				, "9.2.0"
+				, "10.2.0"
 				, "expressInstall.swf"
 				, parameters
 				, {
@@ -67,16 +68,21 @@
              
              */
             
-						     function playVideo() {
-						         var myFlashMovie = swfobject.getObjectById("UmiwiMediaPlayback");
-						         myFlashMovie.playVideo();
-						     }
         </script>
 
     </head>
     <body>
         <table width="100%" border="0" cellspacing="5">
         	<tbody>
+        		<tr>
+        			<td width="700"  valign="top">
+        				<div>
+        					<button name="play" onClick="playVideo()">Play</button>
+        					<button name="pause" onClick="pauseVideo()"/>Pause</button>
+        					<button name="currentTime" onClick="getCurrentTime()"/>CurrentTime</button>
+        				</div>
+        			</td>
+        		</tr>
 						<tr>
                 <td width="700"  valign="top">
                     <div id="UmiwiMediaPlayback">
@@ -84,9 +90,6 @@
                             Alternative content
                         </p>
                     </div>
-                     <form name="form1" onsubmit="return false;">
-								         <input type="button" value="Play" onclick="playVideo();" />
-								     </form>
                   	<p>
                         <script type="text/javascript">
                             
@@ -94,7 +97,9 @@
                             // listed media links:
                             
                             var linkingCode = "";
-                            var links = ["http://vod.umiwi.com/vod/2011/06/20/b83a4e99d29ade16734f63a877bac307.mp4", 
+                            var links = ["http://vod2.umiwi.com/vod1/free/2012/02/20/695f0039095e7c45553fc87de2d89275.ssm/695f0039095e7c45553fc87de2d89275.f4m", 
+                            "rtmp://cp67126.edgefcs.net/ondemand/mp4:mediapm/osmf/content/test/sample1_700kbps.f4v",
+                            "http://vod.umiwi.com/vod/2011/06/20/b83a4e99d29ade16734f63a877bac307.mp4", 
                             "http://vod2.umiwi.com/a.ssm/a.f4m", 
                             "http://vod2.umiwi.com/vod/2011/05/30/a3dd6e0b185404f9045ef10033085c80.ssm/a3dd6e0b185404f9045ef10033085c80.f4m"];
                             
@@ -109,6 +114,55 @@
                             }
                             
                             document.write(linkingCode);
+                            
+                            function submitNote(a,b)
+														{
+														//alert("Hello Note!" + a + b)
+														}
+														
+														function submitComment(a)
+														{
+														//alert("Hello comment!" + a)
+														}
+														
+														function jumpToURL(a)
+														{
+														//alert("jumpToURL " + a)
+														}
+														
+														function video_play_next()
+														{
+														//alert("video_play_next")
+														}
+														
+														function video_play_over()
+														{
+														//alert("video_play_over")
+														}
+														
+														function playVideo()
+														{
+															thisMovie("UmiwiMediaPlayback").playVideo();
+														}
+														
+														function pauseVideo()
+														{
+														 	thisMovie("UmiwiMediaPlayback").pauseVideo();
+														}
+														
+														function getCurrentTime()
+														{
+														 	var time = thisMovie("UmiwiMediaPlayback").getCurrentTime();
+														 	alert("Current time is " + time);
+														}
+														
+													 function thisMovie(movieName) {
+											         if (navigator.appName.indexOf("Microsoft") != -1) {
+											             return window[movieName];
+											         } else {
+											             return document[movieName];
+											         }
+											     }
                         </script>
                     </p>
                 </td>
