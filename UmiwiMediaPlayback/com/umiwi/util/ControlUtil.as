@@ -93,13 +93,16 @@
 			playStatus = (traitInstance as PlayTrait).playState;
             
             var timeOffset:Number =  ControlUtil.totalTime - ControlUtil.playTime;
-            if(playStatus == PlayState.STOPPED && (timeOffset < 5))
+            if(playStatus == PlayState.STOPPED)
             {
                 UConfigurationLoader.updateMsg("Video " + timeOffset + " seconds left.");
-                if(ControlUtil.configuration.albumDataProvider.length > 0)
-                {
-                    playNext();
-                }
+                //if(timeOffset < 5)
+                //{   
+                    if(ControlUtil.configuration.albumDataProvider.length > 0)
+                    {
+                        playNext();
+                    }
+                //}
             }
 		}
 		
