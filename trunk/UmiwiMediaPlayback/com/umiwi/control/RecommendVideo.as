@@ -121,8 +121,11 @@
 		{
 			var playTrait:PlayTrait = traitInstance as PlayTrait;
             var timeOffset:Number =  ControlUtil.totalTime - ControlUtil.playTime;
-			if(playTrait.playState == PlayState.STOPPED && (timeOffset < 5) &&
-                ControlUtil.configuration.albumDataProvider.length <= 0)
+			//if(playTrait.playState == PlayState.STOPPED && (timeOffset < 5) &&
+              //  ControlUtil.configuration.albumDataProvider.length <= 0)
+                
+            if(playTrait.playState == PlayState.STOPPED &&
+                    ControlUtil.configuration.albumDataProvider.length <= 0)
 			{
                 UConfigurationLoader.updateMsg("Video " + timeOffset + " seconds left.");
                 UConfigurationLoader.updateMsg("Video stop");
