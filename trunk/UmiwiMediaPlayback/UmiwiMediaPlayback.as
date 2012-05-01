@@ -304,7 +304,7 @@
 			
 			iisPath="http://www.umiwi.com/player/";
 			
-			
+			UConfigurationLoader.updateMsg("This is Umiwi playback 1.0!");
 			UConfigurationLoader.updateMsg('iisPath='+iisPath);
 			
 			//初始化大播放按钮不可见

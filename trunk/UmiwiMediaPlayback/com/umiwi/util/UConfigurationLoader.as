@@ -40,7 +40,6 @@
 		
 		public function getFlvInfo(parameters:Object, cback:Function):void
 		{
-            updateMsg("This is Umiwi playback 1.0!");
 			_parameters = parameters;
 			_callback = cback;
 			if(!_parameters.flvID) 
