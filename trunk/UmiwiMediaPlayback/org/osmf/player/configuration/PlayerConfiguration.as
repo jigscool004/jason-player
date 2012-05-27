@@ -170,5 +170,9 @@ package org.osmf.player.configuration
         public var commentDefault:Boolean = true;
         
         public var isRTMP:Boolean = false;
+		
+		//http://bugs.adobe.com/jira/browse/FM-1550
+		public var hasStopBug:Boolean = false;
+		public var stopStatus:Boolean = false;
 	}
 }

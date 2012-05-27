@@ -213,6 +213,21 @@
 						var netStream:NetStream = (loadTrait as NetStreamLoadTrait).netStream;
 						if(playTrait && playTrait.playState != PlayState.STOPPED)
 						{
+							//Bug http://bugs.adobe.com/jira/browse/FM-1550
+							if(ControlUtil.configuration.hasStopBug && (!ControlUtil.configuration.stopStatus))
+							{
+								if(timeTrait.duration - timeTrait.currentTime < 3) 
+								{
+									playTrait.stop();
+									ControlUtil.configuration.stopStatus = true;
+									
+									seekTrait.seek(0);
+								}
+								else if(ControlUtil.configuration.stopStatus)
+								{
+									ControlUtil.configuration.stopStatus = false;
+								}
+							}
 							
 							scrubBarLoadedTrack.width 
 								= 	0

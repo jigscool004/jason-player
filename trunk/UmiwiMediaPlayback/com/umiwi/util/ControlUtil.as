@@ -104,6 +104,22 @@
                     }
                 //}
             }
+			
+			if(playStatus == PlayState.PAUSED)
+			{
+				if (ExternalInterface.available && !ControlUtil.configuration.out)
+				{
+					try{
+						ExternalInterface.call("pauseVideo");
+						UConfigurationLoader.updateMsg("Video is paused.");
+					}
+					catch(_:Error)
+					{
+						trace(_.toString());
+					}
+					return;
+				}
+			}
 		}
 		
 		public function get media():MediaElement
